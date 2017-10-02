@@ -20,3 +20,6 @@ $(PROGFILES:.cpp=): assn1.o
 depend :
 	makedepend ${PROGFILES}
 # DO NOT DELETE
+
+clean:
+	rm -f assn1 assn1.o

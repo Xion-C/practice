@@ -7,7 +7,7 @@
 //
 /***************************************************************************/
 
-/* Include needed files */
+                                                   /* Include needed files */
 #include <GL/gl.h>
 #include <GL/glu.h>
 #include <stdlib.h>
@@ -17,7 +17,7 @@
 #include <GL/glut.h>   // The GL Utility Toolkit (Glut) Header
 
 #define WIDTH 800
-#define HEIGHT 600
+#define HEIGHT 800
 
 int x_last,y_last;
 
@@ -28,9 +28,9 @@ void init_window()
 {
 
         					       /* Clear the window */
-    glClearColor(0.0,0.0,0.0,0.0);
+        glClearColor(0.0,0.0,0.0,0.0);
 	glShadeModel(GL_SMOOTH);
-    glOrtho(0,WIDTH,0,HEIGHT,-1.0,1.0);
+        glOrtho(0,WIDTH,0,HEIGHT,-1.0,1.0);
 }
 
 /***************************************************************************/
@@ -39,10 +39,10 @@ void write_pixel(int x, int y, double intensity)
                                          /* Turn on the pixel found at x,y */
 {
 
-    glColor3f (intensity, intensity, intensity);                 
-    glBegin(GL_POINTS);
-    glVertex3i( x, y, 0);
-    glEnd();	
+        glColor3f (intensity, intensity, intensity);                 
+        glBegin(GL_POINTS);
+           glVertex3i( x, y, 0);
+        glEnd();	
 }
 
 //***************************************************************************/
@@ -65,12 +65,12 @@ void mouse(int button, int state, int x, int y)
    match the screen, also it remembers where the old value was to avoid multiple
    readings from the same mouse click.  This can cause problems when trying to
    start a line or curve where the last one ended */
-    static int oldx = 0;
-    static int oldy = 0;
+        static int oldx = 0;
+        static int oldy = 0;
 	int mag;
 	
 	y *= -1;  //align y with mouse
-	y += HEIGHT; //ignore 
+	y += 500; //ignore 
 	mag = (oldx - x)*(oldx - x) + (oldy - y)*(oldy - y);
 	if (mag > 20) {
 		printf(" x,y is (%d,%d)\n", x,y);
@@ -105,7 +105,7 @@ int main (int argc, char *argv[])
    using the escape key.						  */
 	
 	glutInit            ( &argc, argv ); 
-   	glutInitDisplayMode ( GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH ); 
+       	glutInitDisplayMode ( GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH ); 
 	glutInitWindowSize  ( WIDTH,HEIGHT ); 
 	glutCreateWindow    ( "Computer Graphics" ); 
 	glutDisplayFunc     ( display );  
@@ -113,7 +113,7 @@ int main (int argc, char *argv[])
 	glutMouseFunc       ( mouse );
 	glutKeyboardFunc    ( keyboard );
         					      
-    init_window();				             //create_window
+        init_window();				             //create_window
 						       		
 	glutMainLoop        ( );                 // Initialize The Main Loop
 }
