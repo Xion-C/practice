@@ -20,11 +20,12 @@
 #define HEIGHT 600
 #define P_NUM 4 //The number of control points in Bezier curve 
 #define SEG_NUM 10 //The number of segments needed for the curve to look smooth
-#define AREA_R 5 //The radius of the area around control point that could be clicked
+#define AREA_R 4.5 //The radius of the area around control point that could be clicked
 
 int x_last, y_last;
 int control_px[P_NUM], control_py[P_NUM];
 int init_p = 1;
+int click_flag = 0; //mouse click event flag
 int chosen_p = 0; //which control point to be changed; if no control point(0 to P_NUM-1) is chosen, the value should be P_NUM
 
 /***************************************************************************/
@@ -32,7 +33,6 @@ int chosen_p = 0; //which control point to be changed; if no control point(0 to 
 void init_window()
 /* Clear the image area, and set up the coordinate system */
 {
-
         					       /* Clear the window */
 	glClearColor(0.0,0.0,0.0,0.0);
 	glShadeModel(GL_SMOOTH);
@@ -59,19 +59,18 @@ void draw_area_around(float intensity)
 	int i, x, y;
 	int xboundl, xboundh, yboundl, yboundh;
 
-	for(i = 0; i <= (init_p ? chosen_p : P_NUM); i++) {
+	for(i = 0; i <= (init_p ? chosen_p : P_NUM - 1); i++) {
 		xboundl = control_px[i] - AREA_R > 0 ? control_px[i] - AREA_R : 0;
 		xboundh = control_px[i] + AREA_R < WIDTH ? control_px[i] + AREA_R : WIDTH;
 		yboundl = control_py[i] - AREA_R > 0 ? control_py[i] - AREA_R : 0;
 		yboundh = control_py[i] + AREA_R < HEIGHT ? control_py[i] + AREA_R : HEIGHT;
 		for(x = xboundl; x <= xboundh; x++) {
 			for(y = yboundl; y <= yboundh; y++) {
-				if( (x - control_px[i]) * (x - control_px[i]) + (y - control_py[i]) * (y - control_py[i]) < AREA_R * AREA_R )
-				{
+				if( (x - control_px[i]) * (x - control_px[i]) + (y - control_py[i]) * (y - control_py[i]) < AREA_R * AREA_R ) {
 					write_pixel(x, y, intensity);
 				}
 			}
-		}
+		} 
 	}
 
 }
@@ -124,24 +123,47 @@ void display ( void )   // Create The Display Function
 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	      // Clear Screen 
 
-	if(init_p) { //initialize the first 4 control points 
-		control_px[chosen_p] = x_last;
-		control_py[chosen_p] = y_last;
-		write_pixel(x_last,y_last,1.0);
-		draw_area_around(0.5);
-		if(++chosen_p >= P_NUM) {
-			init_p = 0;
-		}
-	}
-	else {
-		if(chosen_p < P_NUM) { //when one control point is choosen, set the new location
+	int mag;
+	static int i;
+
+	if(click_flag) {
+		if(init_p) { //initialize the first 4 control points 
 			control_px[chosen_p] = x_last;
 			control_py[chosen_p] = y_last;
-			chosen_p = P_NUM;
+			printf("init_p %d - x %d, y %d\n", chosen_p, x_last, y_last);
+			write_pixel(x_last,y_last,1.0);
+			
+			if(++chosen_p >= P_NUM) {
+				init_p = 0;
+			}
 		}
-		bezier_curve(control_px, control_py);
-		draw_area_around(0.5);
+		else {
+			if(chosen_p < P_NUM) { //when one control point is choosen, set the new location
+				control_px[chosen_p] = x_last;
+				control_py[chosen_p] = y_last;
+				chosen_p = P_NUM;
+			}
+			bezier_curve(control_px, control_py);
+
+			for(i = 0; i < P_NUM; i++) { //find whether any control point is clicked
+				mag = (x_last - control_px[i]) * (x_last - control_px[i]) + (y_last - control_py[i]) * (y_last - control_py[i]);
+				if(mag <= AREA_R * AREA_R) { //when a control point is chosen
+					chosen_p = i;
+					printf("cotrol point p%d is chosen\n", i);
+					break;
+				}
+			}
+			i = i >= P_NUM ? 0 : i;
+
+			
+		}
+
+		click_flag = 0;	
 	}
+	draw_area_around(0.5);
+
+
+
 	
 
 	//write_pixel(x_last,y_last,1.0);
@@ -158,26 +180,48 @@ void mouse(int button, int state, int x, int y)
    match the screen, also it remembers where the old value was to avoid multiple
    readings from the same mouse click.  This can cause problems when trying to
    start a line or curve where the last one ended */
-	static int oldx = 0;
-	static int oldy = 0;
-	int mag;
+
 
 	y *= -1;  //align y with mouse
 	y += HEIGHT; //ignore 
-	for(static int i = 0; i < P_NUM; i++) {
-		mag = (oldx - control_px[i]) * (oldx - control_px[i]) + (oldy - control_py[i]) * (oldy - control_py[i]);
-		if(mag <= AREA_R * AREA_R) { //when a control point is chosen
-			chosen_p = i;
-			printf("cotrol point p%d is chosen\n", i);
-			break;
-		}
-		if(i >= P_NUM) { i = 0; }
+
+	// if(init_p) { //initialize the first 4 control points 
+	// 	control_px[chosen_p] = x;
+	// 	control_py[chosen_p] = y;
+	// 	printf("init_p %d - x %d, y %d\n", chosen_p, x, y);
+	// 	write_pixel(x_last,y_last,1.0);
+	// 	draw_area_around(0.5);
+	// 	if(++chosen_p >= P_NUM) {
+	// 		init_p = 0;
+	// 	}
+	// }
+	// else {
+	// 	if(chosen_p < P_NUM) { //when one control point is choosen, set the new location
+	// 		control_px[chosen_p] = x;
+	// 		control_py[chosen_p] = y;
+	// 		chosen_p = P_NUM;
+	// 	}
+	// 	bezier_curve(control_px, control_py);
+	// 	draw_area_around(0.5);
+	// }
+
+	// for(static int i = 0; i < P_NUM; i++) { //find whether any control point is clicked
+	// 	mag = (oldx - control_px[i]) * (oldx - control_px[i]) + (oldy - control_py[i]) * (oldy - control_py[i]);
+	// 	if(mag <= AREA_R * AREA_R) { //when a control point is chosen
+	// 		chosen_p = i;
+	// 		printf("cotrol point p%d is chosen\n", i);
+	// 		break;
+	// 	}
+	// 	if(i >= P_NUM) { i = 0; }
+	// }
+	if(state == GLUT_DOWN) {
+		click_flag = 1;
+		printf("click event, x %d, y %d\n", x, y);
+
+		x_last = x;
+		y_last = y;		
 	}
 
-	oldx = x;
-	oldy = y;
-	x_last = x;
-	y_last = y;
 }
  
 /***************************************************************************/
