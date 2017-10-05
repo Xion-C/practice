@@ -18,7 +18,7 @@
 
 #define WIDTH 800
 #define HEIGHT 600
-#define P_NUM 4 //The number of control points in Bezier curve 
+#define P_NUM 8 //The number of control points in Bezier curve 
 #define SEG_NUM 50 //The number of segments needed for the curve to look smooth
 #define AREA_R 5.5 //The radius of the area around control point that could be clicked
 #define ANIME_FRAMES 200 //Control the anitmation speed. The anitmation will be slower when the value increased
@@ -284,7 +284,7 @@ int main (int argc, char *argv[])
 	glutMouseFunc       ( mouse );
 	glutKeyboardFunc    ( keyboard );
         					      
-    init_window();				             //create_window
+	init_window();				             //create_window
 						       		
 	glutMainLoop        ( );                 // Initialize The Main Loop
 }
