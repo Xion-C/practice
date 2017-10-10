@@ -34,12 +34,12 @@ public:
         strcpy(buf, rhs.buf);
         return *this;
     }
-    int aaa(int a) const { a=2;int b;b=5;return b;}
-    int bbb(int c) const { c=2;c=aaa(10);iii=3;return c;}
+    //int aaa(int a) const { a=2;int b;b=5;return b;}
+    //int bbb(int c) const { c=2;c=aaa(10);iii;return c;}
 
 private:
 	char *buf;
-    const int iii=11;
+    //const int iii=11;
 };
 
 int main() {
