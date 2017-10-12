@@ -8,7 +8,7 @@ import filecmp
 
 EXECUTABLE = os.path.join(os.getcwd(), 'run')
 LIB_FOLDER = os.path.join(os.getcwd(), '../Python-2.7.2/')
-
+OUTDIR = os.path.join(os.getcwd(), '/tmp/alltest')
 
 class TestHarness:
     def __init__(self):
@@ -32,7 +32,7 @@ class TestHarness:
 
     def testOneFile(self, root, filename):
         testcase = os.path.join(root, filename)
-        toExec = '%s < %s > /dev/null' % (EXECUTABLE, testcase)
+        toExec = '%s < %s > %s' % (EXECUTABLE, testcase, OUTDIR)
         retcode = subprocess.call(toExec, shell=True)
         self.testCode(retcode, testcase)
 
