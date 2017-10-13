@@ -22,7 +22,8 @@ int main() {
 	for(n=fcs.begin(); n!=fcs.end(); n++)
 		std::cout << n->name << std::endl;
 
-
+	for(n=fcs.end()-1; n>=fcs.begin(); n--)
+		std::cout << n->name << std::endl;
 
 	return 0;
 }

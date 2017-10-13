@@ -64,6 +64,5 @@ int main(int argc, char * argv[]) {
   if (parse_had_errors) {
     fprintf(stderr,"Abnormal termination\n");
   }
-  //free(input_file);
   return (parse_had_errors ? EXIT_FAILURE : EXIT_SUCCESS);
 }

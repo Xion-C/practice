@@ -8,14 +8,19 @@
 	void yyerror (const char *);
 	void printResult();
 	int complexity = 1;
-	int func_nest = 0;
+	const int start = 0;
 	struct funcInfo {
 		int complexity;
 		int line;
 		int column;
 		std::string name;
 	} fi;
+	struct tryInfo {
+		int column;
+		int first_complexity;
+	} tryi;
 	std::vector<struct funcInfo> funcs;
+	std::vector<struct tryInfo> trys;
 %}
 
 // 83 tokens, in alphabetical order:
@@ -76,21 +81,18 @@ decorated // Used in: compound_stmt
 funcdef // Used in: decorated, compound_stmt
 	: DEF NAME parameters COLON suite
 	{
-		if(@1.first_column - 1 > 0) {
-			func_nest++;
+		if(@1.first_column - 1 > start) {
 			complexity++;
-			printf("nested + : %d\n", @1.first_column);
 		}
 		else {
-			printf("complexity %d\n", complexity);
 			fi.complexity = complexity;
 			fi.line = @1.first_line;
 			fi.column = @1.first_column - 1;
 			fi.name = $2;
 			funcs.push_back(fi);
 			complexity = 1;
+			trys.clear();
 		}
-		printf("name - %s\n", $2);
 		delete [] $2;
 	}
 	;
@@ -301,13 +303,20 @@ assert_stmt // Used in: small_stmt
 	;
 compound_stmt // Used in: stmt
 	: if_stmt {
-		complexity++; }
+		complexity++;
+	}
 	| while_stmt {
-		complexity++; }
+		complexity++;
+	}
 	| for_stmt {
-		complexity++; }
-	| try_stmt {
-		complexity++; }
+		complexity++;
+	}
+	| {
+		tryi.column = yylloc.first_column;
+		tryi.first_complexity = complexity;
+		trys.push_back(tryi);
+		complexity++;
+	} try_stmt
 	| with_stmt
 	| funcdef
 	| classdef
@@ -315,12 +324,12 @@ compound_stmt // Used in: stmt
 	;
 if_stmt // Used in: compound_stmt
 	: IF test COLON suite star_ELIF ELSE COLON suite
-	  //{ complexity++;printf("cp --- %d\n", complexity); }
 	| IF test COLON suite star_ELIF
-	  //{ complexity++;printf("cp --- %d\n", complexity); }
 	;
 star_ELIF // Used in: if_stmt, star_ELIF
-	: star_ELIF ELIF test COLON suite
+	: star_ELIF ELIF test COLON suite {
+		complexity++;
+	}
 	| %empty
 	;
 while_stmt // Used in: compound_stmt
@@ -333,10 +342,19 @@ for_stmt // Used in: compound_stmt
 	;
 try_stmt // Used in: compound_stmt
 	: TRY COLON suite plus_except opt_ELSE opt_FINALLY
-	| TRY COLON suite FINALLY COLON suite
+	| TRY COLON suite FINALLY COLON suite {
+		for(std::vector<struct tryInfo>::iterator it = trys.end() - 1; it>=trys.begin(); it--) {
+			if(it->column == @4.first_column) {
+				complexity = it->first_complexity;
+				trys.erase(it);
+				break;
+			}
+		}
+		//if(!flag) {printf("something goes wrong...\n");}
+	}
 	;
 plus_except // Used in: try_stmt, plus_except
-	: plus_except except_clause COLON suite
+	: plus_except except_clause COLON suite 
 	| except_clause COLON suite
 	;
 opt_ELSE // Used in: try_stmt
@@ -344,7 +362,16 @@ opt_ELSE // Used in: try_stmt
 	| %empty
 	;
 opt_FINALLY // Used in: try_stmt
-	: FINALLY COLON suite
+	: FINALLY COLON suite {
+		for(std::vector<struct tryInfo>::iterator it = trys.end() - 1; it>=trys.begin(); it--) {
+			if(it->column == @1.first_column) {
+				complexity = it->first_complexity;
+				trys.erase(it);
+				break;
+			}
+		}
+		//if(!flag) {printf("something goes wrong...\n");}
+	}
 	| %empty
 	;
 with_stmt // Used in: compound_stmt
@@ -359,8 +386,12 @@ with_item // Used in: with_stmt, star_COMMA_with_item
 	| test
 	;
 except_clause // Used in: plus_except
-	: EXCEPT test opt_AS_COMMA
-	| EXCEPT
+	: EXCEPT test opt_AS_COMMA {
+		complexity++;
+	}
+	| EXCEPT {
+		complexity++;
+	}
 	;
 pick_AS_COMMA // Used in: opt_AS_COMMA
 	: AS

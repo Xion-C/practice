@@ -447,7 +447,6 @@ int debug_yylex(void)
 }
 
 int yywrap() {
-  printf("--- Terminating flex ---\n");
   yylex_destroy();
   return 1;
 }
