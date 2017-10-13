@@ -28,6 +28,8 @@
 #include <stdlib.h>
 #include "parse.tab.h"
 
+#define BUFSIZE 4096
+
 extern void init_scanner(FILE *);
 
 static FILE * 
@@ -40,10 +42,20 @@ open_file(const char *filename) {
   return file;
 }
 
+void printScript() {
+  char buffer[BUFSIZE];
+  printf("/-------------------- Print the script --------------------/\n");
+  while(fgets(buffer, BUFSIZE, stdin)) { // read by line
+    printf("%s\n", buffer);
+  }
+  printf("/---------------------------------------------------------/\n");
+}
 
 int main(int argc, char * argv[]) {
   FILE *input_file = stdin;
+  //printScript();
   if (argc > 1) { /* user-supplied filename */
+    printf("The file directory is : %s\n", argv[1]);
     input_file = open_file(argv[1]);
   }
   init_scanner(input_file);

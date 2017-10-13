@@ -8,7 +8,7 @@ import filecmp
 
 EXECUTABLE = os.path.join(os.getcwd(), 'run')
 LIB_FOLDER = os.path.join(os.getcwd(), '../Python-2.7.2/')
-OUTDIR = os.path.join(os.getcwd(), 'tmp/alltest')
+OUTDIR = os.path.join(os.getcwd(), '/tmp/alltest')
 
 class TestHarness:
     def __init__(self):

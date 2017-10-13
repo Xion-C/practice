@@ -4,9 +4,7 @@
 	extern char *yytext;
 	void yyerror (const char *);
 	void printResult();
-	int complexity = 1;
-	int pre_firstline = 0;
-	int func_nest = 0;
+	int complexity = 0; 
 %}
 
 // 83 tokens, in alphabetical order:
@@ -24,13 +22,6 @@
 
 %locations
 
-%union
-{
-	char * str;
-}
-
-%type <str> NAME
-
 %%
 
 start
@@ -46,7 +37,9 @@ pick_NEWLINE_stmt // Used in: star_NEWLINE_stmt
 	;
 star_NEWLINE_stmt // Used in: file_input, star_NEWLINE_stmt
 	: star_NEWLINE_stmt pick_NEWLINE_stmt
+	  { static int i = 0; i++; printf("star new %d\n", i); }
 	| %empty
+	  { static int i = 0; i++; printf("emp ----- %d\n", i); }
 	;
 decorator // Used in: decorators
 	: AT dotted_name LPAR opt_arglist RPAR NEWLINE
@@ -65,20 +58,7 @@ decorated // Used in: compound_stmt
 	| decorators funcdef
 	;
 funcdef // Used in: decorated, compound_stmt
-	: DEF NAME parameters COLON suite 
-	{
-		if(@1.first_line > 0) {
-			func_nest++;
-			complexity++;
-			printf("nest+\n");
-		}
-		else {
-			printf("com %d\n", complexity);
-			complexity = 1;
-		}
-		printf("name - %s\n", $2); 
-		pre_firstline = @1.first_line;
-	}
+	: DEF NAME parameters COLON suite
 	;
 parameters // Used in: funcdef
 	: LPAR varargslist RPAR
@@ -286,18 +266,18 @@ assert_stmt // Used in: small_stmt
 	| ASSERT test
 	;
 compound_stmt // Used in: stmt
-	: if_stmt {
-		printf("fl %d, fc %d, ll %d, lc %d\n",@1.first_line,@1.first_column,@1.last_line,@1.last_column); }
-	| while_stmt {
-		complexity++; }
-	| for_stmt { 
-		complexity++; }
-	| try_stmt {
-		complexity++; }
-	| with_stmt {
-		complexity++; }
-	| funcdef {
-		complexity++; }
+	: if_stmt
+	  { complexity++;printf("cp --- %d\n", complexity);printf("no  %d\n",@1.first_line); }
+	| while_stmt
+	  { complexity++;printf("cp --- %d\n", complexity); }
+	| for_stmt
+	  { complexity++;printf("cp --- %d\n", complexity); }
+	| try_stmt
+	  { complexity++;printf("cp --- %d\n", complexity); }
+	| with_stmt
+	  { complexity++;printf("cp --- %d\n", complexity); }
+	| funcdef
+	  { complexity++;printf("cp --- %d\n", complexity); }
 	| classdef
 	| decorated
 	;
@@ -659,7 +639,7 @@ void yyerror (const char *s)
 
 void printResult()
 {
-	printf("Complexity : %d\n", complexity);
+	printf("Complexity : %d", complexity);
 }
 
 
