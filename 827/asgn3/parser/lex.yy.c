@@ -353,9 +353,6 @@ void yyfree (void *  );
 
 /* Begin user sect3 */
 
-#define yywrap(n) 1
-#define YY_SKIP_YYWRAP
-
 typedef unsigned char YY_CHAR;
 
 FILE *yyin = (FILE *) 0, *yyout = (FILE *) 0;
@@ -672,9 +669,9 @@ char *yytext;
 #line 1 "scan.l"
 /*
  * The MIT License (MIT)
- * 
+ *
  * Copyright (c) 2016 Brian A. Malloy and James F. Power
- * 
+ *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
  * "Software"), to deal in the Software without restriction, including
@@ -682,10 +679,10 @@ char *yytext;
  * distribute, sublicense, and/or sell copies of the Software, and to
  * permit persons to whom the Software is furnished to do so, subject to
  * the following conditions:
- * 
+ *
  * The above copyright notice and this permission notice shall be
  * included in all copies or substantial portions of the Software.
- * 
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
  * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
  * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
@@ -693,11 +690,11 @@ char *yytext;
  * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- * 
+ *
  */
 #line 27 "scan.l"
 /* This scanner is written by James Power, Chris Malloy, and Brian Malloy
- * During Fall, 2016.  
+ * During Fall, 2016.
  * Most of the definitions and specifications were taken from:
  * https://docs.python.org/2.7/reference/index.html
  */
@@ -757,7 +754,7 @@ static int numbers = 0;
 /***** Start states for multi-line strings and indentation *****/
 
 
-#line 761 "lex.yy.c"
+#line 758 "lex.yy.c"
 
 #define INITIAL 0
 #define LONG_STRING 1
@@ -949,8 +946,8 @@ YY_DECL
 #line 159 "scan.l"
 
 
-  
-#line 954 "lex.yy.c"
+
+#line 951 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -1523,7 +1520,7 @@ YY_RULE_SETUP
 #line 282 "scan.l"
 ECHO;
 	YY_BREAK
-#line 1527 "lex.yy.c"
+#line 1524 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2534,10 +2531,7 @@ void yyfree (void * ptr )
 #line 282 "scan.l"
 
 
-
-
-
-void 
+void
 init_scanner(FILE *input_file)
 {
   yyin = input_file;
@@ -2553,8 +2547,8 @@ init_scanner(FILE *input_file)
   tok->indstack[0] = FIRST_COLUMN;  /* Start column (not 0)  */
 }
 
-static void display_error(const char *msg) 
-{ 
+static void display_error(const char *msg)
+{
     fprintf (stderr, "%d.%d-%d.%d:", yylloc.first_line, yylloc.first_column,
                                      yylloc.last_line,  yylloc.last_column);
     fprintf(stderr, " lexical error with [%s]: %s\n", yytext, msg);
@@ -2572,7 +2566,7 @@ static void right_enclose(void)
     -- tok->level;
 }
 
-static void mark_long_string_start(void) 
+static void mark_long_string_start(void)
 {
     tok->long_string_start_line = yylloc.first_line;
     tok->long_string_start_col =  yylloc.first_column;
@@ -2587,13 +2581,13 @@ static void mark_long_string_end(void)
 
 static void mark_new_line(void)
 {
-    yycolumn = FIRST_COLUMN; 
+    yycolumn = FIRST_COLUMN;
 }
 
 static bool explicit_newline(void)
 {
     bool is_explicit_newline = (tok->level == 0) && (tok->cont_line || (yylloc.first_column > FIRST_COLUMN));
-    tok->cont_line = false; 
+    tok->cont_line = false;
     mark_new_line();
     return is_explicit_newline;
 }
@@ -2611,13 +2605,13 @@ static void handle_eof(void)
 /* Pop the indentation stack until you get back to col, queue DEDENTs */
 static void pop_indents(int col)
 {
-    if ( tok->indent < 0 ) { 
+    if ( tok->indent < 0 ) {
         display_error("(internal) indentation stack underflow");
     }
     else {
         int curr_indent = tok->indstack[tok->indent];
-        if (col < curr_indent) { 
-            tok->pendin --;  
+        if (col < curr_indent) {
+            tok->pendin --;
             tok->indent --;   /* The actual 'pop' */
             pop_indents(col);
         }
@@ -2631,7 +2625,7 @@ static void pop_indents(int col)
 /* Push col onto the indentation stack, queue an INDENT */
 static void push_indent(int col)
 {
-    tok->pendin ++;  
+    tok->pendin ++;
     tok->indstack[++tok->indent] = col;
 }
 
@@ -2657,11 +2651,11 @@ int yylex(void)
     if (tok->pendin < 0) {
         tok->pendin ++;
         token = DEDENT;
-    } 
+    }
     else if (tok->pendin > 0) {
         tok->pendin --;
         token = INDENT;
-    } 
+    }
     /* Next check for a pending token */
     else if (tok->pending_token != NO_TOKEN) {
         token = tok->pending_token;
@@ -2670,20 +2664,20 @@ int yylex(void)
     /* Finally, call the actual scanner */
     else {
         token = orig_yylex();
-        if (token == NEWLINE) { 
-            tok->atbol = true; 
+        if (token == NEWLINE) {
+            tok->atbol = true;
         }
         else if (tok->atbol) {
-            tok->atbol = false; 
-            note_new_indent(yylloc.first_column); 
-            tok->pending_token = token;  
+            tok->atbol = false;
+            note_new_indent(yylloc.first_column);
+            tok->pending_token = token;
             token = yylex();
         }
         /* if we get here then nothing is pending, so just return the token */
-    } 
+    }
     if (token == ENDMARKER)
         tok->seen_endmarker = true;  /* Wrap up the next time around */
-    return token; 
+    return token;
 }
 
 
@@ -2703,5 +2697,9 @@ int debug_yylex(void)
     return token;
 }
 
-
+int yywrap() {
+  printf("--- Terminating flex ---\n");
+  yylex_destroy();
+  return 1;
+}
 

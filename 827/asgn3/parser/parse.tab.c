@@ -64,15 +64,24 @@
 /* Copy the first part of user declarations.  */
 #line 2 "parse.y" /* yacc.c:339  */
 
+	#include <iostream>
+	#include <vector>
+	#include <string>
 	int yylex (void);
 	extern char *yytext;
 	void yyerror (const char *);
 	void printResult();
 	int complexity = 1;
-	int pre_firstline = 0;
 	int func_nest = 0;
+	struct funcInfo {
+		int complexity;
+		int line;
+		int column;
+		std::string name;
+	} fi;
+	std::vector<struct funcInfo> funcs;
 
-#line 76 "parse.tab.c" /* yacc.c:339  */
+#line 85 "parse.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
 #  if defined __cplusplus && 201103L <= __cplusplus
@@ -198,11 +207,11 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 28 "parse.y" /* yacc.c:355  */
+#line 37 "parse.y" /* yacc.c:355  */
 
 	char * str;
 
-#line 206 "parse.tab.c" /* yacc.c:355  */
+#line 215 "parse.tab.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -231,7 +240,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 235 "parse.tab.c" /* yacc.c:358  */
+#line 244 "parse.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -539,38 +548,38 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,    37,    37,    40,    44,    45,    48,    49,    52,    53,
-      56,    57,    60,    61,    64,    65,    68,    84,    85,    88,
-      89,    92,    93,    96,    97,   100,   101,   104,   105,   108,
-     109,   112,   113,   116,   117,   120,   121,   124,   125,   128,
-     129,   132,   133,   136,   137,   138,   139,   140,   141,   142,
-     143,   144,   147,   148,   151,   152,   155,   156,   159,   160,
-     161,   162,   163,   164,   165,   166,   167,   168,   169,   170,
-     173,   174,   177,   178,   181,   182,   185,   186,   189,   190,
-     193,   196,   199,   200,   201,   202,   203,   206,   209,   212,
-     213,   216,   219,   220,   223,   224,   227,   228,   231,   232,
-     235,   238,   241,   242,   245,   246,   247,   250,   251,   254,
-     255,   258,   259,   262,   263,   266,   267,   270,   271,   274,
-     277,   278,   281,   282,   285,   286,   289,   291,   293,   295,
-     297,   299,   301,   302,   305,   307,   311,   312,   315,   316,
-     319,   320,   323,   324,   327,   328,   331,   332,   335,   336,
-     339,   342,   343,   346,   347,   350,   351,   354,   355,   358,
-     359,   362,   363,   366,   367,   370,   371,   374,   375,   378,
-     379,   382,   383,   386,   387,   390,   391,   394,   395,   398,
-     399,   402,   403,   406,   407,   410,   411,   412,   413,   414,
-     415,   416,   417,   418,   419,   420,   423,   424,   427,   428,
-     431,   432,   435,   436,   439,   440,   443,   444,   447,   448,
-     451,   452,   455,   456,   457,   458,   461,   462,   465,   466,
-     467,   470,   471,   474,   475,   478,   479,   480,   481,   482,
-     483,   484,   487,   488,   491,   492,   495,   496,   499,   500,
-     503,   504,   507,   508,   511,   512,   515,   516,   519,   520,
-     521,   524,   525,   528,   529,   532,   533,   534,   537,   538,
-     541,   542,   545,   546,   549,   550,   553,   554,   557,   558,
-     561,   562,   565,   566,   569,   570,   573,   574,   577,   578,
-     581,   582,   585,   588,   589,   592,   593,   596,   597,   600,
-     601,   602,   605,   606,   609,   610,   613,   614,   617,   618,
-     621,   622,   625,   626,   629,   630,   633,   634,   637,   638,
-     641,   642,   645,   646
+       0,    46,    46,    49,    53,    54,    57,    58,    61,    62,
+      65,    66,    69,    70,    73,    74,    77,    98,    99,   102,
+     103,   106,   107,   110,   111,   114,   115,   118,   119,   122,
+     123,   126,   127,   130,   131,   134,   135,   138,   139,   142,
+     143,   146,   147,   150,   151,   152,   153,   154,   155,   156,
+     157,   158,   161,   162,   165,   166,   169,   170,   173,   174,
+     175,   176,   177,   178,   179,   180,   181,   182,   183,   184,
+     187,   188,   191,   192,   195,   196,   199,   200,   203,   204,
+     207,   210,   213,   214,   215,   216,   217,   220,   223,   226,
+     227,   230,   233,   234,   237,   238,   241,   242,   245,   246,
+     249,   252,   255,   256,   259,   260,   261,   264,   265,   268,
+     269,   272,   273,   276,   277,   280,   281,   284,   285,   288,
+     291,   292,   295,   296,   299,   300,   303,   305,   307,   309,
+     311,   312,   313,   314,   317,   319,   323,   324,   327,   328,
+     331,   332,   335,   336,   339,   340,   343,   344,   347,   348,
+     351,   354,   355,   358,   359,   362,   363,   366,   367,   370,
+     371,   374,   375,   378,   379,   382,   383,   386,   387,   390,
+     391,   394,   395,   398,   399,   402,   403,   406,   407,   410,
+     411,   414,   415,   418,   419,   422,   423,   424,   425,   426,
+     427,   428,   429,   430,   431,   432,   435,   436,   439,   440,
+     443,   444,   447,   448,   451,   452,   455,   456,   459,   460,
+     463,   464,   467,   468,   469,   470,   473,   474,   477,   478,
+     479,   482,   483,   486,   487,   490,   491,   492,   493,   494,
+     495,   496,   499,   500,   503,   504,   507,   508,   511,   512,
+     515,   516,   519,   520,   523,   524,   527,   528,   531,   532,
+     533,   536,   537,   540,   541,   544,   545,   546,   549,   550,
+     553,   554,   557,   558,   561,   562,   565,   566,   569,   570,
+     573,   574,   577,   578,   581,   582,   585,   586,   589,   590,
+     593,   594,   597,   600,   601,   604,   605,   608,   609,   612,
+     613,   614,   617,   618,   621,   622,   625,   626,   629,   630,
+     633,   634,   637,   638,   641,   642,   645,   646,   649,   650,
+     653,   654,   657,   658
 };
 #endif
 
@@ -1886,66 +1895,57 @@ yyreduce:
   switch (yyn)
     {
         case 3:
-#line 41 "parse.y" /* yacc.c:1646  */
+#line 50 "parse.y" /* yacc.c:1646  */
     { printResult(); }
-#line 1892 "parse.tab.c" /* yacc.c:1646  */
+#line 1901 "parse.tab.c" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 69 "parse.y" /* yacc.c:1646  */
+#line 78 "parse.y" /* yacc.c:1646  */
     {
-		if((yylsp[-4]).first_line > 0) {
+		if((yylsp[-4]).first_column - 1 > 0) {
 			func_nest++;
 			complexity++;
-			printf("nest+\n");
+			printf("nested + : %d\n", (yylsp[-4]).first_column);
 		}
 		else {
-			printf("com %d\n", complexity);
+			printf("complexity %d\n", complexity);
+			fi.complexity = complexity;
+			fi.line = (yylsp[-4]).first_line;
+			fi.column = (yylsp[-4]).first_column - 1;
+			fi.name = (yyvsp[-3].str);
+			funcs.push_back(fi);
 			complexity = 1;
 		}
-		printf("name - %s\n", (yyvsp[-3].str)); 
-		pre_firstline = (yylsp[-4]).first_line;
+		printf("name - %s\n", (yyvsp[-3].str));
+		delete [] (yyvsp[-3].str);
 	}
-#line 1910 "parse.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 126:
-#line 289 "parse.y" /* yacc.c:1646  */
-    {
-		printf("fl %d, fc %d, ll %d, lc %d\n",(yylsp[0]).first_line,(yylsp[0]).first_column,(yylsp[0]).last_line,(yylsp[0]).last_column); }
-#line 1917 "parse.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 127:
-#line 291 "parse.y" /* yacc.c:1646  */
-    {
-		complexity++; }
 #line 1924 "parse.tab.c" /* yacc.c:1646  */
     break;
 
-  case 128:
-#line 293 "parse.y" /* yacc.c:1646  */
-    { 
+  case 126:
+#line 303 "parse.y" /* yacc.c:1646  */
+    {
 		complexity++; }
 #line 1931 "parse.tab.c" /* yacc.c:1646  */
     break;
 
-  case 129:
-#line 295 "parse.y" /* yacc.c:1646  */
+  case 127:
+#line 305 "parse.y" /* yacc.c:1646  */
     {
 		complexity++; }
 #line 1938 "parse.tab.c" /* yacc.c:1646  */
     break;
 
-  case 130:
-#line 297 "parse.y" /* yacc.c:1646  */
+  case 128:
+#line 307 "parse.y" /* yacc.c:1646  */
     {
 		complexity++; }
 #line 1945 "parse.tab.c" /* yacc.c:1646  */
     break;
 
-  case 131:
-#line 299 "parse.y" /* yacc.c:1646  */
+  case 129:
+#line 309 "parse.y" /* yacc.c:1646  */
     {
 		complexity++; }
 #line 1952 "parse.tab.c" /* yacc.c:1646  */
@@ -2187,7 +2187,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 649 "parse.y" /* yacc.c:1906  */
+#line 661 "parse.y" /* yacc.c:1906  */
 
 
 #include <stdio.h>
@@ -2201,7 +2201,18 @@ void yyerror (const char *s)
 
 void printResult()
 {
-	printf("Complexity : %d\n", complexity);
+	//printf("Complexity : %d\n", complexity);
+
+	// for(std::vector<struct funcInfo>::iterator it = funcs.begin(); it != funcs.end(); ++it) {
+	// 	printf("(%d %d) %s : %d\n", it->line, it->column, it->name, it->complexity );
+	// }
+	while (!funcs.empty())
+  {
+    // printf("(\"%d:%d: \'%s\'\", %d)\n", funcs.back().line,
+		// 	funcs.back().column, funcs.back().name, funcs.back().complexity );
+		std::cout << "(\"" << funcs.back().line << ":" << funcs.back().column
+			<< ": \'" << funcs.back().name << "\'\", "
+			<< funcs.back().complexity << ")" << std::endl;
+		funcs.pop_back();
+  }
 }
-
-

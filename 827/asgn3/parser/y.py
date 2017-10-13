@@ -22,7 +22,7 @@ def m():
     for x in range(3):
       for y in range(4):
         for z in range(5):
-	  sum += z
+            sum += z
     return sum
   a = 2
   a += 1
