@@ -1,0 +1,12 @@
+
+
+This is a job for rsync. There's no benefit to doing this manually with a shell loop unless you want to move the file rather than copy them.
+
+rsync -a /images/ /images2/
+
+(Note trailing slash on images, otherwise it would copy to /images2/images.)
+
+If images with the same name exist in both directories, the command above will overwrite /images2/SOMEPATH/SOMEFILE with /images/SOMEPATH/SOMEFILE. If you want to replace only older files, add the option -u. If you want to always keep the version in /images2, add the option --ignore-existing.
+
+If you want to move the files from /images, with rsync, you can pass the option --remove-source-files. Then rsync copies all the files in turn, and removes each file when it's done. This is a lot slower than moving if the source and destination directories are on the same filesystem.
+
