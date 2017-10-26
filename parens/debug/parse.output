@@ -1,0 +1,107 @@
+Grammar
+
+    0 $accept: lines $end
+
+    1 lines: lines expr CR
+    2      | %empty
+
+    3 expr: LPAR expr RPAR expr
+    4     | %empty
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+CR (258) 1
+LPAR (259) 3
+RPAR (260) 3
+
+
+Nonterminals, with rules where they appear
+
+$accept (6)
+    on left: 0
+lines (7)
+    on left: 1 2, on right: 0 1
+expr (8)
+    on left: 3 4, on right: 1 3
+
+
+State 0
+
+    0 $accept: . lines $end
+
+    $default  reduce using rule 2 (lines)
+
+    lines  go to state 1
+
+
+State 1
+
+    0 $accept: lines . $end
+    1 lines: lines . expr CR
+
+    $end  shift, and go to state 2
+    LPAR  shift, and go to state 3
+
+    $default  reduce using rule 4 (expr)
+
+    expr  go to state 4
+
+
+State 2
+
+    0 $accept: lines $end .
+
+    $default  accept
+
+
+State 3
+
+    3 expr: LPAR . expr RPAR expr
+
+    LPAR  shift, and go to state 3
+
+    $default  reduce using rule 4 (expr)
+
+    expr  go to state 5
+
+
+State 4
+
+    1 lines: lines expr . CR
+
+    CR  shift, and go to state 6
+
+
+State 5
+
+    3 expr: LPAR expr . RPAR expr
+
+    RPAR  shift, and go to state 7
+
+
+State 6
+
+    1 lines: lines expr CR .
+
+    $default  reduce using rule 1 (lines)
+
+
+State 7
+
+    3 expr: LPAR expr RPAR . expr
+
+    LPAR  shift, and go to state 3
+
+    $default  reduce using rule 4 (expr)
+
+    expr  go to state 8
+
+
+State 8
+
+    3 expr: LPAR expr RPAR expr .
+
+    $default  reduce using rule 3 (expr)

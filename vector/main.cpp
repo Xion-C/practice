@@ -54,6 +54,8 @@ private:
 int main() {
 	//TokenDB db("IDENT");
 	std::vector<Token> tokens;
-	tokens.push_back("IDENT");
-	tokens.push_back("FLOAT");
+	//tokens.push_back("IDENT");
+	//tokens.push_back("FLOAT");
+	tokens.emplace_back("IDENT");
+	tokens.emplace_back("FLOAT");
 }
