@@ -9,9 +9,13 @@ void write_pixel(int x, int y, color_t c) {
 }
 
 void color_random(color_t& c) {
-    c.r = float(rand()) / float(RAND_MAX);
-    c.g = float(rand()) / float(RAND_MAX);
-    c.b = float(rand()) / float(RAND_MAX);
+    int r1,r2,r3;
+    r1=rand();
+    r2=rand();
+    r3=rand();
+    c.r = (float)(r1 % 255) / 255.0f;
+    c.g = (float)(r2 % 255) / 255.0f;
+    c.b = (float)(r3 % 255) / 255.0f;
 }
 void color_white(color_t& c) {
     c.r = c.g = c.b = 1.0;
@@ -28,12 +32,15 @@ void obj_loader(const char *path) {
         if (fscanf(objfile, "%s", text) == EOF)  break;
         if (strcmp(text, "v") == 0) {
             fscanf(objfile, "%f %f %f\n", &(vertex.x), &(vertex.y), &(vertex.z));
+            vertex.w=1.0f;
             objdata.vertices.push_back(vertex);
-            printf("vertex: %f  %f  %f\n", vertex.x, vertex.y, vertex.z);
+            printf("vertex: %f  %f  %f  %f\n", vertex.x, vertex.y, vertex.z, vertex.w);
         }
         int sgroup_temp;
         if (strcmp(text, "s") == 0) {
             fscanf(objfile, "%d\n", &sgroup_temp);
+            color_random(color);
+            objdata.colors.push_back(color);
         }
         int temp;
         if (strcmp(text, "f") == 0) {
@@ -43,13 +50,13 @@ void obj_loader(const char *path) {
             printf("face: %d %d %d %d\n", vi.vi1, vi.vi2, vi.vi3, vi.sgroup);
         }
     }
-    vertices_init();
-    faces_init();
 
-    for (unsigned int i = 0; i < (objdata.faces.size()); i++) {
-        printf("x %f\n", objdata.faces[i].v1.x);
-        printf("r %f g %f b %f\n", objdata.faces[i].color.r, objdata.faces[i].color.g, objdata.faces[i].color.b);
-    }
+    vertices_init();
+
+    // for (unsigned int i = 0; i < (objdata.faces.size()); i++) {
+    //     printf("x %f\n", objdata.faces[i].v1.x);
+    //     printf("r %f g %f b %f\n", objdata.faces[i].color.r, objdata.faces[i].color.g, objdata.faces[i].color.b);
+    // }
 }
 
 float line3d_getz(const point_t p1, const point_t p2, float x, float y) {
@@ -63,9 +70,9 @@ float line3d_getz(const point_t p1, const point_t p2, float x, float y) {
 void draw_zbuffer_pixel(point_t p1, point_t p2, int xi, int yi, color_t c) {
     float zbuf;
     zbuf = line3d_getz(p1, p2, xi, yi);
-    if (zbuf<render.zbuffer[xi][yi]) {
+    if (zbuf<render.zbuffer[xi+biasx][yi+biasy]) {
         write_pixel(xi, yi, c);
-        render.zbuffer[xi][yi] = zbuf;
+        render.zbuffer[xi+biasx][yi+biasy] = zbuf;
         //printf("draw x %d y %d c %f\n",xi,yi,c.r);
     }
 }
@@ -169,27 +176,44 @@ void render_init() {
 void vertices_init() {
     point_t obj_center;
     float x, y, z;
+    float minx,miny,minz,maxx,maxy,maxz;
+    minx=miny=minz=maxx=maxy=maxz=0;
     x = y = z = 0;
     for (unsigned int i = 0; i < (objdata.vertices.size()); i++) {
         x += objdata.vertices[i].x;
         y += objdata.vertices[i].y;
         z += objdata.vertices[i].z;
+        minx=objdata.vertices[i].x<minx?objdata.vertices[i].x:minx;
+        miny=objdata.vertices[i].y<miny?objdata.vertices[i].y:miny;
+        minz=objdata.vertices[i].z<minz?objdata.vertices[i].z:minz;
+        maxx=objdata.vertices[i].x>maxx?objdata.vertices[i].x:maxx;
+        maxy=objdata.vertices[i].y>maxy?objdata.vertices[i].y:maxy;
+        maxz=objdata.vertices[i].z>maxz?objdata.vertices[i].z:maxz;
     }
     obj_center.x = x / objdata.vertices.size();
     obj_center.y = y / objdata.vertices.size();
     obj_center.z = z / objdata.vertices.size();
-
+    matrix_t t;
+    matrix_set_translation(t,-obj_center.x,-obj_center.y,-obj_center.z);
+    vertices_transform(t);
 }
 
+void vertices_transform(const matrix_t& m) {
+  for(unsigned int i = 0; i < (objdata.vertices.size()); i++) {
+      matrix_multi_vector(objdata.vertices[i], m, objdata.vertices[i]);
+      printf("i-%d, x %f, y %f, z %f, w %f\n",i,objdata.vertices[i].x,objdata.vertices[i].y,objdata.vertices[i].z, objdata.vertices[i].w);
+  }
+  faces_init();
+}
 void faces_init() {
+    if(!objdata.faces.empty())  objdata.faces.clear();
     for (unsigned int i = 0; i < (objdata.vertex_indices.size()); i++) {
         face.v1 = objdata.vertices[objdata.vertex_indices[i].vi1 - 1];
         face.v2 = objdata.vertices[objdata.vertex_indices[i].vi2 - 1];
         face.v3 = objdata.vertices[objdata.vertex_indices[i].vi3 - 1];
         face.sgroup = objdata.vertex_indices[i].sgroup;
-        if (i == 0 || (i > 0 && face.sgroup != objdata.vertex_indices[i - 1].sgroup)) {
-            color_random(face.color);
-        }
+        face.color = objdata.colors[face.sgroup - 1];
+        printf("face %d color %f %f %f\n", i,face.color.r,face.color.g,face.color.b);
         objdata.faces.push_back(face);
     }
 }
@@ -198,11 +222,22 @@ void view_obj() {
     render_init();
     for (unsigned int i = 0; i<objdata.faces.size(); i++) {
         draw_triface(objdata.faces[i]);
+        draw_scanline(objdata.faces[i].v1, objdata.faces[i].v2, white);
+        draw_scanline(objdata.faces[i].v2, objdata.faces[i].v3, white);
+        draw_scanline(objdata.faces[i].v1, objdata.faces[i].v3, white);
     }
+
+    static float k=1.0f;
+    matrix_t trans;
+    matrix_set_translation(trans,k,k,0);
+
+    vertices_transform(trans);
+    //k=k+0.01f;
     printf("how many------\n");
 }
 
 
+/********************** some math functions **********************/
 void vector_crossproduct(vector_t& z, const vector_t& x, const vector_t& y) {
     float m1, m2, m3;
     m1 = x.y * y.z - x.z * y.y;
@@ -213,18 +248,23 @@ void vector_crossproduct(vector_t& z, const vector_t& x, const vector_t& y) {
     z.z = m3;
     z.w = 1.0;
 }
-
 void matrix_init_identity(matrix_t& m) {
     m[0][0] = m[1][1] = m[2][2] = m[3][3] = 1;
     m[0][1] = m[0][2] = m[0][3] = 0;
     m[1][0] = m[1][2] = m[1][3] = 0;
     m[2][0] = m[2][1] = m[2][3] = 0;
+    m[3][0] = m[3][1] = m[3][2] = 0;
 }
-void matrix_multi_vector(vector_t& result, const matrix_t m, const vector_t v) {
+void matrix_multi_vector(vector_t& dst, const matrix_t& m, const vector_t& v) {
     float vx = v.x, vy = v.y, vz = v.z, vw = v.w;
-    result.x = m[0][0] * vx + m[0][1] * vy + m[0][2] * vz + m[0][3] * vw;
-    result.y = m[1][0] * vx + m[1][1] * vy + m[1][2] * vz + m[1][3] * vw;
-    result.z = m[2][0] * vx + m[2][1] * vy + m[2][2] * vz + m[2][3] * vw;
-    result.w = m[3][0] * vx + m[3][1] * vy + m[3][2] * vz + m[3][3] * vw;
+    dst.x = m[0][0] * vx + m[0][1] * vy + m[0][2] * vz + m[0][3] * vw;
+    dst.y = m[1][0] * vx + m[1][1] * vy + m[1][2] * vz + m[1][3] * vw;
+    dst.z = m[2][0] * vx + m[2][1] * vy + m[2][2] * vz + m[2][3] * vw;
+    dst.w = m[3][0] * vx + m[3][1] * vy + m[3][2] * vz + m[3][3] * vw;
 }
-void
+void matrix_set_translation(matrix_t& dst,float x,float y,float z) {
+    matrix_init_identity(dst);
+    dst[0][3]=x;
+    dst[1][3]=y;
+    dst[2][3]=z;
+}

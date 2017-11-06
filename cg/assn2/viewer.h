@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
+#include <time.h>
 #include <vector>
 
 #define WIDTH 800
@@ -18,8 +19,7 @@
 typedef unsigned int UINT32;
 
 typedef struct {
-  float x, y, z;
-  float w = 1.0;
+  float x, y, z, w;
 }point_t;
 
 typedef point_t vector_t;
@@ -43,6 +43,7 @@ typedef struct {
   std::vector<point_t> vertices;
   std::vector<triface_t> faces;
   std::vector<vertex_index_t> vertex_indices;
+  std::vector<color_t> colors;
 }obj_t;
 
 typedef float matrix_t[4][4];
@@ -52,12 +53,13 @@ typedef struct {
   float zbuffer[WIDTH][HEIGHT];
 }render_t;
 
+extern int biasx, biasy;
 extern point_t vertex;
 extern color_t color;
+extern color_t white;
 extern triface_t face;
 extern vertex_index_t vi;
 extern obj_t objdata;
-extern matrix_t* m;
 extern render_t render;
 
 void write_pixel(int x, int y, color_t c);
@@ -71,12 +73,13 @@ void draw_scanline(point_t p1, point_t p2, color_t c);
 void draw_triface(const triface_t f);
 void render_init();
 void vertices_init();
+void vertices_transform(const matrix_t& m);
 void faces_init();
 void view_obj();
 
 void vector_crossproduct(vector_t& z, const vector_t& x, const vector_t& y);
-void matrix_multi_vector(vector_t& result, const matrix_t m, const vector_t v);
 void matrix_init_identity(matrix_t& m);
-
+void matrix_multi_vector(vector_t& dst, const matrix_t& m, const vector_t& v);
+void matrix_set_translation(matrix_t& dst,float x,float y,float z);
 
 #endif

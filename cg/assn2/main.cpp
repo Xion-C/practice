@@ -18,13 +18,14 @@
 #include "viewer.h"
 
 int x_last = 0, y_last = 0;
+int biasx = WIDTH/2, biasy=HEIGHT/2;
 
 point_t vertex;
 color_t color;
+color_t white;
 triface_t face;
 vertex_index_t vi;
 obj_t objdata;
-matrix_t* m;
 render_t render;
 
 /***************************************************************************/
@@ -44,8 +45,8 @@ void display ( void ) // Create The Display Function
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	      // Clear Screen
 
-	// color_white(color);
-	// write_pixel(0, 0, color);
+	color_white(color);
+	write_pixel(-100, -100, color);
 	// write_pixel(WIDTH/2-2, HEIGHT/2-2, color);
 	// //write_pixel(-WIDTH/2+2, -HEIGHT/2+2, color);
 	// color_random(color);
@@ -108,6 +109,7 @@ int main (int argc, char *argv[])
 
 	obj_loader("./model1.obj");
 	printf("obj load done\n");
+	color_white(white);
 
 	glutMainLoop        ( );                 // Initialize The Main Loop
 }
