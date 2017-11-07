@@ -21,7 +21,8 @@ LFLAGS = -lglut -L/usr/lib -L/usr/X11R6/lib -lXi -lXmu -lGL -lGLU -lm
 ###
 
 OBJS = \
-  viewer.o \
+	cgmath.o \
+	viewer.o \
 	main.o
 EXEC = run
 

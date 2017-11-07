@@ -1,5 +1,5 @@
 //
-//		          Programming Assignment #1
+//		          Programming Assignment #2
 //
 //			        Victor Zordan
 //
@@ -16,6 +16,7 @@
 
 #include <GL/glut.h>   // The GL Utility Toolkit (Glut) Header
 #include "viewer.h"
+#include "cgmath.h"
 
 int x_last = 0, y_last = 0;
 int biasx = WIDTH / 2, biasy = HEIGHT / 2;
@@ -25,7 +26,6 @@ int showr = 0;
 int showe = 0;
 int showframe = 0;
 int showperspective = 0;
-int alreadyperspective = 0;
 
 float t_step = 2;
 float r_angle = 0.1;
@@ -38,6 +38,34 @@ triface_t face;
 vertex_index_t vi;
 obj_t objdata;
 render_t render;
+
+const char* menu[] = {
+    "******************************************\n",
+    "press T for translation\n",
+    "press R for rotation\n",
+    "press E for scale\n",
+    "press V for perspective\n",
+    "press W for switching wireframe/color\n"
+};
+const char* kcontrol[] = {
+    "************************************************************************\n",
+    "-- T pressed, enter Translation, use W/S/A/D to control Translation\n",
+    "-- R pressed, enter Rotation, use W/S/A/D to control Rotation\n",
+    "-- E pressed, enter Scale, use W/S/A/D to control Scale\n",
+    "press Q to go back to reset perspective(V) or wireframe/color(W)\n"
+};
+const char* wcontrol[] = {
+    "*********************\n",
+    "-- W pressed\n",
+    "   -- show wireframe\n",
+    "   -- show color\n"
+};
+const char* vcontrol[] = {
+    "***********************\n",
+    "-- V pressed\n",
+    "   -- show perspective\n",
+    "   -- show orthonormal\n"
+};
 
 /***************************************************************************/
 
@@ -56,10 +84,10 @@ void display(void) // Create The Display Function
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	      // Clear Screen
 
-                                                              //write_pixel(-100, -100, color);
-                                                              // write_pixel(WIDTH/2-2, HEIGHT/2-2, color);
-                                                              // //write_pixel(-WIDTH/2+2, -HEIGHT/2+2, color);
-                                                              // color_random(color);
+    //write_pixel(-100, -100, color);
+    // write_pixel(WIDTH/2-2, HEIGHT/2-2, color);
+    // //write_pixel(-WIDTH/2+2, -HEIGHT/2+2, color);
+    // color_random(color);
     write_pixel(x_last, y_last, white);
     view_obj();
 
@@ -91,7 +119,7 @@ void keyboard(unsigned char key, int x, int y)  // Create Keyboard Function
         exit(0); // Exit The Program
         break;
     case 't':
-				printf("-- t pressed, translation\n");
+        printf("%s%s%s%s", kcontrol[0], kcontrol[1], kcontrol[4], kcontrol[0]);
         menulevel = 1;
         showt = 1;
         showr = 0;
@@ -99,40 +127,47 @@ void keyboard(unsigned char key, int x, int y)  // Create Keyboard Function
 
         break;
     case 'r':
-				printf("-- r pressed, rotation\n");
+        printf("%s%s%s%s", kcontrol[0], kcontrol[2], kcontrol[4], kcontrol[0]);
         menulevel = 1;
         showt = 0;
         showr = 1;
         showe = 0;
         break;
     case 'e':
-				printf("-- e pressed, scale\n");
+        printf("%s%s%s%s", kcontrol[0], kcontrol[3], kcontrol[4], kcontrol[0]);
         menulevel = 1;
         showt = 0;
         showr = 0;
         showe = 1;
         break;
     case 'v':
+        printf("%s%s", vcontrol[0], vcontrol[1]);
         showperspective = 1 - showperspective;
-        if (showperspective == 1 && alreadyperspective == 0) {
-            //vertices_perspective();
-            alreadyperspective = 1;
+        // if (showperspective == 1 && alreadyperspective == 0) {
+        //     //vertices_perspective();
+        //     alreadyperspective = 1;
+        // }
+        // else if (showperspective == 0) {
+        //     //vertices_perspective_reverse();
+        //     alreadyperspective = 0;
+        // }
+        if (showperspective == 1) {
+            printf("%s%s", vcontrol[2], vcontrol[0]);
         }
         else if (showperspective == 0) {
-            //vertices_perspective_reverse();
-            alreadyperspective = 0;
+            printf("%s%s", vcontrol[3], vcontrol[0]);
         }
         break;
 
     case 'w':
         if (menulevel == 0) {
-            printf("-- w pressed\n");
+            printf("%s%s", wcontrol[0], wcontrol[1]);
             showframe = 1 - showframe;
-            if (showframe == 0) {
-                printf("  -- show wireframe\n");
+            if (showframe == 1) {
+                printf("%s%s", wcontrol[2], wcontrol[1]);
             }
-            else {
-                printf("  -- show color\n");
+            else if (showframe == 0) {
+                printf("%s%s", wcontrol[3], wcontrol[1]);
             }
         }
         else if (menulevel == 1) {
@@ -140,20 +175,29 @@ void keyboard(unsigned char key, int x, int y)  // Create Keyboard Function
                 vertices_translation(0, t_step, 0);
             }
             else if (showr == 1) {
-                vertices_rotation_x(r_angle);
+                vertices_rotation_x(-r_angle);
             }
             else if (showe == 1) {
                 vertices_scale(1 + s_ratio, 1 + s_ratio, 1 + s_ratio);
             }
         }
         break;
+    case 'q':
+        menulevel = 0;
+        showt = 0;
+        showr = 0;
+        showe = 0;
+        for (int i = 0; i < 6; i++) {
+            printf("%s", menu[i]);
+        }
+        printf("%s", menu[0]);
     case 's':
         if (menulevel == 1) {
             if (showt == 1) {
                 vertices_translation(0, -t_step, 0);
             }
             else if (showr == 1) {
-                vertices_rotation_x(-r_angle);
+                vertices_rotation_x(r_angle);
             }
             else if (showe == 1) {
                 vertices_scale(1 - s_ratio, 1 - s_ratio, 1 - s_ratio);
@@ -213,16 +257,13 @@ int main(int argc, char *argv[])
 
     init_window();				             //create_window
 
-    obj_loader("./model1.obj");
+    obj_loader("./model2.obj");
     printf("obj load done\n");
     color_white(white);
-		printf("***************************\n \
-press T for translation\n \
-press R for rotation\n \
-press E for scale\n \
-press V for perspective\n \
-press W for switching wireframe/color\n \
-***************************\n");
+    for (int i = 0; i < 6; i++) {
+        printf("%s", menu[i]);
+    }
+    printf("%s", menu[0]);
 
     glutMainLoop();                 // Initialize The Main Loop
 }

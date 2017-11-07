@@ -1,4 +1,5 @@
 #include "viewer.h"
+#include "cgmath.h"
 
 void write_pixel(int x, int y, color_t c) {
     /* Turn on the pixel found at x,y */
@@ -13,9 +14,9 @@ void color_random(color_t& c) {
     r1 = rand();
     r2 = rand();
     r3 = rand();
-    c.r = (float)(r1 % 255) / 255.0f;
-    c.g = (float)(r2 % 255) / 255.0f;
-    c.b = (float)(r3 % 255) / 255.0f;
+    c.r = (float)(r1 % 100) / 100.0f;
+    c.g = (float)(r2 % 100) / 100.0f;
+    c.b = (float)(r3 % 100) / 100.0f;
 }
 void color_white(color_t& c) {
     c.r = c.g = c.b = 1.0;
@@ -81,7 +82,7 @@ void draw_zbuffer_pixel(point_t p1, point_t p2, float px, float py, color_t c) {
     //write_pixel(xi, yi, c);
 }
 
-void draw_scanline(point_t p1, point_t p2, color_t c) //draw a line using dda algorithm
+void draw_line(point_t p1, point_t p2, color_t c) //draw a line using dda algorithm
 {
     float m, b;
     float px, py;
@@ -93,16 +94,12 @@ void draw_scanline(point_t p1, point_t p2, color_t c) //draw a line using dda al
     y1 = round(p2.y);
     if (x1 - x0 == 0) { //when line is horizontal
         for (xi = x0, yi = (y0 < y1 ? y0 : y1); yi <= (y0 < y1 ? y1 : y0); yi++) {
-            px = xi;
-            py = yi;
-            draw_zbuffer_pixel(p1, p2, px, py, c);
+            write_pixel(xi, yi, c);
         }
     }
     else if (y1 - y0 == 0) { //when line is vertical
         for (xi = (x0 < x1 ? x0 : x1), yi = y0; xi <= (x0 < x1 ? x1 : x0); xi++) {
-            px = xi;
-            py = yi;
-            draw_zbuffer_pixel(p1, p2, px, py, c);
+            write_pixel(xi, yi, c);
         }
     }
     else {
@@ -110,22 +107,22 @@ void draw_scanline(point_t p1, point_t p2, color_t c) //draw a line using dda al
         b = float(x1 * y0 - x0 * y1) / float(x1 - x0);
         if (m < 1. && m > -1.) { //when |m|<1
             for (xi = (x0 < x1 ? x0 : x1); xi <= (x0 < x1 ? x1 : x0); xi++) {
-                px = xi;
                 py = m * float(xi) + b;
-                draw_zbuffer_pixel(p1, p2, px, py, c);
+                yi = round(py);
+                write_pixel(xi, yi, c);
             }
         }
         else { //when |m|>=1
             for (yi = (y0 < y1 ? y0 : y1); yi <= (y0 < y1 ? y1 : y0); yi++) {
-                py = yi;
                 px = 1. / m * float(yi) - b / m;
-                draw_zbuffer_pixel(p1, p2, px, py, c);
+                xi = round(px);
+                write_pixel(xi, yi, c);
             }
         }
     }
 }
 
-void draw_triface(const triface_t f) {
+void draw_triface(const triface_t& f) {
     int x0, y0, x1, y1, vx, vy;
     float m, b;
     int xi, yi;
@@ -143,14 +140,14 @@ void draw_triface(const triface_t f) {
         for (xi = x0, yi = (y0 < y1 ? y0 : y1); yi <= (y0 < y1 ? y1 : y0); yi++) {
             p2.x = xi;
             p2.y = yi;
-            draw_scanline(p1, p2, f.color);
+            draw_line(p1, p2, f.color);
         }
     }
     else if (y1 - y0 == 0) { //when line is vertical
         for (xi = (x0 < x1 ? x0 : x1), yi = y0; xi <= (x0 < x1 ? x1 : x0); xi++) {
             p2.x = xi;
             p2.y = yi;
-            draw_scanline(p1, p2, f.color);
+            draw_line(p1, p2, f.color);
         }
     }
     else {
@@ -161,7 +158,7 @@ void draw_triface(const triface_t f) {
                 yi = int(round(m * float(xi) + b));
                 p2.x = xi;
                 p2.y = yi;
-                draw_scanline(p1, p2, f.color);
+                draw_line(p1, p2, f.color);
             }
         }
         else { //when |m|>=1
@@ -169,7 +166,7 @@ void draw_triface(const triface_t f) {
                 xi = int(round(1. / m * float(yi) - b / m));
                 p2.x = xi;
                 p2.y = yi;
-                draw_scanline(p1, p2, f.color);
+                draw_line(p1, p2, f.color);
             }
         }
     }
@@ -188,6 +185,7 @@ void vertices_init() {
     float x, y, z;
     float minx, miny, minz, maxx, maxy, maxz;
     float rscale;
+    vector_t v;
     minx = miny = minz = maxx = maxy = maxz = 0;
     x = y = z = 0;
     for (unsigned int i = 0; i < (objdata.vertices.size()); i++) {
@@ -202,11 +200,16 @@ void vertices_init() {
         maxz = objdata.vertices[i].z>maxz ? objdata.vertices[i].z : maxz;
     }
     rscale = 0.5 * WIDTH / (maxx - minx);
+    v.x = maxx - minx;
+    v.y = maxy - miny;
+    v.z = maxz - minz;
+
     objdata.center.x = x / objdata.vertices.size();
     objdata.center.y = y / objdata.vertices.size();
     objdata.center.z = z / objdata.vertices.size();
     vertices_translation(-objdata.center.x, -objdata.center.y, -objdata.center.z);
     vertices_scale(rscale, rscale, rscale);
+    objdata.maxsize = vector_magnitude(v) * rscale;
     vertices_translation(0, 0, DEPTH / 2);
     //printf("center -- %f %f %f\n", objdata.center.x, objdata.center.y, objdata.center.z);
 }
@@ -252,19 +255,13 @@ void vertices_rotation_z(const float& theta) {
     vertices_transform(m);
 }
 void vertices_scale(const float& x, const float& y, const float& z) {
-    matrix_t m, t1, t2 , s;
+    matrix_t m, t1, t2, s;
     matrix_set_translation(t1, -objdata.center.x, -objdata.center.y, -objdata.center.z);
     matrix_set_scale(s, x, y, z);
     matrix_set_translation(t2, objdata.center.x, objdata.center.y, objdata.center.z);
-    matrix_mul(m, t1, s);
-    matrix_mul(m, m, t2);
+    matrix_mul(m, t2, s);
+    matrix_mul(m, m, t1);
     vertices_transform(m);
-}
-void vertices_perspective(const float& d) {
-    matrix_t m;
-    matrix_init_identity(m);
-    m[3][2] = 1.0f/d;
-    m[3][2] = 0.0f;
 }
 void faces_init() {
     if (!objdata.faces.empty())  objdata.faces.clear();
@@ -275,6 +272,35 @@ void faces_init() {
         face.sgroup = objdata.vertex_indices[i].sgroup;
         face.color = objdata.colors[face.sgroup - 1];
         //printf("face %d color %f %f %f\n", i, face.color.r, face.color.g, face.color.b);
+
+        //compute normal vector_t
+        float x1 = face.v1.x;
+        float x2 = face.v2.x;
+        float x3 = face.v3.x;
+        float y1 = face.v1.y;
+        float y2 = face.v2.y;
+        float y3 = face.v3.y;
+        float z1 = face.v1.z;
+        float z2 = face.v2.z;
+        float z3 = face.v3.z;
+        float dx12 = x1 - x2;
+        float dy12 = y1 - y2;
+        float dz12 = z1 - z2;
+        float dx23 = x2 - x3;
+        float dy23 = y2 - y3;
+        float dz23 = z2 - z3;
+        face.n.x = dy12 * dz23 - dz12 * dy23;
+        face.n.y = dz12 * dx23 - dx12 * dz23;
+        face.n.z = dx12 * dy23 - dy12 * dx23;
+        face.n.w = 1.0f;
+        if (fabs(face.n.z) < LIMIT_ZERO) {
+            face.zn = false;
+        }
+        else {
+            face.zn = true;
+        }
+        face.d = -(face.n.x * face.v1.x + face.n.y * face.v1.y * face.n.z * face.v1.z);
+
         objdata.faces.push_back(face);
     }
 }
@@ -286,109 +312,103 @@ void center_translation(const float x, const float y, const float z) {
 
 void view_obj() {
     render_init();
+    triface_t f;
+    point_t v1, v2, v3;
     for (unsigned int i = 0; i<objdata.faces.size(); i++) {
-        if (showframe == 0) {
-            draw_triface(objdata.faces[i]);
+        f = objdata.faces[i];
+        if (showperspective == 1) {
+            //pers f
         }
-        draw_scanline(objdata.faces[i].v1, objdata.faces[i].v2, white);
-        draw_scanline(objdata.faces[i].v2, objdata.faces[i].v3, white);
-        draw_scanline(objdata.faces[i].v1, objdata.faces[i].v3, white);
+        v1 = f.v1;
+        v2 = f.v2;
+        v3 = f.v3;
+        if (showframe == 0) {
+            triface_rasterization(f);
+            //draw_triface(objdata.faces[i]);
+        }
+        draw_line(v1, v2, white);
+        draw_line(v2, v3, white);
+        draw_line(v1, v3, white);
     }
+    for ()
+    //getchar();
 
     //printf("------- frame updated -------\n");
 }
 
 
-/********************** some math functions **********************/
-void vector_crossproduct(vector_t& z, const vector_t& x, const vector_t& y) {
-    float m1, m2, m3;
-    m1 = x.y * y.z - x.z * y.y;
-    m2 = x.z * y.x - x.x * y.z;
-    m3 = x.x * y.y - x.y * y.x;
-    z.x = m1;
-    z.y = m2;
-    z.z = m3;
-    z.w = 1.0;
-}
-void vector_homogenate(vector_t& v) {
-    float wp = 1.0f / v.w;
-    v.x *= wp;
-    v.y *= wp;
-    v.z *= wp;
-}
-void matrix_init_identity(matrix_t& m) {
-    m[0][0] = m[1][1] = m[2][2] = m[3][3] = 1;
-    m[0][1] = m[0][2] = m[0][3] = 0;
-    m[1][0] = m[1][2] = m[1][3] = 0;
-    m[2][0] = m[2][1] = m[2][3] = 0;
-    m[3][0] = m[3][1] = m[3][2] = 0;
-}
-void matrix_copy(matrix_t& dst, const matrix_t& src) {
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            dst[i][j] = src[i][j];
-        }
+void triangle_vertex_clockwise(point_t& p1, point_t& p2, point_t& p3) {
+    float y1 = p1.y;
+    float y2 = p2.y;
+    float y3 = p3.y;
+    float x1 = p1.x;
+    float x2 = p2.x;
+    float x3 = p3.x;
+    float dx12 = x1 - x2;
+    float dx23 = x2 - x3;
+    float dy12 = y1 - y2;
+    float dy23 = y2 - y3;
+    point_t temp;
+    if (dx12 * dy23 - dy12 * dx23 > 0) {
+        temp = p1;
+        p1 = p2;
+        p2 = temp;
     }
 }
-void matrix_mul(matrix_t& dst, const matrix_t& m1, const matrix_t& m2) {
-    matrix_t r;
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j < 4; j++) {
-            r[i][j] = 0;
-            for (int k = 0; k < 4; k++) {
-                r[i][j] += m1[i][k] * m2[k][j];
-            }
-        }
-    }
-    matrix_copy(dst, r);
-}
-void matrix_multi_vector(vector_t& dst, const matrix_t& m, const vector_t& v) {
-    float vx = v.x, vy = v.y, vz = v.z, vw = v.w;
-    dst.x = m[0][0] * vx + m[0][1] * vy + m[0][2] * vz + m[0][3] * vw;
-    dst.y = m[1][0] * vx + m[1][1] * vy + m[1][2] * vz + m[1][3] * vw;
-    dst.z = m[2][0] * vx + m[2][1] * vy + m[2][2] * vz + m[2][3] * vw;
-    dst.w = m[3][0] * vx + m[3][1] * vy + m[3][2] * vz + m[3][3] * vw;
-}
-void matrix_set_translation(matrix_t& dst, const float x, const float y, const float z) {
-    matrix_init_identity(dst);
-    dst[0][3] = x;
-    dst[1][3] = y;
-    dst[2][3] = z;
-}
-void matrix_set_rotation_x(matrix_t& dst, const float theta) {
-    float vcos = cos(theta);
-    float vsin = sin(theta);
-    matrix_init_identity(dst);
-    dst[1][1] = vcos;
-    dst[1][2] = -vsin;
-    dst[2][1] = vsin;
-    dst[2][2] = vcos;
-}
-void matrix_set_rotation_y(matrix_t& dst, const float theta) {
-    float vcos = cos(theta);
-    float vsin = sin(theta);
-    matrix_init_identity(dst);
-    dst[0][0] = vcos;
-    dst[0][2] = vsin;
-    dst[2][0] = -vsin;
-    dst[2][2] = vcos;
-}
-void matrix_set_rotation_z(matrix_t& dst, const float theta) {
-    float vcos = cos(theta);
-    float vsin = sin(theta);
-    matrix_init_identity(dst);
-    dst[0][0] = vcos;
-    dst[0][1] = -vsin;
-    dst[1][0] = vsin;
-    dst[1][1] = vcos;
-}
-void matrix_set_rotation_arbitrry(matrix_t& dst, const vector_t& v, const float theta) {
-    /* v is the arbitrary axis vector */
 
-}
-void matrix_set_scale(matrix_t& dst, const float x, const float y, const float z) {
-    matrix_init_identity(dst);
-    dst[0][0] = x;
-    dst[1][1] = y;
-    dst[2][2] = z;
+void triface_rasterization(const triface_t& f) {
+    point_t p1 = f.v1, p2 = f.v2, p3 = f.v3;
+    //triangle_vertex_clockwise(p1, p2, p3);
+    float y1 = p1.y;
+    float y2 = p2.y;
+    float y3 = p3.y;
+    float x1 = p1.x;
+    float x2 = p2.x;
+    float x3 = p3.x;
+    float dx12 = x1 - x2;
+    float dx23 = x2 - x3;
+    float dy12 = y1 - y2;
+    float dy23 = y2 - y3;
+    float dx31 = x3 - x1;
+    float dy31 = y3 - y1;
+    // Bounding rectangle
+    int minx = (int)fmin_3(x1, x2, x3);
+    int maxx = (int)fmax_3(x1, x2, x3);
+    int miny = (int)fmin_3(y1, y2, y3);
+    int maxy = (int)fmax_3(y1, y2, y3);
+    // constant part of half-edge functions
+    float c1 = dy12 * x1 - dx12 * y1;
+    float c2 = dy23 * x2 - dx23 * y2;
+    float c3 = dy31 * x3 - dx31 * y3;
+    float cy1 = c1 + dx12 * miny - dy12 * minx;
+    float cy2 = c2 + dx23 * miny - dy23 * minx;
+    float cy3 = c3 + dx31 * miny - dy31 * minx;
+
+    float z;
+    // Scan through bounding rectangle
+    for (int y = miny; y < maxy; y++) {
+        // Start value for horizontal scan
+        float cx1 = cy1;
+        float cx2 = cy2;
+        float cx3 = cy3;
+        for (int x = minx; x < maxx; x++) {
+            if (cx1 >= 0 && cx2 >= 0 && cx3 >= 0) {
+                if ((int)round(!f.zn)) { //when f.n.zn is false
+                    //line
+                    z = DEPTH;
+                }
+                else {
+                    //plane
+                    z = (-f.d - f.n.x * x - f.n.y * y) / f.n.z;
+                }
+                write_pixel(x, y, f.color);
+            }
+            cx1 -= dy12;
+            cx2 -= dy23;
+            cx3 -= dy31;
+        }
+        cy1 += dx12;
+        cy2 += dx23;
+        cy3 += dx31;
+    }
 }
