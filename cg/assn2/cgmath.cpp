@@ -2,19 +2,19 @@
 
 /********************** some math functions **********************/
 float fmax_2(const float& a, const float& b) {
-    return a>b?a:b;
+    return a>b ? a : b;
 }
 float fmin_2(const float& a, const float& b) {
-    return a<b?a:b;
+    return a<b ? a : b;
 }
 float fmax_3(const float& a, const float& b, const float& c) {
-    float m = a>b?a:b;
-    m = c>m?c:m;
+    float m = a>b ? a : b;
+    m = c>m ? c : m;
     return m;
 }
 float fmin_3(const float& a, const float& b, const float& c) {
-    float m = a<b?a:b;
-    m = c<m?c:m;
+    float m = a<b ? a : b;
+    m = c<m ? c : m;
     return m;
 }
 float line3d_getz(const point_t p1, const point_t p2, float x, float y) {
@@ -57,6 +57,14 @@ void vector_homogenate(vector_t& v) {
     v.x *= wp;
     v.y *= wp;
     v.z *= wp;
+}
+void vector_normalize(vector_t& v) {
+    double r;
+    r = sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
+    v.x = v.x / r;
+    v.y = v.y / r;
+    v.z = v.z / r;
+    v.w = 1.0f;
 }
 float vector_magnitude(const vector_t& v) {
     return sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
@@ -137,5 +145,5 @@ void matrix_set_scale(matrix_t& dst, const float x, const float y, const float z
 void matrix_set_perspective(matrix_t& dst, const float d) {
     matrix_init_identity(dst);
     dst[3][3] = 0;
-    dst[3][2] = 1.0f/d;
+    dst[3][2] = 1.0f / d;
 }

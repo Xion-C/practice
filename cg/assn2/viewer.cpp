@@ -11,18 +11,13 @@ void write_pixel(int x, int y, color_t c) {
 
 void draw_zbuffer_pixel(int xi, int yi, float zbuf, color_t c) {
     if (xi + biasx > WIDTH || yi + biasy > HEIGHT || xi + biasx < 0 || yi + biasy < 0) {
-        printf("--- zbuffer error---\n");
+        //printf("--- out of edge ---\n");
     }
-    if (fabs(render.zbuffer[xi + biasx][yi + biasy] - DEPTH) < 0.01) {
+    else if (zbuf < render.zbuffer[yi + biasy][xi + biasx]) {
         write_pixel(xi, yi, c);
-        printf("write x %d y %d z %f\n",xi,yi,zbuf);
+        render.zbuffer[yi + biasy][xi + biasx] = zbuf;
+        // printf("draw x %d y %d z %f\n",xi,yi,zbuf);
     }
-    else if (zbuf >= render.zbuffer[xi + biasx][yi + biasy]) {
-        write_pixel(xi, yi, c);
-        render.zbuffer[xi + biasx][yi + biasy] = zbuf;
-        printf("draw x %d y %d z %f\n",xi,yi,zbuf);
-    }
-    //write_pixel(xi, yi, c);
 }
 
 void draw_line(point_t p1, point_t p2, color_t c) //draw a line using dda algorithm
@@ -98,9 +93,9 @@ void triface_rasterization(const triface_t& f) {
     int maxx = round(fmax_3(x1, x2, x3));
     int miny = round(fmin_3(y1, y2, y3));
     int maxy = round(fmax_3(y1, y2, y3));
-    float accuracy12 = fmax_2(fabs(dx12), fabs(dy12));
-    float accuracy23 = fmax_2(fabs(dx23), fabs(dy23));
-    float accuracy31 = fmax_2(fabs(dx31), fabs(dy31));
+    float accuracy12 = fmax_2(fabs(dx12), fabs(dy12)) / 2 + 0.1;
+    float accuracy23 = fmax_2(fabs(dx23), fabs(dy23)) / 2 + 0.1;
+    float accuracy31 = fmax_2(fabs(dx31), fabs(dy31)) / 2 + 0.1;
 
     // constant part of half-edge functions
     float c1 = dy12 * x1 - dx12 * y1;
@@ -120,7 +115,7 @@ void triface_rasterization(const triface_t& f) {
         for (int x = minx; x < maxx; x++) {
             if (cx1 > -accuracy12 && cx2 > -accuracy23 && cx3 > -accuracy31) {
                 if ((int)round(!f.zn)) { //when f.n.zn is false
-                    //line
+                                         //line
                     z = DEPTH;
                 }
                 else {
@@ -140,59 +135,9 @@ void triface_rasterization(const triface_t& f) {
     }
 }
 
-void draw_triface(const triface_t& f) {
-    int x0, y0, x1, y1, vx, vy;
-    float m, b;
-    int xi, yi;
-    point_t p1, p2;
-    x0 = round(f.v1.x);
-    y0 = round(f.v1.y);
-    x1 = round(f.v2.x);
-    y1 = round(f.v2.y);
-    vx = round(f.v3.x);
-    vy = round(f.v3.y);
-    p1.x = vx;
-    p1.y = vy;
-
-    if (x1 - x0 == 0) { //when line is horizontal
-        for (xi = x0, yi = (y0 < y1 ? y0 : y1); yi <= (y0 < y1 ? y1 : y0); yi++) {
-            p2.x = xi;
-            p2.y = yi;
-            draw_line(p1, p2, f.color);
-        }
-    }
-    else if (y1 - y0 == 0) { //when line is vertical
-        for (xi = (x0 < x1 ? x0 : x1), yi = y0; xi <= (x0 < x1 ? x1 : x0); xi++) {
-            p2.x = xi;
-            p2.y = yi;
-            draw_line(p1, p2, f.color);
-        }
-    }
-    else {
-        m = float(y1 - y0) / float(x1 - x0);
-        b = float(x1 * y0 - x0 * y1) / float(x1 - x0);
-        if (m < 1. && m > -1.) { //when |m|<1
-            for (xi = (x0 < x1 ? x0 : x1); xi <= (x0 < x1 ? x1 : x0); xi++) {
-                yi = int(round(m * float(xi) + b));
-                p2.x = xi;
-                p2.y = yi;
-                draw_line(p1, p2, f.color);
-            }
-        }
-        else { //when |m|>=1
-            for (yi = (y0 < y1 ? y0 : y1); yi <= (y0 < y1 ? y1 : y0); yi++) {
-                xi = int(round(1. / m * float(yi) - b / m));
-                p2.x = xi;
-                p2.y = yi;
-                draw_line(p1, p2, f.color);
-            }
-        }
-    }
-}
-
 void render_init() {
-    for (int i = 0; i<HEIGHT; i++) {
-        for (int j = 0; j<WIDTH; j++) {
+    for (int i = 0; i < HEIGHT; i++) {
+        for (int j = 0; j < WIDTH; j++) {
             render.zbuffer[i][j] = DEPTH;
             render.frame[i][j] = 0;
         }
@@ -311,13 +256,15 @@ void faces_init() {
         face.n.y = dz12 * dx23 - dx12 * dz23;
         face.n.z = dx12 * dy23 - dy12 * dx23;
         face.n.w = 1.0f;
+        vector_normalize(face.n);
+        // printf("%d - normal %f %f %f\n", i,face.n.x,face.n.y,face.n.z);
         if (fabs(face.n.z) < LIMIT_ZERO) {
             face.zn = false;
         }
         else {
             face.zn = true;
         }
-        face.d = -(face.n.x * face.v1.x + face.n.y * face.v1.y * face.n.z * face.v1.z);
+        face.d = -(face.n.x * face.v1.x + face.n.y * face.v1.y + face.n.z * face.v1.z);
 
         objdata.faces.push_back(face);
     }
@@ -364,6 +311,7 @@ void obj_loader(const char *path) {
 }
 void view_obj() {
     render_init();
+
     triface_t f;
     point_t v1, v2, v3;
     matrix_t p;
@@ -391,7 +339,6 @@ void view_obj() {
             draw_line(f.v1, f.v3, white);
         }
     }
-    //getchar();
 
     //printf("------- frame updated -------\n");
 }

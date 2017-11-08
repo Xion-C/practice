@@ -15,8 +15,8 @@
 #include "cgmath.h"
 
 #define WIDTH 800
-#define HEIGHT 600
-#define DEPTH 1000
+#define HEIGHT 800
+#define DEPTH 1600
 #define LIMIT_ZERO 0.00001
 
 typedef unsigned int UINT32;
@@ -71,7 +71,6 @@ extern render_t render;
 void write_pixel(int x, int y, color_t c);
 void draw_zbuffer_pixel(int xi, int yi, float zbuf, color_t c);
 void draw_line(point_t p1, point_t p2, color_t c);
-void draw_triface(const triface_t& f);
 void triface_rasterization(const triface_t& f);
 
 void color_random(color_t& c);

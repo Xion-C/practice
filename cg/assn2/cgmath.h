@@ -21,6 +21,7 @@ float line3d_getz(const point_t p1, const point_t p2, float x, float y);
 void triangle_vertex_clockwise(point_t& p1, point_t& p2, point_t& p3);
 void vector_crossproduct(vector_t& z, const vector_t& x, const vector_t& y);
 void vector_homogenate(vector_t& v);
+void vector_normalize(vector_t& v);
 float vector_magnitude(const vector_t& v);
 void matrix_init_identity(matrix_t& m);
 void matrix_copy(matrix_t& dst, const matrix_t& src);

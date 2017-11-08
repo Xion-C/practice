@@ -19,7 +19,8 @@
 #include "cgmath.h"
 
 int x_last = 0, y_last = 0;
-int biasx = WIDTH / 2, biasy = HEIGHT / 2;
+int biasx = WIDTH / 2;
+int biasy = HEIGHT / 2;
 int menulevel = 0;
 int showt = 0;
 int showr = 0;
@@ -84,6 +85,7 @@ void display(void) // Create The Display Function
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	      // Clear Screen
 
+    //write_pixel(x_last, y_last, white);
     view_obj();
 
     glutSwapBuffers(); // Draw Frame Buffer
@@ -206,7 +208,7 @@ void keyboard(unsigned char key, int x, int y)  // Create Keyboard Function
                 vertices_translation(-t_step, 0, 0);
             }
             else if (showr == 1) {
-                vertices_rotation_y(-r_angle);
+                vertices_rotation_y(r_angle);
             }
             else if (showe == 1) {
                 vertices_scale(1 - s_ratio, 1 - s_ratio, 1 - s_ratio);
@@ -220,7 +222,7 @@ void keyboard(unsigned char key, int x, int y)  // Create Keyboard Function
                 vertices_translation(t_step, 0, 0);
             }
             else if (showr == 1) {
-                vertices_rotation_y(r_angle);
+                vertices_rotation_y(-r_angle);
             }
             else if (showe == 1) {
                 vertices_scale(1 + s_ratio, 1 + s_ratio, 1 + s_ratio);
