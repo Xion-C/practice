@@ -24,7 +24,7 @@ OBJS = \
 	cgmath.o \
 	viewer.o \
 	main.o
-EXEC = run
+EXEC = assn2
 
 %.o: %.cpp
 	$(CC) $(CPPFLAGS) -c $< -o $@
@@ -38,6 +38,6 @@ depend :
 	makedepend ${PROGFILES}
 
 clean:
-	rm -f run *.o
+	rm -f assn2 *.o
 
 # DO NOT DELETE
