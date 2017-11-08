@@ -84,11 +84,6 @@ void display(void) // Create The Display Function
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	      // Clear Screen
 
-    //write_pixel(-100, -100, color);
-    // write_pixel(WIDTH/2-2, HEIGHT/2-2, color);
-    // //write_pixel(-WIDTH/2+2, -HEIGHT/2+2, color);
-    // color_random(color);
-    write_pixel(x_last, y_last, white);
     view_obj();
 
     glutSwapBuffers(); // Draw Frame Buffer
@@ -158,7 +153,16 @@ void keyboard(unsigned char key, int x, int y)  // Create Keyboard Function
             printf("%s%s", vcontrol[3], vcontrol[0]);
         }
         break;
-
+    case 'q':
+        menulevel = 0;
+        showt = 0;
+        showr = 0;
+        showe = 0;
+        for (int i = 0; i < 6; i++) {
+            printf("%s", menu[i]);
+        }
+        printf("%s", menu[0]);
+        break;
     case 'w':
         if (menulevel == 0) {
             printf("%s%s", wcontrol[0], wcontrol[1]);
@@ -175,29 +179,20 @@ void keyboard(unsigned char key, int x, int y)  // Create Keyboard Function
                 vertices_translation(0, t_step, 0);
             }
             else if (showr == 1) {
-                vertices_rotation_x(-r_angle);
+                vertices_rotation_x(r_angle);
             }
             else if (showe == 1) {
                 vertices_scale(1 + s_ratio, 1 + s_ratio, 1 + s_ratio);
             }
         }
         break;
-    case 'q':
-        menulevel = 0;
-        showt = 0;
-        showr = 0;
-        showe = 0;
-        for (int i = 0; i < 6; i++) {
-            printf("%s", menu[i]);
-        }
-        printf("%s", menu[0]);
     case 's':
         if (menulevel == 1) {
             if (showt == 1) {
                 vertices_translation(0, -t_step, 0);
             }
             else if (showr == 1) {
-                vertices_rotation_x(r_angle);
+                vertices_rotation_x(-r_angle);
             }
             else if (showe == 1) {
                 vertices_scale(1 - s_ratio, 1 - s_ratio, 1 - s_ratio);

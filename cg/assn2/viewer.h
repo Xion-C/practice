@@ -16,7 +16,7 @@
 
 #define WIDTH 800
 #define HEIGHT 600
-#define DEPTH 800
+#define DEPTH 1000
 #define LIMIT_ZERO 0.00001
 
 typedef unsigned int UINT32;
@@ -47,6 +47,7 @@ typedef struct {
     std::vector<color_t> colors;
     point_t center;
     float maxsize;
+    int nsmooth;
 }obj_t;
 
 
@@ -68,15 +69,16 @@ extern obj_t objdata;
 extern render_t render;
 
 void write_pixel(int x, int y, color_t c);
-void vector_crossproduct(vector_t& z, const vector_t& x, const vector_t& y);
-void color_random(color_t& c);
-void color_white(color_t& c);
-void obj_loader(const char *path);
-float line3d_getz(const point_t p1, const point_t p2, float x, float y);
-void draw_zbuffer_pixel(point_t p1, point_t p2, float px, float py, color_t c);
+void draw_zbuffer_pixel(int xi, int yi, float zbuf, color_t c);
 void draw_line(point_t p1, point_t p2, color_t c);
 void draw_triface(const triface_t& f);
+void triface_rasterization(const triface_t& f);
+
+void color_random(color_t& c);
+void color_white(color_t& c);
+
 void render_init();
+
 void vertices_init();
 void vertices_transform(const matrix_t& m);
 void vertices_translation(const float& x, const float& y, const float& z);
@@ -84,10 +86,12 @@ void vertices_rotation_x(const float& theta);
 void vertices_rotation_y(const float& theta);
 void vertices_rotation_z(const float& theta);
 void vertices_scale(const float& x, const float& y, const float& z);
+
 void faces_init();
+
 void center_translation(const float x, const float y, const float z);
+
+void obj_loader(const char *path);
 void view_obj();
 
-void triangle_vertex_clockwise(point_t& p1, point_t& p2, point_t& p3);
-void triface_rasterization(const triface_t& f);
 #endif

@@ -17,6 +17,31 @@ float fmin_3(const float& a, const float& b, const float& c) {
     m = c<m?c:m;
     return m;
 }
+float line3d_getz(const point_t p1, const point_t p2, float x, float y) {
+    float dxy, dpxy;
+    dpxy = sqrt((p2.x - p1.x)*(p2.x - p1.x) + (p2.y - p1.y)*(p2.y - p1.y));
+    dxy = sqrt((x - p1.x)*(x - p1.x) + (y - p1.y)*(y - p1.y));
+    if (dpxy > 0.5)  return p1.z + (p2.z - p1.z)*dxy / dpxy;
+    else  return  p2.z<p1.z ? p2.z : p1.z;
+}
+void triangle_vertex_clockwise(point_t& p1, point_t& p2, point_t& p3) {
+    float y1 = p1.y;
+    float y2 = p2.y;
+    float y3 = p3.y;
+    float x1 = p1.x;
+    float x2 = p2.x;
+    float x3 = p3.x;
+    float dx12 = x1 - x2;
+    float dx23 = x2 - x3;
+    float dy12 = y1 - y2;
+    float dy23 = y2 - y3;
+    point_t temp;
+    if (dx12 * dy23 - dy12 * dx23 > 0) {
+        temp = p1;
+        p1 = p2;
+        p2 = temp;
+    }
+}
 void vector_crossproduct(vector_t& z, const vector_t& x, const vector_t& y) {
     float m1, m2, m3;
     m1 = x.y * y.z - x.z * y.y;

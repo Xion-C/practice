@@ -17,6 +17,8 @@ float fmax_2(const float& a, const float& b);
 float fmin_2(const float& a, const float& b);
 float fmax_3(const float& a, const float& b, const float& c);
 float fmin_3(const float& a, const float& b, const float& c);
+float line3d_getz(const point_t p1, const point_t p2, float x, float y);
+void triangle_vertex_clockwise(point_t& p1, point_t& p2, point_t& p3);
 void vector_crossproduct(vector_t& z, const vector_t& x, const vector_t& y);
 void vector_homogenate(vector_t& v);
 float vector_magnitude(const vector_t& v);
