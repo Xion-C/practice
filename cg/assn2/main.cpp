@@ -255,6 +255,8 @@ int main(int argc, char *argv[])
     init_window();				             //create_window
 
     obj_loader("./model2.obj");
+    // obj_loader("./Infinite-Level_02.OBJ");
+
     printf("obj load done\n");
     color_white(white);
     for (int i = 0; i < 6; i++) {
