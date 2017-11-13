@@ -91,7 +91,6 @@ static int imagnumbers = 0;
 %}
 
 %option yylineno
-%option noyywrap
 
 
 number    {integer}|{longinteger}|{floatnumber}|{imagnumber}
@@ -473,4 +472,9 @@ int debug_yylex(void)
         default: printf(" %d [%s]\n", token, yytext);
     }
     return token;
+}
+
+int yywrap() {
+  yylex_destroy();
+  return 1;
 }

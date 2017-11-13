@@ -1,3 +1,6 @@
+#ifndef AST__H
+#define AST__H
+
 #pragma once
 
 //  Declarations for a calculator that builds an AST
@@ -75,3 +78,5 @@ public:
   DivBinaryNode(Node* left, Node* right) : BinaryNode(left, right) { }
   virtual const Literal* eval() const;
 };
+
+#endif

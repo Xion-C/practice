@@ -9,7 +9,7 @@
 	extern char *yytext;
 	void yyerror (const char *);
 
-	PoolOfNodes& pool = PoolOfNodes::getInstance();
+	PoolOfNodes& pool = PoolOfNodes::getInstance(); //prevent memory leak
 %}
 
 
@@ -26,9 +26,10 @@
 %token<identifier> NAME
 
 %token<op> PLUS MINUS STAR SLASH PERCENT DOUBLESLASH DOUBLESTAR
-%type<op> pick_multop pick_PLUS_MINUS
 
-%type<node> atom power factor term arith_expr shift_expr and_expr xor_expr expr comparison not_test and_test or_test test testlist expr_stmt pick_yield_expr_testlist yield_expr star_EQUAL
+%type<op> pick_multop pick_PLUS_MINUS pick_unop
+
+%type<node> atom power factor term arith_expr shift_expr and_expr xor_expr expr comparison not_test and_test or_test test testlist expr_stmt pick_yield_expr_testlist yield_expr star_EQUAL small_stmt simple_stmt stmt pick_NEWLINE_stmt star_NEWLINE_stmt file_input start opt_yield_test pick_yield_expr_testlist_comp testlist_comp
 
 // %token NUMBER
 %token IMAG
@@ -53,17 +54,32 @@
 
 start
 	: file_input
+    {
+        $$ = $1;
+        std::cout << "at beginning" << std::endl;
+        // delete [] $1;
+    }
 	;
 file_input // Used in: start
-	: star_NEWLINE_stmt ENDMARKER
+	: star_NEWLINE_stmt ENDMARKER { $$ = $1; }
 	;
 pick_NEWLINE_stmt // Used in: star_NEWLINE_stmt
-	: NEWLINE
-	| stmt
+	: NEWLINE { $$ = NULL; }
+	| stmt { $$ = $1; }
 	;
 star_NEWLINE_stmt // Used in: file_input, star_NEWLINE_stmt
 	: star_NEWLINE_stmt pick_NEWLINE_stmt
-	| %empty
+    {
+        // if ($1) {
+        //     $$ = $1;
+        // }
+        // else {
+        //     $$ = $2;
+        // }
+        // if ($1) { delete [] $1; }
+        $$ = $2;
+    }
+	| %empty { $$ = NULL; }
 	;
 decorator // Used in: decorators
 	: AT dotted_name LPAR opt_arglist RPAR NEWLINE
@@ -125,27 +141,35 @@ star_fpdef_notest // Used in: fplist, star_fpdef_notest
 	| %empty
 	;
 stmt // Used in: pick_NEWLINE_stmt, plus_stmt
-	: simple_stmt
-	| compound_stmt
+	: simple_stmt { $$ = $1; }
+	| compound_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
 	;
 simple_stmt // Used in: stmt, suite
 	: small_stmt star_SEMI_small_stmt SEMI NEWLINE
+    {
+        // std::cout << "simple_stmt1" << std::endl;
+        $$ = $1;
+    }
 	| small_stmt star_SEMI_small_stmt NEWLINE
+    {
+        // std::cout << "simple_stmt2" << std::endl;
+        $$ = $1;
+    }
 	;
 star_SEMI_small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
 	: star_SEMI_small_stmt SEMI small_stmt
 	| %empty
 	;
 small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
-	: expr_stmt { ($1)->eval()->print(); }
-	| print_stmt
-	| del_stmt
-	| pass_stmt
-	| flow_stmt
-	| import_stmt
-	| global_stmt
-	| exec_stmt
-	| assert_stmt
+	: expr_stmt { $$ = $1; }
+	| print_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+	| del_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+	| pass_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+	| flow_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+	| import_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+	| global_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+	| exec_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+	| assert_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
 	;
 expr_stmt // Used in: small_stmt
 	: testlist augassign pick_yield_expr_testlist
@@ -153,30 +177,49 @@ expr_stmt // Used in: small_stmt
         //Node* lhs = new IdentNode($1);
         //($1)->print();
         $$ = new AsgBinaryNode($1, $3);
-        pool.add($1);
+        // pool.add($1);
         pool.add($$);
         //delete [] $1;
         //std::cout << "expr_stmt1" << std::endl;
     }
 	| testlist star_EQUAL
     {
-        $$ = new AsgBinaryNode($1, $2);
-        pool.add($1);
-        pool.add($$);
-        //std::cout << "expr_stmt2" << std::endl;
+        if ($2) {
+            // std::cout << "expr_stmt2" << std::endl;
+            $$ = new AsgBinaryNode($1, $2);
+            //pool.add($1);
+            pool.add($$);
+            //delete [] $1;
+        }
+        else {
+            $$ = $1;
+            ($1)->eval()->print();
+        }
     }
 	;
 pick_yield_expr_testlist // Used in: expr_stmt, star_EQUAL
-	: yield_expr { $$ = $1; }
-	| testlist { $$ = $1; }
+	: yield_expr
+    {
+        $$ = $1;
+        // std::cout << "pick_yield_expr_testlist1" << std::endl;
+    }
+	| testlist
+    {
+        $$ = $1;
+        // std::cout << "pick_yield_expr_testlist2" << std::endl;
+    }
 	;
 star_EQUAL // Used in: expr_stmt, star_EQUAL
 	: star_EQUAL EQUAL pick_yield_expr_testlist
     {
         $$ = $3;
-        //std::cout << "star_EQUAL1" << std::endl;
+        // std::cout << "star_EQUAL1" << std::endl;
     }
-	| %empty { $$ = NULL; }
+	| %empty
+    {
+        $$ = NULL;
+        // std::cout << "star_EQUAL2" << std::endl;
+    }
 	;
 augassign // Used in: expr_stmt
 	: PLUSEQUAL
@@ -401,8 +444,8 @@ test // Used in: opt_EQUAL_test, print_stmt, star_COMMA_test, opt_test, plus_COM
 	: or_test opt_IF_ELSE { $$ = $1; }
 	| lambdef
     {
-        //std::cout << "impossible lambdef" << std::endl;
         $$ = NULL;
+        std::cout << "impossible lambdef" << std::endl;
     }
 	;
 opt_IF_ELSE // Used in: test
@@ -506,10 +549,12 @@ term // Used in: arith_expr, term
             pool.add($$);
             break;
         case OP_PERCENT:
-            $$ = NULL;//
+            $$ = NULL;
+            std::cout << "impossible op" << std::endl;
             break;
         case OP_DOUBLESLASH:
-            $$ = NULL;//
+            $$ = NULL;
+            std::cout << "impossible op" << std::endl;
             break;
         }
         //std::cout << "term2" << std::endl;
@@ -536,7 +581,7 @@ factor // Used in: term, factor, power
 pick_unop // Used in: factor
 	: PLUS
 	| MINUS
-	| TILDE
+	| TILDE { $$ = 0; }
 	;
 power // Used in: factor
 	: atom star_trailer DOUBLESTAR factor { $$ = $1; }
@@ -551,22 +596,40 @@ star_trailer // Used in: power, star_trailer
 	| %empty
 	;
 atom // Used in: power
-	: LPAR opt_yield_test RPAR { $$ = NULL; }
-	| LSQB opt_listmaker RSQB { $$ = NULL; }
-	| LBRACE opt_dictorsetmaker RBRACE { $$ = NULL; }
-	| BACKQUOTE testlist1 BACKQUOTE { $$ = NULL; }
-	| NAME { $$ = new IdentNode($1); delete [] $1; pool.add($$); }
-	| INT { $$ = new IntLiteral($1); pool.add($$); }
-	| FLOAT { $$ = new FloatLiteral($1); pool.add($$); }
-	| plus_STRING { $$ = NULL; }
+	: LPAR opt_yield_test RPAR
+    {
+        $$ = $2;
+        // std::cout << "atom1" << std::endl;
+        if (!$2) { std::cout << "empty parens" << std::endl; }
+    }
+	| LSQB opt_listmaker RSQB { $$ = NULL; std::cout << "impossible atom2" << std::endl; }
+	| LBRACE opt_dictorsetmaker RBRACE { $$ = NULL; std::cout << "impossible atom3" << std::endl; }
+	| BACKQUOTE testlist1 BACKQUOTE { $$ = NULL; std::cout << "impossible atom4" << std::endl; }
+	| NAME
+    {
+        $$ = new IdentNode($1);
+        delete [] $1;
+        pool.add($$);
+    }
+	| INT
+    {
+        $$ = new IntLiteral($1);
+        pool.add($$);
+    }
+	| FLOAT
+    {
+        $$ = new FloatLiteral($1);
+        pool.add($$);
+    }
+	| plus_STRING { $$ = NULL; std::cout << "impossible atom8" << std::endl; }
 	;
 pick_yield_expr_testlist_comp // Used in: opt_yield_test
-	: yield_expr
-	| testlist_comp
+	: yield_expr { $$ = $1; }
+	| testlist_comp { $$ = $1; }
 	;
 opt_yield_test // Used in: atom
-	: pick_yield_expr_testlist_comp
-	| %empty
+	: pick_yield_expr_testlist_comp { $$ = $1; }
+	| %empty { $$ = NULL; }
 	;
 opt_listmaker // Used in: atom
 	: listmaker
@@ -585,8 +648,8 @@ listmaker // Used in: opt_listmaker
 	| test star_COMMA_test opt_COMMA
 	;
 testlist_comp // Used in: pick_yield_expr_testlist_comp
-	: test comp_for
-	| test star_COMMA_test opt_COMMA
+	: test comp_for { $$ = $1; }
+	| test star_COMMA_test opt_COMMA { $$ = $1; }
 	;
 lambdef // Used in: test
 	: LAMBDA varargslist COLON test

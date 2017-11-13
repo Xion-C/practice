@@ -21,6 +21,7 @@
 // }
 
 extern void init_scanner(FILE *);
+static struct tok_state *tok;
 
 static FILE *
 open_file(const char *filename) {
@@ -42,10 +43,18 @@ int main(int argc, char * argv[]) {
   // yydebug = 0;  /* Change to 1 if you want debugging */
   int parse_had_errors = yyparse();
 
-  PoolOfNodes::getInstance().drainThePool();
 
   if (parse_had_errors) {
     fprintf(stderr,"Abnormal termination\n");
   }
+  else {
+      std::cout << "Program syntactically correct" << std::endl;
+      PoolOfNodes::getInstance().drainThePool();
+  }
+
+  // free(input_file);
+  free(tok);
+  fclose(input_file);
   return (parse_had_errors ? EXIT_FAILURE : EXIT_SUCCESS);
+  // return 0;
 }

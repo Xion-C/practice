@@ -1,5 +1,9 @@
+#ifndef LITERAL__H
+#define LITERAL__H
+
 #include "node.h"
 #include "poolOfNodes.h"
+#include <cmath>
 
 class Literal : public Node {
 public:
@@ -20,6 +24,18 @@ public:
   virtual const Literal* operator/(const Literal& rhs) const =0;
   virtual const Literal* opDiv(float) const =0;
   virtual const Literal* opDiv(int) const =0;
+
+  virtual const Literal* doubleSlash(const Literal& rhs) const =0;
+  virtual const Literal* opDoubleSlash(float) const =0;
+  virtual const Literal* opDoubleSlash(int) const =0;
+
+  virtual const Literal* operator%(const Literal& rhs) const =0;
+  virtual const Literal* opMod(float) const =0;
+  virtual const Literal* opMod(int) const =0;
+
+  virtual const Literal* doubleStar(const Literal& rhs) const =0;
+  virtual const Literal* opDoubleStar(float) const =0;
+  virtual const Literal* opDoubleStar(int) const =0;
 
   virtual const Literal* eval() const = 0;
   virtual void print() const {
@@ -89,6 +105,52 @@ public:
     return node;
   }
 
+  virtual const Literal* doubleSlash(const Literal& rhs) const {
+      return rhs.opDoubleSlash(val);
+  }
+  virtual const Literal* opDoubleSlash(float lhs) const {
+      if ( val == 0) throw std::string("Zero Division Error");
+      const Literal* node = new FloatLiteral(floor(lhs / val));
+      PoolOfNodes::getInstance().add(node);
+      return node;
+  }
+  virtual const Literal* opDoubleSlash(int lhs) const {
+      if ( val == 0) throw std::string("Zero Division Error");
+      const Literal* node = new FloatLiteral(floor(lhs / val));
+      PoolOfNodes::getInstance().add(node);
+      return node;
+  }
+
+  virtual const Literal* operator%(const Literal& rhs) const {
+      return rhs.opMod(val);
+  }
+  virtual const Literal* opMod(float lhs) const {
+      if ( val == 0) throw std::string("Zero Division Error");
+      const Literal* node = new FloatLiteral(lhs - val * floor(lhs / val));
+      PoolOfNodes::getInstance().add(node);
+      return node;
+  }
+  virtual const Literal* opMod(int lhs) const {
+      if ( val == 0) throw std::string("Zero Division Error");
+      const Literal* node = new FloatLiteral(lhs - val * floor(lhs / val));
+      PoolOfNodes::getInstance().add(node);
+      return node;
+  }
+
+  virtual const Literal* doubleStar(const Literal& rhs) const {
+      return rhs.opDoubleStar(val);
+  }
+  virtual const Literal* opDoubleStar(float lhs) const {
+      const Literal* node = new FloatLiteral(powf(lhs, val));
+      PoolOfNodes::getInstance().add(node);
+      return node;
+  }
+  virtual const Literal* opDoubleStar(int lhs) const {
+      const Literal* node = new FloatLiteral(powf(lhs, val));
+      PoolOfNodes::getInstance().add(node);
+      return node;
+  }
+
   virtual const Literal* eval() const { return this; }
   virtual void print() const {
     std::cout << "FLOAT: " << val << std::endl;
@@ -154,10 +216,60 @@ public:
   }
   virtual const Literal* opDiv(int lhs) const  {
     if ( val == 0 ) throw std::string("Zero Division Error");
-    const Literal* node = new IntLiteral(lhs / val);
+    int r = (int)(floor(static_cast<float>(lhs) / static_cast<float>(val)));
+    const Literal* node = new IntLiteral(r);
     PoolOfNodes::getInstance().add(node);
     return node;
   }
+
+  virtual const Literal* doubleSlash(const Literal& rhs) const {
+      return rhs.opDoubleSlash(val);
+  }
+  virtual const Literal* opDoubleSlash(float lhs) const {
+      if ( val == 0) throw std::string("Zero Division Error");
+      const Literal* node = new FloatLiteral(floor(lhs / val));
+      PoolOfNodes::getInstance().add(node);
+      return node;
+  }
+  virtual const Literal* opDoubleSlash(int lhs) const {
+      if ( val == 0) throw std::string("Zero Division Error");
+      int r = (int)(floor(static_cast<float>(lhs) / static_cast<float>(val)));
+      const Literal* node = new IntLiteral(r);
+      PoolOfNodes::getInstance().add(node);
+      return node;
+  }
+
+  virtual const Literal* operator%(const Literal& rhs) const {
+      return rhs.opMod(val);
+  }
+  virtual const Literal* opMod(float lhs) const {
+      if ( val == 0) throw std::string("Zero Division Error");
+      const Literal* node = new FloatLiteral(lhs - val * floor(lhs / val));
+      PoolOfNodes::getInstance().add(node);
+      return node;
+  }
+  virtual const Literal* opMod(int lhs) const {
+      if ( val == 0) throw std::string("Zero Division Error");
+      int r = lhs - val * (int)(floor((float)lhs / (float)val));
+      const Literal* node = new IntLiteral(r);
+      PoolOfNodes::getInstance().add(node);
+      return node;
+  }
+
+  virtual const Literal* doubleStar(const Literal& rhs) const {
+      return rhs.opDoubleStar(val);
+  }
+  virtual const Literal* opDoubleStar(float lhs) const {
+      const Literal* node = new FloatLiteral(powf(lhs, val));
+      PoolOfNodes::getInstance().add(node);
+      return node;
+  }
+  virtual const Literal* opDoubleStar(int lhs) const {
+      const Literal* node = new IntLiteral((int)(powf(lhs, val)));
+      PoolOfNodes::getInstance().add(node);
+      return node;
+  }
+
 
   virtual const Literal* eval() const { return this; }
   virtual void print() const {
@@ -166,3 +278,5 @@ public:
 private:
   int val;
 };
+
+#endif

@@ -353,9 +353,6 @@ void yyfree (void *  );
 
 /* Begin user sect3 */
 
-#define yywrap(n) 1
-#define YY_SKIP_YYWRAP
-
 typedef unsigned char YY_CHAR;
 
 FILE *yyin = (FILE *) 0, *yyout = (FILE *) 0;
@@ -763,7 +760,7 @@ static int imagnumbers = 0;
 /***** Start states for multi-line strings and indentation *****/
 
 
-#line 767 "lex.yy.c"
+#line 764 "lex.yy.c"
 
 #define INITIAL 0
 #define LONG_STRING 1
@@ -952,11 +949,11 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
     
-#line 165 "includes/scan.l"
+#line 164 "includes/scan.l"
 
 
 
-#line 960 "lex.yy.c"
+#line 957 "lex.yy.c"
 
 	if ( !(yy_init) )
 		{
@@ -1051,463 +1048,463 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 168 "includes/scan.l"
+#line 167 "includes/scan.l"
 { /* Hack to allow 2.7 use 3.x print-style function call */
                               tok->print_name_hack = true; return NAME; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 171 "includes/scan.l"
+#line 170 "includes/scan.l"
 { ; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 172 "includes/scan.l"
+#line 171 "includes/scan.l"
 { ; }
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 175 "includes/scan.l"
+#line 174 "includes/scan.l"
 { if (explicit_newline()) return NEWLINE; }
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 177 "includes/scan.l"
+#line 176 "includes/scan.l"
 {  tok->cont_line = true;  mark_new_line(); /* Explicit line joining: throw it away */ ;  }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 180 "includes/scan.l"
+#line 179 "includes/scan.l"
 { mark_long_string_start(); BEGIN(LONG_STRING); }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 181 "includes/scan.l"
+#line 180 "includes/scan.l"
 { mark_long_string_end(); BEGIN(INITIAL); return STRING; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 183 "includes/scan.l"
+#line 182 "includes/scan.l"
 { mark_long_string_start(); BEGIN(LONG_STRING2); }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 184 "includes/scan.l"
+#line 183 "includes/scan.l"
 { mark_long_string_end(); BEGIN(INITIAL); return STRING; }
 	YY_BREAK
 case 10:
 /* rule 10 can match eol */
 YY_RULE_SETUP
-#line 186 "includes/scan.l"
+#line 185 "includes/scan.l"
 { mark_new_line(); }
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 187 "includes/scan.l"
+#line 186 "includes/scan.l"
 { ; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 188 "includes/scan.l"
+#line 187 "includes/scan.l"
 { ; }
 	YY_BREAK
 case YY_STATE_EOF(LONG_STRING):
 case YY_STATE_EOF(LONG_STRING2):
-#line 189 "includes/scan.l"
+#line 188 "includes/scan.l"
 { display_error("unterminated long string at EOF"); }
 	YY_BREAK
 case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
-#line 191 "includes/scan.l"
+#line 190 "includes/scan.l"
 { return STRING; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 194 "includes/scan.l"
+#line 193 "includes/scan.l"
 { left_enclose();  return LPAR; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 195 "includes/scan.l"
+#line 194 "includes/scan.l"
 { right_enclose(); return RPAR; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 196 "includes/scan.l"
+#line 195 "includes/scan.l"
 { left_enclose();  return LSQB;  }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 197 "includes/scan.l"
+#line 196 "includes/scan.l"
 { right_enclose(); return RSQB; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 198 "includes/scan.l"
+#line 197 "includes/scan.l"
 { left_enclose();  return LBRACE; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 199 "includes/scan.l"
+#line 198 "includes/scan.l"
 { right_enclose(); return RBRACE; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 201 "includes/scan.l"
+#line 200 "includes/scan.l"
 { return COLON; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 202 "includes/scan.l"
+#line 201 "includes/scan.l"
 { return COMMA; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 203 "includes/scan.l"
+#line 202 "includes/scan.l"
 { return SEMI; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 205 "includes/scan.l"
+#line 204 "includes/scan.l"
 { yylval.op = OP_PLUS; return PLUS; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 206 "includes/scan.l"
+#line 205 "includes/scan.l"
 { yylval.op = OP_MINUS; return MINUS; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 207 "includes/scan.l"
+#line 206 "includes/scan.l"
 { yylval.op = OP_STAR; return STAR; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 208 "includes/scan.l"
+#line 207 "includes/scan.l"
 { yylval.op = OP_SLASH; return SLASH; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 209 "includes/scan.l"
+#line 208 "includes/scan.l"
 { yylval.op = OP_PERCENT; return PERCENT; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 210 "includes/scan.l"
+#line 209 "includes/scan.l"
 { yylval.op = OP_DOUBLESLASH; return DOUBLESLASH; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 211 "includes/scan.l"
+#line 210 "includes/scan.l"
 { yylval.op = OP_DOUBLESTAR; return DOUBLESTAR; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 213 "includes/scan.l"
+#line 212 "includes/scan.l"
 { return LESS; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 214 "includes/scan.l"
+#line 213 "includes/scan.l"
 { return GREATER; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 215 "includes/scan.l"
+#line 214 "includes/scan.l"
 { return EQUAL; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 217 "includes/scan.l"
+#line 216 "includes/scan.l"
 { return DOT; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 218 "includes/scan.l"
+#line 217 "includes/scan.l"
 { return BACKQUOTE; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 220 "includes/scan.l"
+#line 219 "includes/scan.l"
 { return EQEQUAL; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 221 "includes/scan.l"
+#line 220 "includes/scan.l"
 { return NOTEQUAL; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 222 "includes/scan.l"
+#line 221 "includes/scan.l"
 { return LESSEQUAL; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 223 "includes/scan.l"
+#line 222 "includes/scan.l"
 { return GREATEREQUAL; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 224 "includes/scan.l"
+#line 223 "includes/scan.l"
 { return GRLT; }
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 226 "includes/scan.l"
+#line 225 "includes/scan.l"
 { return TILDE; }
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 227 "includes/scan.l"
+#line 226 "includes/scan.l"
 { return CIRCUMFLEX; }
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 228 "includes/scan.l"
+#line 227 "includes/scan.l"
 { return LEFTSHIFT; }
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 229 "includes/scan.l"
+#line 228 "includes/scan.l"
 { return RIGHTSHIFT; }
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 231 "includes/scan.l"
+#line 230 "includes/scan.l"
 { return PLUSEQUAL; }
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 232 "includes/scan.l"
+#line 231 "includes/scan.l"
 { return MINEQUAL; }
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 233 "includes/scan.l"
+#line 232 "includes/scan.l"
 { return STAREQUAL; }
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 234 "includes/scan.l"
+#line 233 "includes/scan.l"
 { return SLASHEQUAL; }
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 235 "includes/scan.l"
+#line 234 "includes/scan.l"
 { return PERCENTEQUAL; }
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 236 "includes/scan.l"
+#line 235 "includes/scan.l"
 { return AMPEREQUAL; }
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 237 "includes/scan.l"
+#line 236 "includes/scan.l"
 { return BAR; }
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 238 "includes/scan.l"
+#line 237 "includes/scan.l"
 { return VBAREQUAL; }
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 239 "includes/scan.l"
+#line 238 "includes/scan.l"
 { return CIRCUMFLEXEQUAL; }
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 240 "includes/scan.l"
+#line 239 "includes/scan.l"
 { return LEFTSHIFTEQUAL; }
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 241 "includes/scan.l"
+#line 240 "includes/scan.l"
 { return RIGHTSHIFTEQUAL; }
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 242 "includes/scan.l"
+#line 241 "includes/scan.l"
 { return DOUBLESTAREQUAL; }
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 243 "includes/scan.l"
+#line 242 "includes/scan.l"
 { return DOUBLESLASHEQUAL; }
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 245 "includes/scan.l"
+#line 244 "includes/scan.l"
 { return AT; }
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 247 "includes/scan.l"
+#line 246 "includes/scan.l"
 { return AND; }
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 248 "includes/scan.l"
+#line 247 "includes/scan.l"
 { return AMPERSAND; }
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 249 "includes/scan.l"
+#line 248 "includes/scan.l"
 { return NOT; }
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 250 "includes/scan.l"
+#line 249 "includes/scan.l"
 { return OR; }
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 251 "includes/scan.l"
+#line 250 "includes/scan.l"
 { return AS; }
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 252 "includes/scan.l"
+#line 251 "includes/scan.l"
 { return ASSERT; }
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 253 "includes/scan.l"
+#line 252 "includes/scan.l"
 { return BREAK; }
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 254 "includes/scan.l"
+#line 253 "includes/scan.l"
 { return CLASS; }
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 255 "includes/scan.l"
+#line 254 "includes/scan.l"
 { return CONTINUE; }
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 256 "includes/scan.l"
+#line 255 "includes/scan.l"
 { return DEF; }
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 257 "includes/scan.l"
+#line 256 "includes/scan.l"
 { return DEL; }
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 258 "includes/scan.l"
+#line 257 "includes/scan.l"
 { return ELIF; }
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 259 "includes/scan.l"
+#line 258 "includes/scan.l"
 { return ELSE; }
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 260 "includes/scan.l"
+#line 259 "includes/scan.l"
 { return EXCEPT; }
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 261 "includes/scan.l"
+#line 260 "includes/scan.l"
 { return EXEC; }
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 262 "includes/scan.l"
+#line 261 "includes/scan.l"
 { return FINALLY; }
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 263 "includes/scan.l"
+#line 262 "includes/scan.l"
 { return FOR; }
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 264 "includes/scan.l"
+#line 263 "includes/scan.l"
 { return FROM; }
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 265 "includes/scan.l"
+#line 264 "includes/scan.l"
 { return GLOBAL; }
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 266 "includes/scan.l"
+#line 265 "includes/scan.l"
 { return IF; }
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 267 "includes/scan.l"
+#line 266 "includes/scan.l"
 { return IMPORT; }
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 268 "includes/scan.l"
+#line 267 "includes/scan.l"
 { return IN; }
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 269 "includes/scan.l"
+#line 268 "includes/scan.l"
 { return IS; }
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 270 "includes/scan.l"
+#line 269 "includes/scan.l"
 { return LAMBDA; }
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 271 "includes/scan.l"
+#line 270 "includes/scan.l"
 { return PASS; }
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 272 "includes/scan.l"
+#line 271 "includes/scan.l"
 { if (tok->print_name_hack) return NAME; else return PRINT; }
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 273 "includes/scan.l"
+#line 272 "includes/scan.l"
 { return RAISE; }
 	YY_BREAK
 case 85:
 YY_RULE_SETUP
-#line 274 "includes/scan.l"
+#line 273 "includes/scan.l"
 { return RETURN; }
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 275 "includes/scan.l"
+#line 274 "includes/scan.l"
 { return TRY; }
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 276 "includes/scan.l"
+#line 275 "includes/scan.l"
 { return WHILE; }
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 277 "includes/scan.l"
+#line 276 "includes/scan.l"
 { return WITH; }
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 278 "includes/scan.l"
+#line 277 "includes/scan.l"
 { return YIELD; }
 	YY_BREAK
 case 90:
 YY_RULE_SETUP
-#line 280 "includes/scan.l"
+#line 279 "includes/scan.l"
 {
                       ++intnumbers;
                       yylval.intNumber = atoi(yytext);
@@ -1516,7 +1513,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 91:
 YY_RULE_SETUP
-#line 285 "includes/scan.l"
+#line 284 "includes/scan.l"
 {
                       ++intnumbers;
                       yylval.intNumber = atoi(yytext);
@@ -1524,7 +1521,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 289 "includes/scan.l"
+#line 288 "includes/scan.l"
 {
                       ++floatnumbers;
                       yylval.fltNumber = atof(yytext);
@@ -1533,12 +1530,12 @@ YY_RULE_SETUP
 	YY_BREAK
 case 93:
 YY_RULE_SETUP
-#line 294 "includes/scan.l"
+#line 293 "includes/scan.l"
 { ++imagnumbers; return IMAG; }
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 296 "includes/scan.l"
+#line 295 "includes/scan.l"
 {
              ++identifiers;
              yylval.identifier = new char[yyleng+1];
@@ -1547,20 +1544,20 @@ YY_RULE_SETUP
            }
 	YY_BREAK
 case YY_STATE_EOF(INITIAL):
-#line 303 "includes/scan.l"
+#line 302 "includes/scan.l"
 { handle_eof(); return ENDMARKER; }
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 305 "includes/scan.l"
+#line 304 "includes/scan.l"
 { display_error("unknown character"); }
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 308 "includes/scan.l"
+#line 307 "includes/scan.l"
 ECHO;
 	YY_BREAK
-#line 1564 "lex.yy.c"
+#line 1561 "lex.yy.c"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2568,7 +2565,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 308 "includes/scan.l"
+#line 307 "includes/scan.l"
 
 
 
@@ -2738,5 +2735,10 @@ int debug_yylex(void)
         default: printf(" %d [%s]\n", token, yytext);
     }
     return token;
+}
+
+int yywrap() {
+  yylex_destroy();
+  return 1;
 }
 

@@ -1,3 +1,6 @@
+#ifndef POOLOFNODES__H
+#define POOLOFNODES__H
+
 #include <vector>
 class Node;
 
@@ -10,3 +13,5 @@ private:
   std::vector<const Node*> nodePool;
   PoolOfNodes() : nodePool() {}
 };
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef NODE__H
+#define NODE__H
+
 #pragma once
 #include <iostream>
 
@@ -8,8 +11,9 @@ public:
   Node() {}
   virtual ~Node() {}
   virtual const Literal* eval() const = 0;
-  virtual void print() const { 
-    std::cout << "NODE" << std::endl; 
+  virtual void print() const {
+    std::cout << "NODE" << std::endl;
   }
 };
 
+#endif
