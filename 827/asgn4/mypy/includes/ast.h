@@ -12,12 +12,23 @@
 extern void yyerror(const char*);
 extern void yyerror(const char*, const char);
 
+#define OP_PLUS 1
+#define OP_MINUS 2
+#define OP_STAR 3
+#define OP_SLASH 4
+#define OP_PERCENT 5
+#define OP_DOUBLESLASH 6
+#define OP_DOUBLESTAR 7
+
 class IdentNode : public Node {
 public:
-  IdentNode(const std::string id) : Node(), ident(id) { } 
+  IdentNode(const std::string id) : Node(), ident(id) { }
   virtual ~IdentNode() {}
   const std::string getIdent() const { return ident; }
   virtual const Literal* eval() const;
+  virtual void print() const {
+      std::cout << "IDENTIFIER: " << ident << std::endl;
+  }
 private:
   std::string ident;
 };
@@ -64,4 +75,3 @@ public:
   DivBinaryNode(Node* left, Node* right) : BinaryNode(left, right) { }
   virtual const Literal* eval() const;
 };
-

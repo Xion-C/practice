@@ -132,8 +132,9 @@ union YYSTYPE
   int intNumber;
   float fltNumber;
   char *id;
+  int op;
 
-#line 137 "parse.tab.c" /* yacc.c:355  */
+#line 138 "parse.tab.c" /* yacc.c:355  */
 };
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
@@ -148,7 +149,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 152 "parse.tab.c" /* yacc.c:358  */
+#line 153 "parse.tab.c" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -390,14 +391,14 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   27
+#define YYLAST   28
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  12
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  3
+#define YYNNTS  4
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  12
+#define YYNRULES  13
 /* YYNSTATES -- Number of states.  */
 #define YYNSTATES  21
 
@@ -446,8 +447,8 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    29,    29,    33,    40,    41,    44,    47,    50,    53,
-      56,    59,    62
+       0,    34,    34,    38,    45,    46,    49,    54,    57,    60,
+      63,    66,    72,    73
 };
 #endif
 
@@ -457,7 +458,7 @@ static const yytype_uint8 yyrline[] =
 static const char *const yytname[] =
 {
   "$end", "error", "$undefined", "CR", "EQ", "INT", "FLOAT", "IDENT",
-  "PLUS", "MINUS", "MULT", "DIV", "$accept", "lines", "expr", YY_NULLPTR
+  "PLUS", "MINUS", "MULT", "DIV", "$accept", "lines", "expr", "oop", YY_NULLPTR
 };
 #endif
 
@@ -485,8 +486,8 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -5,    13,    -5,    -5,    -5,    -5,    17,    -3,    -4,    -5,
-      -4,    -4,    -4,    -4,    -5,     1,     4,     4,    -5,    -5,
+      -5,    13,    -5,    -5,    -5,    -5,    24,    -3,    -4,    -5,
+      -5,    -5,    -4,    -4,    -4,    -5,     1,     6,     6,    16,
       -5
 };
 
@@ -495,21 +496,21 @@ static const yytype_int8 yypact[] =
      means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       5,     0,     1,     4,    10,    11,    12,     0,     0,     2,
-       0,     0,     0,     0,    12,     0,     6,     7,     8,     9,
+       5,     0,     1,     4,     9,    10,    11,     0,     0,     2,
+      12,    13,     0,     0,     0,    11,     0,     7,     8,     6,
        3
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -5,    -5,    14
+      -5,    -5,     9,    -5
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     1,     7
+      -1,     1,     7,    14
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -517,16 +518,16 @@ static const yytype_int8 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-       9,     4,     5,    14,    20,    10,    11,    12,    13,    10,
-      11,    12,    13,     2,    12,    13,     3,     0,     4,     5,
-       6,     8,    15,     0,    16,    17,    18,    19
+       9,     4,     5,    15,    20,    10,    11,    12,    13,    10,
+      11,    12,    13,     2,    10,    11,     3,    16,     4,     5,
+       6,    17,    18,    19,    10,    11,    12,    13,     8
 };
 
-static const yytype_int8 yycheck[] =
+static const yytype_uint8 yycheck[] =
 {
        3,     5,     6,     7,     3,     8,     9,    10,    11,     8,
-       9,    10,    11,     0,    10,    11,     3,    -1,     5,     6,
-       7,     4,     8,    -1,    10,    11,    12,    13
+       9,    10,    11,     0,     8,     9,     3,     8,     5,     6,
+       7,    12,    13,    14,     8,     9,    10,    11,     4
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
@@ -534,7 +535,7 @@ static const yytype_int8 yycheck[] =
 static const yytype_uint8 yystos[] =
 {
        0,    13,     0,     3,     5,     6,     7,    14,     4,     3,
-       8,     9,    10,    11,     7,    14,    14,    14,    14,    14,
+       8,     9,    10,    11,    15,     7,    14,    14,    14,    14,
        3
 };
 
@@ -542,14 +543,14 @@ static const yytype_uint8 yystos[] =
 static const yytype_uint8 yyr1[] =
 {
        0,    12,    13,    13,    13,    13,    14,    14,    14,    14,
-      14,    14,    14
+      14,    14,    15,    15
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     3,     5,     2,     0,     3,     3,     3,     3,
-       1,     1,     1
+       0,     2,     3,     5,     2,     0,     3,     3,     3,     1,
+       1,     1,     1,     1
 };
 
 
@@ -1226,89 +1227,94 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 30 "includes/parse.y" /* yacc.c:1646  */
-    { 
+#line 35 "includes/parse.y" /* yacc.c:1646  */
+    {
             ((yyvsp[-1].node))->eval()->print();
           }
-#line 1234 "parse.tab.c" /* yacc.c:1646  */
+#line 1235 "parse.tab.c" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 34 "includes/parse.y" /* yacc.c:1646  */
-    { Node* lhs = new IdentNode((yyvsp[-3].id)); 
+#line 39 "includes/parse.y" /* yacc.c:1646  */
+    { Node* lhs = new IdentNode((yyvsp[-3].id));
             (yyval.node) = new AsgBinaryNode(lhs, (yyvsp[-1].node));
             pool.add(lhs);
             pool.add((yyval.node));
             delete [] (yyvsp[-3].id);
           }
-#line 1245 "parse.tab.c" /* yacc.c:1646  */
+#line 1246 "parse.tab.c" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 41 "includes/parse.y" /* yacc.c:1646  */
+#line 46 "includes/parse.y" /* yacc.c:1646  */
     { ; }
-#line 1251 "parse.tab.c" /* yacc.c:1646  */
+#line 1252 "parse.tab.c" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 44 "includes/parse.y" /* yacc.c:1646  */
-    { (yyval.node) = new AddBinaryNode((yyvsp[-2].node), (yyvsp[0].node)); 
-                             pool.add((yyval.node));
-                           }
-#line 1259 "parse.tab.c" /* yacc.c:1646  */
+#line 50 "includes/parse.y" /* yacc.c:1646  */
+    { if((yyvsp[-1].op)==1) {(yyval.node) = new AddBinaryNode((yyvsp[-2].node), (yyvsp[0].node)); pool.add((yyval.node));}
+            else if((yyvsp[-1].op)==2) {(yyval.node) = new SubBinaryNode((yyvsp[-2].node), (yyvsp[0].node));pool.add((yyval.node));}
+            else {std::cout << "what??" << std::endl;}
+          }
+#line 1261 "parse.tab.c" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 47 "includes/parse.y" /* yacc.c:1646  */
-    { (yyval.node) = new SubBinaryNode((yyvsp[-2].node), (yyvsp[0].node)); 
+#line 54 "includes/parse.y" /* yacc.c:1646  */
+    { (yyval.node) = new MulBinaryNode((yyvsp[-2].node), (yyvsp[0].node));
                              pool.add((yyval.node));
                            }
-#line 1267 "parse.tab.c" /* yacc.c:1646  */
+#line 1269 "parse.tab.c" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 50 "includes/parse.y" /* yacc.c:1646  */
-    { (yyval.node) = new MulBinaryNode((yyvsp[-2].node), (yyvsp[0].node)); 
+#line 57 "includes/parse.y" /* yacc.c:1646  */
+    { (yyval.node) = new DivBinaryNode((yyvsp[-2].node), (yyvsp[0].node));
                              pool.add((yyval.node));
                            }
-#line 1275 "parse.tab.c" /* yacc.c:1646  */
+#line 1277 "parse.tab.c" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 53 "includes/parse.y" /* yacc.c:1646  */
-    { (yyval.node) = new DivBinaryNode((yyvsp[-2].node), (yyvsp[0].node)); 
+#line 60 "includes/parse.y" /* yacc.c:1646  */
+    { (yyval.node) = new IntLiteral((yyvsp[0].intNumber));
                              pool.add((yyval.node));
                            }
-#line 1283 "parse.tab.c" /* yacc.c:1646  */
+#line 1285 "parse.tab.c" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 56 "includes/parse.y" /* yacc.c:1646  */
-    { (yyval.node) = new IntLiteral((yyvsp[0].intNumber));        
+#line 63 "includes/parse.y" /* yacc.c:1646  */
+    { (yyval.node) = new FloatLiteral((yyvsp[0].fltNumber));
                              pool.add((yyval.node));
                            }
-#line 1291 "parse.tab.c" /* yacc.c:1646  */
+#line 1293 "parse.tab.c" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 59 "includes/parse.y" /* yacc.c:1646  */
-    { (yyval.node) = new FloatLiteral((yyvsp[0].fltNumber));      
-                             pool.add((yyval.node));
-                           }
-#line 1299 "parse.tab.c" /* yacc.c:1646  */
-    break;
-
-  case 12:
-#line 62 "includes/parse.y" /* yacc.c:1646  */
-    { (yyval.node) = new IdentNode((yyvsp[0].id));         
+#line 66 "includes/parse.y" /* yacc.c:1646  */
+    { (yyval.node) = new IdentNode((yyvsp[0].id));
                              delete [] (yyvsp[0].id);
                              pool.add((yyval.node));
                            }
+#line 1302 "parse.tab.c" /* yacc.c:1646  */
+    break;
+
+  case 12:
+#line 72 "includes/parse.y" /* yacc.c:1646  */
+    {(yyval.op)=(yyvsp[0].op);}
 #line 1308 "parse.tab.c" /* yacc.c:1646  */
     break;
 
+  case 13:
+#line 73 "includes/parse.y" /* yacc.c:1646  */
+    {(yyval.op)=(yyvsp[0].op);}
+#line 1314 "parse.tab.c" /* yacc.c:1646  */
+    break;
 
-#line 1312 "parse.tab.c" /* yacc.c:1646  */
+
+#line 1318 "parse.tab.c" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -1536,6 +1542,6 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 67 "includes/parse.y" /* yacc.c:1906  */
+#line 75 "includes/parse.y" /* yacc.c:1906  */
 
 void yyerror(const char * msg) { std::cout << msg << std::endl; }

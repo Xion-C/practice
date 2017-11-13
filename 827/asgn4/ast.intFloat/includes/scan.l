@@ -11,27 +11,27 @@ ident       {letter}({letter}|{digit})*
 %%
 
 "="       { return EQ;    }
-"+"       { return PLUS;  }
-"-"       { return MINUS; }
+"+"       { yylval.op=1;return PLUS;  }
+"-"       { yylval.op=2;return MINUS; }
 "*"       { return MULT;  }
 "/"       { return DIV;   }
-{digits}  { 
+{digits}  {
             yylval.intNumber = atoi(yytext);
-            return INT; 
+            return INT;
           }
-{float}   { 
+{float}   {
             yylval.fltNumber = atof(yytext);
-            return FLOAT; 
+            return FLOAT;
           }
 {ident}   {
             yylval.id = new char[yyleng+1];
             strcpy(yylval.id, yytext);
-            return IDENT; 
+            return IDENT;
           }
 "\n"      { return CR;    }
 .         {}
 %%
-int yywrap() { 
+int yywrap() {
   yylex_destroy();
-  return 1; 
+  return 1;
 }

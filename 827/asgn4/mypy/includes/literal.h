@@ -22,8 +22,8 @@ public:
   virtual const Literal* opDiv(int) const =0;
 
   virtual const Literal* eval() const = 0;
-  virtual void print() const { 
-    std::cout << "No Way" << std::endl; 
+  virtual void print() const {
+    std::cout << "No Way" << std::endl;
   }
 };
 
@@ -37,7 +37,7 @@ public:
   virtual const Literal* opPlus(float lhs) const  {
     const Literal* node = new FloatLiteral(lhs + val);
     PoolOfNodes::getInstance().add(node);
-    return node; 
+    return node;
   }
   virtual const Literal* opPlus(int lhs) const  {
     const Literal* node = new FloatLiteral(lhs + val);
@@ -90,8 +90,8 @@ public:
   }
 
   virtual const Literal* eval() const { return this; }
-  virtual void print() const { 
-    std::cout << "FLOAT: " << val << std::endl; 
+  virtual void print() const {
+    std::cout << "FLOAT: " << val << std::endl;
   }
 private:
   float val;
@@ -160,10 +160,9 @@ public:
   }
 
   virtual const Literal* eval() const { return this; }
-  virtual void print() const { 
-    std::cout << "INT: " << val << std::endl; 
+  virtual void print() const {
+    std::cout << "INT: " << val << std::endl;
   }
 private:
   int val;
 };
-
