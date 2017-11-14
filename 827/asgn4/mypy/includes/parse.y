@@ -29,7 +29,7 @@
 
 %type<op> pick_multop pick_PLUS_MINUS pick_unop
 
-%type<node> atom power factor term arith_expr shift_expr and_expr xor_expr expr comparison not_test and_test or_test test testlist expr_stmt pick_yield_expr_testlist yield_expr star_EQUAL small_stmt simple_stmt stmt pick_NEWLINE_stmt star_NEWLINE_stmt file_input start opt_yield_test pick_yield_expr_testlist_comp testlist_comp
+%type<node> atom power factor term arith_expr shift_expr and_expr xor_expr expr comparison not_test and_test or_test test testlist expr_stmt pick_yield_expr_testlist yield_expr star_EQUAL small_stmt simple_stmt stmt pick_NEWLINE_stmt star_NEWLINE_stmt file_input start opt_yield_test pick_yield_expr_testlist_comp testlist_comp star_COMMA_test opt_test print_stmt
 
 // %token NUMBER
 %token IMAG
@@ -162,7 +162,11 @@ star_SEMI_small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
 	;
 small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
 	: expr_stmt { $$ = $1; }
-	| print_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+	| print_stmt
+    {
+        //just print, no need to pass the node
+        $$ = NULL;
+    }
 	| del_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
 	| pass_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
 	| flow_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
@@ -237,15 +241,36 @@ augassign // Used in: expr_stmt
 	;
 print_stmt // Used in: small_stmt
 	: PRINT opt_test
+    {
+        $$ = $2;
+        // std::cout << "print_stmt1" << std::endl;
+    }
 	| PRINT RIGHTSHIFT test opt_test_2
+    {
+        $$ = NULL;
+        // std::cout << "print_stmt2" << std::endl;
+    }
 	;
 star_COMMA_test // Used in: star_COMMA_test, opt_test, listmaker, testlist_comp, testlist, pick_for_test
 	: star_COMMA_test COMMA test
-	| %empty
+    {
+        $$ = $1; //should always be NULL
+        if ($3) {
+            ($3)->eval()->print();
+        }
+    }
+	| %empty { $$ = NULL; }
 	;
 opt_test // Used in: print_stmt
 	: test star_COMMA_test opt_COMMA
-	| %empty
+    {
+        $$ = $1;
+        if ($1) {
+            ($1)->eval()->print();
+        }
+        // std::cout << "opt_test1" << std::endl;
+    }
+	| %empty { $$ = NULL; }
 	;
 plus_COMMA_test // Used in: plus_COMMA_test, opt_test_2
 	: plus_COMMA_test COMMA test
@@ -549,29 +574,29 @@ term // Used in: arith_expr, term
             pool.add($$);
             break;
         case OP_PERCENT:
-            $$ = NULL;
-            std::cout << "impossible op" << std::endl;
+            $$ = new ModBinaryNode($1, $3);
+            pool.add($$);
             break;
         case OP_DOUBLESLASH:
-            $$ = NULL;
-            std::cout << "impossible op" << std::endl;
+            $$ = new FlrDivBinaryNode($1, $3);
+            pool.add($$);
             break;
         }
         //std::cout << "term2" << std::endl;
     }
 	;
 pick_multop // Used in: term
-	: STAR //multiply
+    : STAR //multiply
       { $$ = $1; }
-	| SLASH //divide
+    | SLASH //divide
       { $$ = $1; }
-	| PERCENT //mod
+    | PERCENT //mod
       { $$ = $1; }
-	| DOUBLESLASH //div
+    | DOUBLESLASH //div
       { $$ = $1; }
-	;
+    ;
 factor // Used in: term, factor, power
-	: pick_unop factor
+    : pick_unop factor
     {
         switch ($1) {
         case OP_PLUS:
@@ -584,25 +609,34 @@ factor // Used in: term, factor, power
             break;
         }
     }
-	| power
+    | power
     {
         $$ = $1;
         //std::cout << "factor2" << std::endl;
     }
-	;
+    ;
 pick_unop // Used in: factor
 	: PLUS { $$ = $1; }
 	| MINUS { $$ = $1; }
 	| TILDE { $$ = 0; }
 	;
 power // Used in: factor
-	: atom star_trailer DOUBLESTAR factor { $$ = $1; }
-	| atom star_trailer
+    : atom star_trailer DOUBLESTAR factor
+    {
+        if ($3 == OP_DOUBLESTAR) {
+            $$ = new ExpBinaryNode($1, $4);
+            pool.add($$);
+        }
+        else {
+            std::cout << "DOUBLESTAR wrong" << std::endl;
+        }
+    }
+    | atom star_trailer
     {
         $$ = $1;
         //std::cout << "power2" << std::endl;
     }
-	;
+    ;
 star_trailer // Used in: power, star_trailer
 	: star_trailer trailer
 	| %empty

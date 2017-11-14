@@ -76,3 +76,30 @@ const Literal* DivBinaryNode::eval() const {
   const Literal* y = right->eval();
   return ((*x)/(*y));
 }
+
+const Literal* FlrDivBinaryNode::eval() const {
+  if (!left || !right) {
+    throw "error";
+  }
+  const Literal* x = left->eval();
+  const Literal* y = right->eval();
+  return (*x).doubleSlash(*y);
+}
+
+const Literal* ModBinaryNode::eval() const {
+  if (!left || !right) {
+    throw "error";
+  }
+  const Literal* x = left->eval();
+  const Literal* y = right->eval();
+  return ((*x)%(*y));
+}
+
+const Literal* ExpBinaryNode::eval() const {
+  if (!left || !right) {
+    throw "error";
+  }
+  const Literal* x = left->eval();
+  const Literal* y = right->eval();
+  return (*x).doubleStar(*y);
+}
