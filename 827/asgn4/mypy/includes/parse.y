@@ -10,6 +10,8 @@
 	void yyerror (const char *);
 
 	PoolOfNodes& pool = PoolOfNodes::getInstance(); //prevent memory leak
+    Node* temp[64];
+    int tempcount = 0;
 %}
 
 
@@ -26,8 +28,9 @@
 %token<identifier> NAME
 
 %token<op> PLUS MINUS STAR SLASH PERCENT DOUBLESLASH DOUBLESTAR
+%token<op> EQUAL PLUSEQUAL MINEQUAL STAREQUAL SLASHEQUAL PERCENTEQUAL DOUBLESTAREQUAL DOUBLESLASHEQUAL
 
-%type<op> pick_multop pick_PLUS_MINUS pick_unop
+%type<op> pick_multop pick_PLUS_MINUS pick_unop augassign
 
 %type<node> atom power factor term arith_expr shift_expr and_expr xor_expr expr comparison not_test and_test or_test test testlist expr_stmt pick_yield_expr_testlist yield_expr star_EQUAL small_stmt simple_stmt stmt pick_NEWLINE_stmt star_NEWLINE_stmt file_input start opt_yield_test pick_yield_expr_testlist_comp testlist_comp star_COMMA_test opt_test print_stmt
 
@@ -38,12 +41,12 @@
 // 83 tokens, in alphabetical order:
 %token AMPEREQUAL AMPERSAND AND AS ASSERT AT BACKQUOTE BAR BREAK CIRCUMFLEX
 %token CIRCUMFLEXEQUAL CLASS COLON COMMA CONTINUE DEDENT DEF DEL DOT
-%token DOUBLESLASHEQUAL DOUBLESTAREQUAL ELIF ELSE ENDMARKER EQEQUAL
-%token EQUAL EXCEPT EXEC FINALLY FOR FROM GLOBAL GREATER GREATEREQUAL GRLT
+%token ELIF ELSE ENDMARKER EQEQUAL
+%token  EXCEPT EXEC FINALLY FOR FROM GLOBAL GREATER GREATEREQUAL GRLT
 %token IF IMPORT IN INDENT IS LAMBDA LBRACE LEFTSHIFT LEFTSHIFTEQUAL LESS
-%token LESSEQUAL LPAR LSQB MINEQUAL NEWLINE NOT NOTEQUAL
-%token OR PASS PERCENTEQUAL PLUSEQUAL PRINT RAISE RBRACE RETURN
-%token RIGHTSHIFT RIGHTSHIFTEQUAL RPAR RSQB SEMI SLASHEQUAL STAREQUAL
+%token LESSEQUAL LPAR LSQB NEWLINE NOT NOTEQUAL
+%token OR PASS PRINT RAISE RBRACE RETURN
+%token RIGHTSHIFT RIGHTSHIFTEQUAL RPAR RSQB SEMI
 %token STRING TILDE TRY VBAREQUAL WHILE WITH YIELD
 
 %start start
@@ -178,22 +181,60 @@ small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
 expr_stmt // Used in: small_stmt
 	: testlist augassign pick_yield_expr_testlist
     {
-        //Node* lhs = new IdentNode($1);
-        //($1)->print();
-        $$ = new AsgBinaryNode($1, $3);
-        // pool.add($1);
-        pool.add($$);
-        //delete [] $1;
-        //std::cout << "expr_stmt1" << std::endl;
+        // std::cout << "expr_stmt1" << std::endl;
+        switch ($2) {
+            case OP_PLUSEQUAL:
+                $$ = new PlusAsgBinaryNode($1, $3);
+                pool.add($$);
+            break;
+            case OP_MINEQUAL:
+                $$ = new MinAsgBinaryNode($1, $3);
+                pool.add($$);
+            break;
+            case OP_STAREQUAL:
+                $$ = new MulAsgBinaryNode($1, $3);
+                pool.add($$);
+            break;
+            case OP_SLASHEQUAL:
+                $$ = new DivAsgBinaryNode($1, $3);
+                pool.add($$);
+            break;
+            case OP_PERCENTEQUAL:
+                $$ = new ModAsgBinaryNode($1, $3);
+                pool.add($$);
+            break;
+            case OP_DOUBLESTAREQUAL:
+                $$ = new ExpAsgBinaryNode($1, $3);
+                pool.add($$);
+            break;
+            case OP_DOUBELSLASHEQUAL:
+                $$ = new FlrDivAsgBinaryNode($1, $3);
+                pool.add($$);
+            break;
+            case 0:
+                std::cout << "augassign error" << std::endl;
+            break;
+        }
     }
 	| testlist star_EQUAL
     {
         if ($2) {
             // std::cout << "expr_stmt2" << std::endl;
             $$ = new AsgBinaryNode($1, $2);
-            //pool.add($1);
             pool.add($$);
-            //delete [] $1;
+
+            tempcount--;
+            if (tempcount) { //not only one EQUAL
+                tempcount--;
+                Node* equ;
+                for( ; tempcount>=0; tempcount--) {
+                    equ = new AsgBinaryNode(temp[tempcount], $2);
+                    pool.add(equ);
+                }
+            }
+            if(tempcount < 0) {
+                tempcount = 0;
+            }
         }
         else {
             $$ = $1;
@@ -216,7 +257,9 @@ pick_yield_expr_testlist // Used in: expr_stmt, star_EQUAL
 star_EQUAL // Used in: expr_stmt, star_EQUAL
 	: star_EQUAL EQUAL pick_yield_expr_testlist
     {
+        // if ($1 == NULL)  //means this is the bottom of the equal tree
         $$ = $3;
+        temp[tempcount++] = $3;
         // std::cout << "star_EQUAL1" << std::endl;
     }
 	| %empty
@@ -226,18 +269,18 @@ star_EQUAL // Used in: expr_stmt, star_EQUAL
     }
 	;
 augassign // Used in: expr_stmt
-	: PLUSEQUAL
-	| MINEQUAL
-	| STAREQUAL
-	| SLASHEQUAL
-	| PERCENTEQUAL
-	| AMPEREQUAL
-	| VBAREQUAL
-	| CIRCUMFLEXEQUAL
-	| LEFTSHIFTEQUAL
-	| RIGHTSHIFTEQUAL
-	| DOUBLESTAREQUAL
-	| DOUBLESLASHEQUAL
+	: PLUSEQUAL { $$ = $1; }
+	| MINEQUAL { $$ = $1; }
+	| STAREQUAL { $$ = $1; }
+	| SLASHEQUAL { $$ = $1; }
+	| PERCENTEQUAL { $$ = $1; }
+	| AMPEREQUAL { $$ = 0; }
+	| VBAREQUAL { $$ = 0; }
+	| CIRCUMFLEXEQUAL { $$ = 0; }
+	| LEFTSHIFTEQUAL { $$ = 0; }
+	| RIGHTSHIFTEQUAL { $$ = 0; }
+	| DOUBLESTAREQUAL { $$ = $1; }
+	| DOUBLESLASHEQUAL { $$ = $1; }
 	;
 print_stmt // Used in: small_stmt
 	: PRINT opt_test
@@ -539,14 +582,14 @@ arith_expr // Used in: shift_expr, arith_expr
 	| arith_expr pick_PLUS_MINUS term
     {
         switch ($2) {
-        case OP_PLUS:
-            $$ = new AddBinaryNode($1, $3);
-            pool.add($$);
-        break;
-        case OP_MINUS:
-            $$ = new SubBinaryNode($1, $3);
-            pool.add($$);
-        break;
+            case OP_PLUS:
+                $$ = new AddBinaryNode($1, $3);
+                pool.add($$);
+            break;
+            case OP_MINUS:
+                $$ = new SubBinaryNode($1, $3);
+                pool.add($$);
+            break;
         }
     }
 	;
@@ -565,22 +608,22 @@ term // Used in: arith_expr, term
 	| term pick_multop factor
     {
         switch ($2) {
-        case OP_STAR:
-            $$ = new MulBinaryNode($1, $3);
-            pool.add($$);
-            break;
-        case OP_SLASH:
-            $$ = new DivBinaryNode($1, $3);
-            pool.add($$);
-            break;
-        case OP_PERCENT:
-            $$ = new ModBinaryNode($1, $3);
-            pool.add($$);
-            break;
-        case OP_DOUBLESLASH:
-            $$ = new FlrDivBinaryNode($1, $3);
-            pool.add($$);
-            break;
+            case OP_STAR:
+                $$ = new MulBinaryNode($1, $3);
+                pool.add($$);
+                break;
+            case OP_SLASH:
+                $$ = new DivBinaryNode($1, $3);
+                pool.add($$);
+                break;
+            case OP_PERCENT:
+                $$ = new ModBinaryNode($1, $3);
+                pool.add($$);
+                break;
+            case OP_DOUBLESLASH:
+                $$ = new FlrDivBinaryNode($1, $3);
+                pool.add($$);
+                break;
         }
         //std::cout << "term2" << std::endl;
     }
@@ -599,14 +642,14 @@ factor // Used in: term, factor, power
     : pick_unop factor
     {
         switch ($1) {
-        case OP_PLUS:
-            $$ = new PositiveUnaryNode($2);
-            pool.add($$);
-            break;
-        case OP_MINUS:
-            $$ = new NegativeUnaryNode($2);
-            pool.add($$);
-            break;
+            case OP_PLUS:
+                $$ = new PositiveUnaryNode($2);
+                pool.add($$);
+                break;
+            case OP_MINUS:
+                $$ = new NegativeUnaryNode($2);
+                pool.add($$);
+                break;
         }
     }
     | power
@@ -748,7 +791,15 @@ testlist // Used in: expr_stmt, pick_yield_expr_testlist, return_stmt, for_stmt,
 	| test star_COMMA_test
     {
         $$ = $1;
-        //std::cout << "testlist2" << std::endl;
+        // std::cout << "testlist 2" << std::endl;
+        // if(!$1) { std::cout << "testlist 2 NULL error" << std::endl; }
+        // else {
+        //     if(($1)->eval()) {
+        //         std::cout << "print: " << std::endl;
+        //         ($1)->eval()->print();
+        //     }
+        // }
+        // ($1)->eval()->print();
     }
 	;
 dictorsetmaker // Used in: opt_dictorsetmaker

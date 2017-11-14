@@ -227,19 +227,20 @@ comment   #.*
 "<<"       { return LEFTSHIFT; }
 ">>"       { return RIGHTSHIFT; }
 
-"+="       { return PLUSEQUAL; }
-"-="       { return MINEQUAL; }
-"*="       { return STAREQUAL; }
-"/="       { return SLASHEQUAL; }
-"%="       { return PERCENTEQUAL; }
+"+="       { yylval.op = OP_PLUSEQUAL; return PLUSEQUAL; }
+"-="       { yylval.op = OP_MINEQUAL; return MINEQUAL; }
+"*="       { yylval.op = OP_STAREQUAL; return STAREQUAL; }
+"/="       { yylval.op = OP_SLASHEQUAL; return SLASHEQUAL; }
+"%="       { yylval.op = OP_PERCENTEQUAL; return PERCENTEQUAL; }
+"**="      { yylval.op = OP_DOUBLESTAREQUAL; return DOUBLESTAREQUAL; }
+"//="      { yylval.op = OP_DOUBELSLASHEQUAL; return DOUBLESLASHEQUAL; }
+
 "&="       { return AMPEREQUAL; }
 "|"        { return BAR; }
 "|="       { return VBAREQUAL; }
 "^="       { return CIRCUMFLEXEQUAL; }
 "<<="      { return LEFTSHIFTEQUAL; }
 ">>="      { return RIGHTSHIFTEQUAL; }
-"**="      { return DOUBLESTAREQUAL; }
-"//="      { return DOUBLESLASHEQUAL; }
 
 "@"        { return AT; }
 
