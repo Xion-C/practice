@@ -1,27 +1,13 @@
 #include <iostream>
 #include <string>
 
-#include "includes/symbolTable.h"
+// #include "includes/symbolTable.h"
+// #include "includes/ast.h"
 #include "includes/poolOfNodes.h"
-
 #include "parse.tab.h"
 
-// extern int yyparse();
-//
-// int main() {
-//   try {
-//     if ( yyparse() == 0 ) {
-//       std::cout << "Program syntactically correct" << std::endl;
-//     //   PoolOfNodes::getInstance().drainThePool();
-//     }
-//   }
-//   catch ( const std::string& msg ) {
-//     std::cout << "oops: " << msg << std::endl;
-//   }
-// }
-
 extern void init_scanner(FILE *);
-static struct tok_state *tok;
+// static struct tok_state *tok;
 
 static FILE *
 open_file(const char *filename) {
@@ -42,8 +28,6 @@ int main(int argc, char * argv[]) {
   init_scanner(input_file);
   // yydebug = 0;  /* Change to 1 if you want debugging */
   int parse_had_errors = yyparse();
-
-
   if (parse_had_errors) {
     fprintf(stderr,"Abnormal termination\n");
   }
@@ -53,8 +37,9 @@ int main(int argc, char * argv[]) {
   }
 
   // free(input_file);
-  free(tok);
-  fclose(input_file);
+  // if (tok != NULL) {std::cout << "not null" << std::endl;}
+  // free(tok);
+  // fclose(input_file);
   return (parse_had_errors ? EXIT_FAILURE : EXIT_SUCCESS);
   // return 0;
 }

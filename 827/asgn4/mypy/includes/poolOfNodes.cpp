@@ -7,8 +7,12 @@ PoolOfNodes& PoolOfNodes::getInstance() {
 }
 
 void PoolOfNodes::drainThePool() {
-    //std::cout << "poolsize " << nodePool.size() << std::endl;
+    // std::cout << "poolsize " << nodePool.size() << std::endl;
     for ( const Node* node : nodePool ) {
-        delete [] node;
+        if (node == NULL) {
+            std::cout << "-- can't not pointer NULL" << std::endl;
+            continue;
+        }
+        delete node; //can not be "delete [] node" here
     }
 }

@@ -7,32 +7,40 @@
 #include "ast.h"
 #include "symbolTable.h"
 
-const Literal* IdentNode::eval() const { 
+const Literal* IdentNode::eval() const {
   const Literal* val = SymbolTable::getInstance().getValue(ident);
   return val;
 }
 
+const Literal* PositiveUnaryNode::eval() const {
+    const Literal* res = right->eval();
+    return res;
+}
 
-AsgBinaryNode::AsgBinaryNode(Node* left, Node* right) : 
-  BinaryNode(left, right) { 
+const Literal* NegativeUnaryNode::eval() const {
+    const Literal* res = right->eval()->opposite();
+    return res;
+}
+
+AsgBinaryNode::AsgBinaryNode(Node* left, Node* right) :
+  BinaryNode(left, right) {
   const Literal* res = right->eval();
   const std::string n = static_cast<IdentNode*>(left)->getIdent();
   SymbolTable::getInstance().setValue(n, res);
 }
 
 
-const Literal* AsgBinaryNode::eval() const { 
+const Literal* AsgBinaryNode::eval() const {
   if (!left || !right) {
     throw "error";
   }
   const Literal* res = right->eval();
-
   const std::string n = static_cast<IdentNode*>(left)->getIdent();
   SymbolTable::getInstance().setValue(n, res);
   return res;
 }
 
-const Literal* AddBinaryNode::eval() const { 
+const Literal* AddBinaryNode::eval() const {
   if (!left || !right) {
     throw "error";
   }
@@ -42,7 +50,7 @@ const Literal* AddBinaryNode::eval() const {
   return (*x).operator+(*y);
 }
 
-const Literal* SubBinaryNode::eval() const { 
+const Literal* SubBinaryNode::eval() const {
   if (!left || !right) {
     throw "error";
   }
@@ -51,7 +59,7 @@ const Literal* SubBinaryNode::eval() const {
   return ((*x)-(*y));
 }
 
-const Literal* MulBinaryNode::eval() const { 
+const Literal* MulBinaryNode::eval() const {
   if (!left || !right) {
     throw "error";
   }
@@ -60,7 +68,7 @@ const Literal* MulBinaryNode::eval() const {
   return ((*x)*(*y));
 }
 
-const Literal* DivBinaryNode::eval() const { 
+const Literal* DivBinaryNode::eval() const {
   if (!left || !right) {
     throw "error";
   }
@@ -68,4 +76,3 @@ const Literal* DivBinaryNode::eval() const {
   const Literal* y = right->eval();
   return ((*x)/(*y));
 }
-

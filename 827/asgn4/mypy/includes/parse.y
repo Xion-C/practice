@@ -56,8 +56,8 @@ start
 	: file_input
     {
         $$ = $1;
-        std::cout << "at beginning" << std::endl;
-        // delete [] $1;
+        // std::cout << "at beginning" << std::endl;
+        // if ($1) { ($1)->eval()->print(); }
     }
 	;
 file_input // Used in: start
@@ -571,7 +571,19 @@ pick_multop // Used in: term
       { $$ = $1; }
 	;
 factor // Used in: term, factor, power
-	: pick_unop factor { $$ = $2; }
+	: pick_unop factor
+    {
+        switch ($1) {
+        case OP_PLUS:
+            $$ = new PositiveUnaryNode($2);
+            pool.add($$);
+            break;
+        case OP_MINUS:
+            $$ = new NegativeUnaryNode($2);
+            pool.add($$);
+            break;
+        }
+    }
 	| power
     {
         $$ = $1;
@@ -579,8 +591,8 @@ factor // Used in: term, factor, power
     }
 	;
 pick_unop // Used in: factor
-	: PLUS
-	| MINUS
+	: PLUS { $$ = $1; }
+	| MINUS { $$ = $1; }
 	| TILDE { $$ = 0; }
 	;
 power // Used in: factor

@@ -7,40 +7,42 @@
 
 class Literal : public Node {
 public:
-  virtual ~Literal() {}
+    virtual ~Literal() {}
 
-  virtual const Literal* operator+(const Literal& rhs) const =0;
-  virtual const Literal* opPlus(float) const =0;
-  virtual const Literal* opPlus(int) const =0;
+    virtual const Literal* operator+(const Literal& rhs) const =0;
+    virtual const Literal* opPlus(float) const =0;
+    virtual const Literal* opPlus(int) const =0;
 
-  virtual const Literal* operator*(const Literal& rhs) const =0;
-  virtual const Literal* opMult(float) const =0;
-  virtual const Literal* opMult(int) const =0;
+    virtual const Literal* operator*(const Literal& rhs) const =0;
+    virtual const Literal* opMult(float) const =0;
+    virtual const Literal* opMult(int) const =0;
 
-  virtual const Literal* operator-(const Literal& rhs) const =0;
-  virtual const Literal* opSubt(float) const =0;
-  virtual const Literal* opSubt(int) const =0;
+    virtual const Literal* operator-(const Literal& rhs) const =0;
+    virtual const Literal* opSubt(float) const =0;
+    virtual const Literal* opSubt(int) const =0;
 
-  virtual const Literal* operator/(const Literal& rhs) const =0;
-  virtual const Literal* opDiv(float) const =0;
-  virtual const Literal* opDiv(int) const =0;
+    virtual const Literal* operator/(const Literal& rhs) const =0;
+    virtual const Literal* opDiv(float) const =0;
+    virtual const Literal* opDiv(int) const =0;
 
-  virtual const Literal* doubleSlash(const Literal& rhs) const =0;
-  virtual const Literal* opDoubleSlash(float) const =0;
-  virtual const Literal* opDoubleSlash(int) const =0;
+    virtual const Literal* doubleSlash(const Literal& rhs) const =0;
+    virtual const Literal* opDoubleSlash(float) const =0;
+    virtual const Literal* opDoubleSlash(int) const =0;
 
-  virtual const Literal* operator%(const Literal& rhs) const =0;
-  virtual const Literal* opMod(float) const =0;
-  virtual const Literal* opMod(int) const =0;
+    virtual const Literal* operator%(const Literal& rhs) const =0;
+    virtual const Literal* opMod(float) const =0;
+    virtual const Literal* opMod(int) const =0;
 
-  virtual const Literal* doubleStar(const Literal& rhs) const =0;
-  virtual const Literal* opDoubleStar(float) const =0;
-  virtual const Literal* opDoubleStar(int) const =0;
+    virtual const Literal* doubleStar(const Literal& rhs) const =0;
+    virtual const Literal* opDoubleStar(float) const =0;
+    virtual const Literal* opDoubleStar(int) const =0;
 
-  virtual const Literal* eval() const = 0;
-  virtual void print() const {
+    virtual const Literal* opposite() const =0;
+
+    virtual const Literal* eval() const = 0;
+    virtual void print() const {
     std::cout << "No Way" << std::endl;
-  }
+    }
 };
 
 class FloatLiteral: public Literal {
@@ -147,6 +149,12 @@ public:
   }
   virtual const Literal* opDoubleStar(int lhs) const {
       const Literal* node = new FloatLiteral(powf(lhs, val));
+      PoolOfNodes::getInstance().add(node);
+      return node;
+  }
+
+  virtual const Literal* opposite() const {
+      const Literal* node = new FloatLiteral(-val);
       PoolOfNodes::getInstance().add(node);
       return node;
   }
@@ -270,6 +278,12 @@ public:
       return node;
   }
 
+  virtual const Literal* opposite() const {
+      const Literal* node = new IntLiteral(-val);
+      PoolOfNodes::getInstance().add(node);
+      return node;
+    // return this;
+  }
 
   virtual const Literal* eval() const { return this; }
   virtual void print() const {
