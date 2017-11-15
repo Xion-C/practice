@@ -26,7 +26,7 @@ int main(int argc, char * argv[]) {
     input_file = open_file(argv[1]);
   }
   init_scanner(input_file);
-  // yydebug = 0;  /* Change to 1 if you want debugging */
+  yydebug = 0;  /* Change to 1 if you want debugging */
   int parse_had_errors = yyparse();
   if (parse_had_errors) {
     fprintf(stderr,"Abnormal termination\n");
