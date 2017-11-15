@@ -17,6 +17,3 @@ i//=(e+d*2-130)
 print i
 g%=e*d
 print g
-
-a=b=c=d=e=f=g=h=i=j=99
-print a,b,c,d,e,f,g,h,i,j

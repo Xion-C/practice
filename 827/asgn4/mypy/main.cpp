@@ -7,7 +7,7 @@
 #include "parse.tab.h"
 
 extern void init_scanner(FILE *);
-// static struct tok_state *tok;
+extern void free_tok();
 
 static FILE *
 open_file(const char *filename) {
@@ -36,10 +36,7 @@ int main(int argc, char * argv[]) {
       PoolOfNodes::getInstance().drainThePool();
   }
 
-  // free(input_file);
-  // if (tok != NULL) {std::cout << "not null" << std::endl;}
-  // free(tok);
+  free_tok();
   // fclose(input_file);
   return (parse_had_errors ? EXIT_FAILURE : EXIT_SUCCESS);
-  // return 0;
 }

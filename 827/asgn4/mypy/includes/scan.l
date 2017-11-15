@@ -325,6 +325,12 @@ init_scanner(FILE *input_file)
   tok->indstack[0] = FIRST_COLUMN;  /* Start column (not 0)  */
 }
 
+void free_tok() {
+    if (tok) {
+        free(tok);
+    }
+}
+
 static void display_error(const char *msg)
 {
     fprintf (stderr, "%d.%d-%d.%d:", yylloc.first_line, yylloc.first_column,
@@ -476,6 +482,6 @@ int debug_yylex(void)
 }
 
 int yywrap() {
-  yylex_destroy();
-  return 1;
+    yylex_destroy();
+    return 1;
 }
