@@ -60,7 +60,10 @@ typedef struct {
 extern int biasx, biasy;
 extern int showframe;
 extern int showperspective;
+extern int sssflag;
 
+extern point_t lightsource_p;
+extern point_t camera_p;
 extern vector_t light_parrallel;
 
 extern point_t vertex;
@@ -75,7 +78,8 @@ void write_pixel(int x, int y, color_t c);
 void draw_zbuffer_pixel(int xi, int yi, float zbuf, color_t c);
 void draw_line(point_t p1, point_t p2, color_t c);
 
-color_t triface_simplelight(const triface_t& f, const vector_t& light);
+color_t triface_simplelight(const triface_t& f, const vector_t& light, const vector_t& view);
+void triface_equation(triface_t& f_t);
 void triface_rasterization(const triface_t& f);
 
 void color_random(color_t& c);

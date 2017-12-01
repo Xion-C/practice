@@ -27,10 +27,14 @@ int showr = 0;
 int showe = 0;
 int showframe = 0;
 int showperspective = 0;
+int sssflag = 0;
 
 float t_step = 2;
 float r_angle = 0.1;
 float s_ratio = 0.1;
+
+point_t lightsource_p = { (float)-biasx + 50.0f, (float)biasy - 50.0, 0.0f, 1.0f };
+point_t camera_p = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 vector_t light_parrallel = { 1.0f, -1.0f, 1.0f, 0.0f };
 
@@ -78,7 +82,7 @@ void init_window() {
     glClearColor(0.0, 0.0, 0.0, 0.0);
     glShadeModel(GL_SMOOTH);
     //glOrtho(0,WIDTH/2,-HEIGHT/2,HEIGHT,-1.0,1.0);
-    glOrtho(-WIDTH / 2, WIDTH / 2, -HEIGHT / 2, HEIGHT / 2, -1.0, DEPTH);
+    glOrtho(-WIDTH / 2, WIDTH / 2, -HEIGHT / 2, HEIGHT / 2, -1.0, 1.0);
     printf("--- Init Window ---\n");
 }
 
@@ -110,9 +114,9 @@ void mouse(int button, int state, int x, int y)
         printf("x %d  y %d\n", x, y);
     }
 }
+
 void keyboard(unsigned char key, int x, int y)  // Create Keyboard Function
 {
-
     switch (key) {
     case 27: // When Escape Is Pressed...
         exit(0); // Exit The Program
@@ -231,7 +235,40 @@ void keyboard(unsigned char key, int x, int y)  // Create Keyboard Function
             }
         }
         break;
-
+    case 'u':
+        lightsource_p.z -= 10;
+        printf("lightsource_p.z : %f\n", lightsource_p.z);
+        break;
+    case 'o':
+        lightsource_p.z += 10;
+        printf("lightsource_p.z : %f\n", lightsource_p.z);
+        break;
+    case 'i':
+        lightsource_p.y += 10;
+        printf("lightsource_p.y : %f\n", lightsource_p.y);
+        break;
+    case 'k':
+        lightsource_p.y -= 10;
+        printf("lightsource_p.y : %f\n", lightsource_p.y);
+        break;
+    case 'j':
+        lightsource_p.x -= 10;
+        printf("lightsource_p.x : %f\n", lightsource_p.x);
+        break;
+    case 'l':
+        lightsource_p.x += 10;
+        printf("lightsource_p.x : %f\n", lightsource_p.x);
+        break;
+    case'z':
+        sssflag = 1 - sssflag;
+        if (sssflag)
+        {
+            printf("Subsurface Scattering ON\n");
+        }
+        else {
+            printf("Subsurface Scattering OFF\n");
+        }
+        break;
     default:
         break;
     }
@@ -263,6 +300,11 @@ int main(int argc, char *argv[])
         printf("%s", menu[i]);
     }
     printf("%s", menu[0]);
+    showperspective = 1;
+    menulevel = 1;
+    showr = 1;
+    printf("Default : Perspective Rotation\n");
+
 
     glutMainLoop();                 // Initialize The Main Loop
 }

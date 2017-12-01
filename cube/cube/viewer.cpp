@@ -15,11 +15,12 @@ void draw_zbuffer_pixel(int xi, int yi, float zbuf, color_t c) {
     if (xi + biasx > WIDTH || yi + biasy > HEIGHT || xi + biasx < 0 || yi + biasy < 0) {
         //printf("--- out of edge ---\n");
     }
+    //else if ((camera_p.z - zbuf) < (camera_p.z - render.zbuffer[y_][x_])) {
     else if (zbuf < render.zbuffer[y_][x_]) {
         //write_pixel(xi, yi, c);
         render.frame[y_][x_] = c;
         render.zbuffer[y_][x_] = zbuf;
-        // printf("draw x %d y %d z %f\n",xi,yi,zbuf);
+        //if(zbuf > 0) printf("draw x %d y %d z %f\n",xi,yi,zbuf);
     }
 }
 
@@ -76,43 +77,82 @@ void color_white(color_t& c) {
     c.r = c.g = c.b = 1.0;
 }
 
-color_t triface_simplelight(const triface_t& f, const vector_t& light) {
+color_t triface_simplelight(const triface_t& f, const vector_t& light, const vector_t& view) {
     point_t p1 = f.v1, p2 = f.v2, p3 = f.v3;
-    float y1 = p1.y;
-    float y2 = p2.y;
-    float y3 = p3.y;
-    float x1 = p1.x;
-    float x2 = p2.x;
-    float x3 = p3.x;
-    float dx12 = x1 - x2;
-    float dx23 = x2 - x3;
-    float dy12 = y1 - y2;
-    float dy23 = y2 - y3;
-    float dz12 = p1.z - p2.z;
-    float dz23 = p2.z - p3.z;
-
-    point_t camera_p = { 0.0f, 0.0f, 0.0f, 1.0f };
 
     color_t rgb;
-    vector_t v1 = { dx12, dy12, dz12, 1.0f };
-    vector_t v2 = { dx23, dy23, dz23, 1.0f };
-    vector_t vn;
-    vector_crossproduct(vn, v1, v2);
-    float gray;
-    gray = (vector_angle(light, vn) / M_PI);
-    gray = (-cos(vector_angle(light, vn)) + 1) / 2;
-    if (gray < 0 || gray>1) printf("gray: %f\n", gray);
-    gray = gray * 0.9 + 0.05;
+    color_t material = { 0.99f, 0.55f, 0.25f };
 
-    rgb = { gray, gray, gray };
+    //vn,vi,vv,vr
+    vector_t vn = f.n;
+    vector_t vi = light;
+    vector_t vv = view;
+    vector_t vr;
+    vector_t vtemp;
+    vector_scalar(vtemp, 2 * vector_dotproduct(vi, vn), vn);
+    vector_minus(vr, vi, vtemp);
+    vector_normalize(vr);
+
+    float gray, cr, cg, cb;
+    float kd = 0.4;
+    float ks = 0.6;
+    float selfilluminous = 0.15;
+
+    gray = kd * vector_dotproduct(vi, vn) + ks * -powf(vector_dotproduct(vv, vr), 1.0f);
+    //printf("vv vr %f  %f   %f  %f\n", vv.x, vr.x, vector_dotproduct(vv, vr), powf(vector_dotproduct(vv, vr), 1.2f));
+    if (sssflag) {
+        gray += selfilluminous;
+    }
+    cr = gray / 2 + material.r;
+    fsaturate(cr);
+    cg = gray / 2 + material.g;
+    fsaturate(cg);
+    cb = gray / 2 + material.b;
+    fsaturate(cb);
+    //if (gray < 0.0f || gray > 1) printf("gray: %f\n", gray);
+
+    rgb = { cr, cg, cb };
     return rgb;
+}
+
+void triface_equation(triface_t& f_t) {
+    float x1 = f_t.v1.x;
+    float x2 = f_t.v2.x;
+    float x3 = f_t.v3.x;
+    float y1 = f_t.v1.y;
+    float y2 = f_t.v2.y;
+    float y3 = f_t.v3.y;
+    float z1 = f_t.v1.z;
+    float z2 = f_t.v2.z;
+    float z3 = f_t.v3.z;
+    float dx12 = x1 - x2;
+    float dy12 = y1 - y2;
+    float dz12 = z1 - z2;
+    float dx23 = x2 - x3;
+    float dy23 = y2 - y3;
+    float dz23 = z2 - z3;
+
+    vector_t d12 = { dx12, dy12, dz12, 1.0f };
+    vector_t d23 = { dx23, dy23, dz23, 1.0f };
+    vector_crossproduct(f_t.n, d12, d23);
+
+    vector_normalize(f_t.n);
+    // printf("%d - normal %f %f %f\n", i,f_t.n.x,f_t.n.y,f_t.n.z);
+    if (fabs(f_t.n.z) < LIMIT_ZERO) {
+        f_t.zn = false;
+    }
+    else {
+        f_t.zn = true;
+    }
+    f_t.d = -(f_t.n.x * f_t.v1.x + f_t.n.y * f_t.v1.y + f_t.n.z * f_t.v1.z);
+    //(-f_t.d - f_t.n.x * x - f_t.n.y * y) / f_t.n.z;
 }
 
 void triface_rasterization(const triface_t& f) {
 
     triface_t f_t = f;
     matrix_t p;
-    matrix_set_perspective(p, objdata.center.z);
+    matrix_set_perspective(p, objdata.center.z, camera_p);
     if (showperspective == 1) {
         matrix_multi_vector(f_t.v1, p, f.v1);
         matrix_multi_vector(f_t.v2, p, f.v2);
@@ -154,23 +194,12 @@ void triface_rasterization(const triface_t& f) {
     float cy3 = c3 + dx31 * miny - dy31 * minx;
 
     float z = 0;
+    triface_equation(f_t);
 
     color_t rgb;
     //rgb = triface_simplelight(f, light_parrallel);
-    vector_t lp;
-    float lx, ly, lz;
-    lx = (float)-((WIDTH/2)-50);
-    lx = 0;
-    ly = (float)(HEIGHT/2)-50;
-    ly = 0;
-    lz = objdata.center.z / 1.5;
-    //lz = 0;
-    //for (int i = -3; i <= 3; i++) {
-    //    for (int j = -3; j <= 3; j++) {
-    //        //write_pixel(lx+j, ly+i, white);
-    //        render.frame[(int)ly + i + biasy][(int)lx + j + biasx] = white;
-    //    }
-    //}
+    vector_t light;
+    vector_t view;
     
     // Scan through bounding rectangle
     for (int y = miny; y < maxy; y++) {
@@ -186,14 +215,24 @@ void triface_rasterization(const triface_t& f) {
                 }
                 else {
                     //plane
-                    z = (-f.d - f.n.x * x - f.n.y * y) / f.n.z;
+                    z = (-f_t.d - f_t.n.x * x - f_t.n.y * y) / f_t.n.z;
                 }
+
+                //if (z > 0) {
+                //    printf("z %f, v1z %f, v2z %f, v3z %f\n", z, p1.z, p2.z, p3.z);
+                //    system("pause");
+                //}
+
                 //write_pixel(x, y, f.color);
                 //draw_zbuffer_pixel(x, y, z, f.color);
 
                 //rgb = triface_simplelight(f, { (float)x, (float)y, (float)z/2, 1.0f });
-                vector_minus(lp, { float(x), float(y), float(z), 1.0f }, { lx, ly, lz, 1.0f });
-                rgb = triface_simplelight(f, lp);
+                //vector_minus(lp, { float(x), float(y), float(z), 1.0f }, lightsource_p);
+                vector_minus(light, lightsource_p, { float(x), float(y), float(z), 1.0f });
+                vector_normalize(light);
+                vector_minus(view, camera_p, { float(x), float(y), float(z), 1.0f });
+                vector_normalize(view);
+                rgb = triface_simplelight(f, light, view);
                 draw_zbuffer_pixel(x, y, z, rgb);
             }
             cx1 -= dy12;
@@ -246,6 +285,8 @@ void vertices_init() {
     objdata.maxsize = vector_magnitude(v) * rscale;
     vertices_translation(0, 0, DEPTH / 2);
     //printf("center -- %f %f %f\n", objdata.center.x, objdata.center.y, objdata.center.z);
+
+    lightsource_p.z = objdata.center.z;
 }
 
 void vertices_transform(const matrix_t& m) {
@@ -323,10 +364,17 @@ void faces_init() {
         float dx23 = x2 - x3;
         float dy23 = y2 - y3;
         float dz23 = z2 - z3;
-        face.n.x = dy12 * dz23 - dz12 * dy23;
-        face.n.y = dz12 * dx23 - dx12 * dz23;
-        face.n.z = dx12 * dy23 - dy12 * dx23;
-        face.n.w = 1.0f;
+
+        vector_t d12 = { dx12, dy12, dz12, 1.0f };
+        vector_t d23 = { dx23, dy23, dz23, 1.0f };
+        vector_crossproduct(face.n, d12, d23);
+
+        //face.n.x = dy12 * dz23 - dz12 * dy23;
+        //face.n.y = dz12 * dx23 - dx12 * dz23;
+        //face.n.z = dx12 * dy23 - dy12 * dx23;
+        //face.n.w = 1.0f;
+
+
         vector_normalize(face.n);
         // printf("%d - normal %f %f %f\n", i,face.n.x,face.n.y,face.n.z);
         if (fabs(face.n.z) < LIMIT_ZERO) {
@@ -386,7 +434,7 @@ void view_obj() {
     triface_t f;
     point_t v1, v2, v3;
     matrix_t p;
-    matrix_set_perspective(p, objdata.center.z);
+    //matrix_set_perspective(p, objdata.center.z, camera_p);
     for (unsigned int i = 0; i<objdata.faces.size(); i++) {
         f = objdata.faces[i];
         if (showperspective == 1) {
@@ -412,11 +460,20 @@ void view_obj() {
         }
     }
 
+    for (int i = -3; i <= 3; i++) {
+        for (int j = -3; j <= 3; j++) {
+            //write_pixel(lx+j, ly+i, white);
+            render.frame[(int)lightsource_p.y + i + biasy][(int)lightsource_p.x + j + biasx] = white;
+        }
+    }
+
+
     for (int i = 0; i < HEIGHT; i++) {
         for (int j = 0; j < WIDTH; j++) {
             write_pixel(j - biasx, i - biasy, render.frame[i][j]);
         }
     }
+
 
     //printf("------- frame updated -------\n");
 }

@@ -1,13 +1,18 @@
 ﻿  viewer.cpp
-c:\[clemson]\2017 fall cpsc-6050 computer graphics\vscg\cube\cube\viewer.cpp(348): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\[clemson]\2017 fall cpsc-6050 computer graphics\vscg\cube\cube\viewer.cpp(399): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(205): note: 参见“fopen”的声明
-c:\[clemson]\2017 fall cpsc-6050 computer graphics\vscg\cube\cube\viewer.cpp(356): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\[clemson]\2017 fall cpsc-6050 computer graphics\vscg\cube\cube\viewer.cpp(407): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1193): note: 参见“fscanf”的声明
-c:\[clemson]\2017 fall cpsc-6050 computer graphics\vscg\cube\cube\viewer.cpp(358): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\[clemson]\2017 fall cpsc-6050 computer graphics\vscg\cube\cube\viewer.cpp(409): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1193): note: 参见“fscanf”的声明
-c:\[clemson]\2017 fall cpsc-6050 computer graphics\vscg\cube\cube\viewer.cpp(365): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\[clemson]\2017 fall cpsc-6050 computer graphics\vscg\cube\cube\viewer.cpp(416): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1193): note: 参见“fscanf”的声明
-c:\[clemson]\2017 fall cpsc-6050 computer graphics\vscg\cube\cube\viewer.cpp(372): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+c:\[clemson]\2017 fall cpsc-6050 computer graphics\vscg\cube\cube\viewer.cpp(423): warning C4996: 'fscanf': This function or variable may be unsafe. Consider using fscanf_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
   c:\program files (x86)\windows kits\10\include\10.0.10240.0\ucrt\stdio.h(1193): note: 参见“fscanf”的声明
+  正在生成代码...
+  正在编译...
+  main.cpp
+c:\[clemson]\2017 fall cpsc-6050 computer graphics\vscg\cube\cube\main.cpp(36): warning C4838: 从“double”转换到“float”需要收缩转换
+  正在生成代码...
   cube.vcxproj -> C:\[Clemson]\2017 fall CPSC-6050 Computer Graphics\vscg\cube\Debug\cube.exe
   cube.vcxproj -> C:\[Clemson]\2017 fall CPSC-6050 Computer Graphics\vscg\cube\Debug\cube.pdb (Full PDB)

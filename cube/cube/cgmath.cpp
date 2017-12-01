@@ -17,6 +17,15 @@ float fmin_3(const float& a, const float& b, const float& c) {
     m = c<m ? c : m;
     return m;
 }
+float fsaturate(float& a) {
+    if (a > 1.0f) {
+        a = 1.0f;
+    }
+    else if (a < 0.0f) {
+        a = 0.0f;
+    }
+    return a;
+}
 float line3d_getz(const point_t p1, const point_t p2, float x, float y) {
     float dxy, dpxy;
     dpxy = sqrt((p2.x - p1.x)*(p2.x - p1.x) + (p2.y - p1.y)*(p2.y - p1.y));
@@ -52,7 +61,16 @@ void vector_minus(vector_t& dst, const vector_t& v1, const vector_t& v2) {
     dst.z = z;
     dst.w = 1.0f;
 }
-
+void vector_scalar(vector_t& dst, const float& c, const vector_t& v) {
+    float x, y, z;
+    x = c * v.x;
+    y = c * v.y;
+    z = c * v.z;
+    dst.x = x;
+    dst.y = y;
+    dst.z = z;
+    dst.w = v.w;
+}
 void vector_crossproduct(vector_t& z, const vector_t& x, const vector_t& y) {
     float m1, m2, m3;
     m1 = x.y * y.z - x.z * y.y;
@@ -82,6 +100,9 @@ float vector_magnitude(const vector_t& v) {
 }
 float vector_angle(const vector_t& v1, const vector_t& v2) {
     return acos((v1.x * v2.x + v1.y * v2.y + v1.z * v2.z) / (vector_magnitude(v1) * vector_magnitude(v2)));
+}
+float vector_dotproduct(const vector_t& v1, const vector_t& v2) {
+    return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
 }
 void matrix_init_identity(matrix_t& m) {
     m[0][0] = m[1][1] = m[2][2] = m[3][3] = 1;
@@ -156,7 +177,9 @@ void matrix_set_scale(matrix_t& dst, const float x, const float y, const float z
     dst[1][1] = y;
     dst[2][2] = z;
 }
-void matrix_set_perspective(matrix_t& dst, const float d) {
+void matrix_set_perspective(matrix_t& dst, const float d, const point_t& camera_p) {
+    //float dz = camera_p.z - d;
+    //dz = d < 0 ? -d : d;
     matrix_init_identity(dst);
     dst[3][3] = 0;
     dst[3][2] = 1.0f / d;
