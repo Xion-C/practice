@@ -30,6 +30,50 @@ extern void yyerror(const char*, const char);
 #define OP_DOUBLESTAREQUAL 13
 #define OP_DOUBELSLASHEQUAL 14
 
+
+class FuncNode : public Node {
+public:
+    FuncNode() : Node() {}
+    virtual ~FuncNode() {}
+    virtual const Literal* eval() const;
+    FuncNode(const FuncNode&) = delete;
+    FuncNode& operator=(const FuncNode&) = delete;
+};
+
+class ReturnNode : public Node {
+public:
+    ReturnNode(Node* r) : Node(), rvalue(r) {}
+    virtual ~ReturnNode() {}
+    virtual const Literal* eval() const;
+    ReturnNode(const ReturnNode&) = delete;
+    ReturnNode& operator=(const ReturnNode&) = delete;
+private:
+    Node* rvalue;
+};
+
+class CallNode : public Node {
+public:
+    CallNode(Node* f) : Node(), func(f) {}
+    virtual ~CallNode() {}
+    virtual const Literal* eval() const;
+    CallNode(const CallNode&) = delete;
+    CallNode& operator=(const CallNode&) = delete;
+private:
+    Node* func;
+};
+
+
+class PrintNode : public Node {
+public:
+    PrintNode(Node* p) : Node(), prints(p) {}
+    virtual ~PrintNode() {}
+    virtual const Literal* eval() const;
+    PrintNode(const PrintNode&) = delete;
+    PrintNode& operator=(const PrintNode&) = delete;
+private:
+    Node* prints;
+};
+
 /* identifier */
 class IdentNode : public Node {
 public:

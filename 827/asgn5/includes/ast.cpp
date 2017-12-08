@@ -7,6 +7,31 @@
 #include "ast.h"
 #include "symbolTable.h"
 
+const Literal* FuncNode::eval() const {
+    return nullptr;
+}
+
+const Literal* ReturnNode::eval() const {
+    if(!rvalue) {
+        throw "error";
+    }
+    return rvalue->eval();
+}
+
+const Literal* CallNode::eval() const {
+    return func->eval();
+}
+
+const Literal* PrintNode::eval() const {
+    if(!prints) {
+        std::cout << "" << std::endl;;
+    }
+    else {
+        prints->eval()->print();
+    }
+    return nullptr;
+}
+
 const Literal* IdentNode::eval() const {
   const Literal* val = SymbolTable::getInstance().getValue(ident);
   if(val == NULL) { throw "ident error"; }

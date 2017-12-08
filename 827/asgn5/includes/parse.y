@@ -32,7 +32,19 @@
 
 %type<op> pick_multop pick_PLUS_MINUS pick_unop augassign
 
-%type<node> atom power factor term arith_expr shift_expr and_expr xor_expr expr comparison not_test and_test or_test test testlist expr_stmt pick_yield_expr_testlist yield_expr star_EQUAL small_stmt simple_stmt stmt pick_NEWLINE_stmt star_NEWLINE_stmt file_input start opt_yield_test pick_yield_expr_testlist_comp testlist_comp star_COMMA_test opt_test print_stmt
+%type<node> atom power factor term
+%type<node> arith_expr shift_expr and_expr xor_expr expr
+%type<node> comparison not_test and_test or_test test testlist
+%type<node> expr_stmt
+%type<node> pick_yield_expr_testlist yield_expr
+%type<node> star_EQUAL
+%type<node> small_stmt simple_stmt stmt
+%type<node> pick_NEWLINE_stmt star_NEWLINE_stmt file_input start
+%type<node> opt_yield_test pick_yield_expr_testlist_comp
+%type<node> testlist_comp star_COMMA_test opt_test
+%type<node> print_stmt star_trailer
+%type<node> compound_stmt if_stmt funcdef
+%type<node> flow_stmt return_stmt
 
 // %token NUMBER
 %token IMAG
@@ -56,22 +68,28 @@
 %%
 
 start
-	: file_input
+    : file_input
     {
         $$ = $1;
         // std::cout << "at beginning" << std::endl;
         // if ($1) { ($1)->eval()->print(); }
     }
-	;
+    ;
 file_input // Used in: start
-	: star_NEWLINE_stmt ENDMARKER { $$ = $1; }
-	;
+    : star_NEWLINE_stmt ENDMARKER
+        { $$ = $1; }
+    ;
 pick_NEWLINE_stmt // Used in: star_NEWLINE_stmt
-	: NEWLINE { $$ = NULL; }
-	| stmt { $$ = $1; }
-	;
+    : NEWLINE { $$ = NULL; }
+    | stmt
+        {
+            static int n = 0;
+            std::cout << "stmt : " << n++ << std::endl;
+            $$ = $1;
+        }
+    ;
 star_NEWLINE_stmt // Used in: file_input, star_NEWLINE_stmt
-	: star_NEWLINE_stmt pick_NEWLINE_stmt
+    : star_NEWLINE_stmt pick_NEWLINE_stmt
     {
         // if ($1) {
         //     $$ = $1;
@@ -82,8 +100,8 @@ star_NEWLINE_stmt // Used in: file_input, star_NEWLINE_stmt
         // if ($1) { delete [] $1; }
         $$ = $2;
     }
-	| %empty { $$ = NULL; }
-	;
+    | %empty { $$ = NULL; }
+    ;
 decorator // Used in: decorators
 	: AT dotted_name LPAR opt_arglist RPAR NEWLINE
 	| AT dotted_name NEWLINE
@@ -101,8 +119,13 @@ decorated // Used in: compound_stmt
 	| decorators funcdef
 	;
 funcdef // Used in: decorated, compound_stmt
-	: DEF NAME parameters COLON suite { delete [] $2; }
-	;
+    : DEF NAME parameters COLON suite
+        {
+            std::cout << "func define" << std::endl;
+            $$ = nullptr;
+            delete [] $2;
+        }
+    ;
 parameters // Used in: funcdef
 	: LPAR varargslist RPAR
 	| LPAR RPAR
@@ -120,199 +143,201 @@ star_fpdef_COMMA // Used in: varargslist, star_fpdef_COMMA
 	| %empty
 	;
 opt_DOUBLESTAR_NAME // Used in: pick_STAR_DOUBLESTAR
-	: COMMA DOUBLESTAR NAME { delete [] $3; }
-	| %empty
-	;
+    : COMMA DOUBLESTAR NAME { delete [] $3; }
+    | %empty
+    ;
 pick_STAR_DOUBLESTAR // Used in: varargslist
-	: STAR NAME opt_DOUBLESTAR_NAME { delete [] $2; }
-	| DOUBLESTAR NAME { delete [] $2; }
-	;
+    : STAR NAME opt_DOUBLESTAR_NAME { delete [] $2; }
+    | DOUBLESTAR NAME { delete [] $2; }
+    ;
 opt_COMMA // Used in: varargslist, opt_test, opt_test_2, testlist_safe, listmaker, testlist_comp, pick_for_test_test, pick_for_test, pick_argument
-	: COMMA
-	| %empty
-	;
+    : COMMA
+    | %empty
+    ;
 fpdef // Used in: varargslist, star_fpdef_COMMA, fplist, star_fpdef_notest
-	: NAME { delete [] $1; }
-	| LPAR fplist RPAR
-	;
+    : NAME { delete [] $1; }
+    | LPAR fplist RPAR
+    ;
 fplist // Used in: fpdef
-	: fpdef star_fpdef_notest COMMA
-	| fpdef star_fpdef_notest
-	;
+    : fpdef star_fpdef_notest COMMA
+    | fpdef star_fpdef_notest
+    ;
 star_fpdef_notest // Used in: fplist, star_fpdef_notest
-	: star_fpdef_notest COMMA fpdef
-	| %empty
-	;
+    : star_fpdef_notest COMMA fpdef
+    | %empty
+    ;
 stmt // Used in: pick_NEWLINE_stmt, plus_stmt
-	: simple_stmt { $$ = $1; }
-	| compound_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
-	;
+    : simple_stmt { $$ = $1; }
+    | compound_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+    ;
 simple_stmt // Used in: stmt, suite
-	: small_stmt star_SEMI_small_stmt SEMI NEWLINE
-    {
-        // std::cout << "simple_stmt1" << std::endl;
-        $$ = $1;
-    }
-	| small_stmt star_SEMI_small_stmt NEWLINE
-    {
-        // std::cout << "simple_stmt2" << std::endl;
-        $$ = $1;
-    }
-	;
-star_SEMI_small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
-	: star_SEMI_small_stmt SEMI small_stmt
-	| %empty
-	;
+    : small_stmt star_SEMI_small_stmt SEMI NEWLINE
+        {
+            // std::cout << "simple_stmt1" << std::endl;
+            $$ = $1;
+        }
+    | small_stmt star_SEMI_small_stmt NEWLINE
+        {
+            // std::cout << "simple_stmt2" << std::endl;
+            $$ = $1;
+        }
+    ;
+    star_SEMI_small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
+    : star_SEMI_small_stmt SEMI small_stmt
+    | %empty
+    ;
 small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
-	: expr_stmt { $$ = $1; }
-	| print_stmt
+    : expr_stmt { $$ = $1; }
+    | print_stmt
     {
         //just print, no need to pass the node
         $$ = NULL;
     }
-	| del_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
-	| pass_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
-	| flow_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
-	| import_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
-	| global_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
-	| exec_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
-	| assert_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
-	;
+    | del_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+    | pass_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+    | flow_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+    | import_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+    | global_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+    | exec_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+    | assert_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+    ;
 expr_stmt // Used in: small_stmt
 	: testlist augassign pick_yield_expr_testlist
-    {
-        // std::cout << "expr_stmt1" << std::endl;
-        switch ($2) {
-            case OP_PLUSEQUAL:
-                $$ = new PlusAsgBinaryNode($1, $3);
-                pool.add($$);
-            break;
-            case OP_MINEQUAL:
-                $$ = new MinAsgBinaryNode($1, $3);
-                pool.add($$);
-            break;
-            case OP_STAREQUAL:
-                $$ = new MulAsgBinaryNode($1, $3);
-                pool.add($$);
-            break;
-            case OP_SLASHEQUAL:
-                $$ = new DivAsgBinaryNode($1, $3);
-                pool.add($$);
-            break;
-            case OP_PERCENTEQUAL:
-                $$ = new ModAsgBinaryNode($1, $3);
-                pool.add($$);
-            break;
-            case OP_DOUBLESTAREQUAL:
-                $$ = new ExpAsgBinaryNode($1, $3);
-                pool.add($$);
-            break;
-            case OP_DOUBELSLASHEQUAL:
-                $$ = new FlrDivAsgBinaryNode($1, $3);
-                pool.add($$);
-            break;
-            case 0:
-                std::cout << "augassign error" << std::endl;
-            break;
+        {
+            // std::cout << "expr_stmt1" << std::endl;
+            switch ($2) {
+                case OP_PLUSEQUAL:
+                    $$ = new PlusAsgBinaryNode($1, $3);
+                    pool.add($$);
+                break;
+                case OP_MINEQUAL:
+                    $$ = new MinAsgBinaryNode($1, $3);
+                    pool.add($$);
+                break;
+                case OP_STAREQUAL:
+                    $$ = new MulAsgBinaryNode($1, $3);
+                    pool.add($$);
+                break;
+                case OP_SLASHEQUAL:
+                    $$ = new DivAsgBinaryNode($1, $3);
+                    pool.add($$);
+                break;
+                case OP_PERCENTEQUAL:
+                    $$ = new ModAsgBinaryNode($1, $3);
+                    pool.add($$);
+                break;
+                case OP_DOUBLESTAREQUAL:
+                    $$ = new ExpAsgBinaryNode($1, $3);
+                    pool.add($$);
+                break;
+                case OP_DOUBELSLASHEQUAL:
+                    $$ = new FlrDivAsgBinaryNode($1, $3);
+                    pool.add($$);
+                break;
+                case 0:
+                    std::cout << "augassign error" << std::endl;
+                break;
+            }
         }
-    }
-	| testlist star_EQUAL
-    {
-        if ($2) {
-            // std::cout << "expr_stmt2" << std::endl;
-            $$ = new AsgBinaryNode($1, $2);
-            pool.add($$);
+    | testlist star_EQUAL
+        {
+            if ($2) {
+                // std::cout << "expr_stmt2" << std::endl;
+                $$ = new AsgBinaryNode($1, $2);
+                pool.add($$);
 
-            tempcount--;
-            if (tempcount) { //not only one EQUAL
                 tempcount--;
-                Node* equ;
-                for( ; tempcount>=0; tempcount--) {
-                    equ = new AsgBinaryNode(temp[tempcount], $2);
-                    pool.add(equ);
+                if (tempcount) { //not only one EQUAL
+                    tempcount--;
+                    Node* equ;
+                    for( ; tempcount>=0; tempcount--) {
+                        equ = new AsgBinaryNode(temp[tempcount], $2);
+                        pool.add(equ);
+                    }
+                }
+                if(tempcount < 0) {
+                    tempcount = 0;
                 }
             }
-            if(tempcount < 0) {
-                tempcount = 0;
+            else {
+                $$ = $1;
+                //($1)->eval()->print();
             }
         }
-        else {
-            $$ = $1;
-            ($1)->eval()->print();
-        }
-    }
-	;
+    ;
 pick_yield_expr_testlist // Used in: expr_stmt, star_EQUAL
-	: yield_expr
-    {
-        $$ = $1;
-        // std::cout << "pick_yield_expr_testlist1" << std::endl;
-    }
-	| testlist
-    {
-        $$ = $1;
-        // std::cout << "pick_yield_expr_testlist2" << std::endl;
-    }
-	;
+    : yield_expr
+        {
+            $$ = $1;
+            // std::cout << "pick_yield_expr_testlist1" << std::endl;
+        }
+    | testlist
+        {
+            $$ = $1;
+            // std::cout << "pick_yield_expr_testlist2" << std::endl;
+        }
+    ;
 star_EQUAL // Used in: expr_stmt, star_EQUAL
-	: star_EQUAL EQUAL pick_yield_expr_testlist
-    {
-        // if ($1 == NULL)  //means this is the bottom of the equal tree
-        $$ = $3;
-        temp[tempcount++] = $3;
-        // std::cout << "star_EQUAL1" << std::endl;
-    }
-	| %empty
-    {
-        $$ = NULL;
-        // std::cout << "star_EQUAL2" << std::endl;
-    }
-	;
+    : star_EQUAL EQUAL pick_yield_expr_testlist
+        {
+            // if ($1 == NULL)  //means this is the bottom of the equal tree
+            $$ = $3;
+            //($3)->print();
+            temp[tempcount++] = $3;
+            // std::cout << "star_EQUAL1" << std::endl;
+        }
+    | %empty
+        {
+            $$ = nullptr;
+            // std::cout << "star_EQUAL2" << std::endl;
+        }
+    ;
 augassign // Used in: expr_stmt
-	: PLUSEQUAL { $$ = $1; }
-	| MINEQUAL { $$ = $1; }
-	| STAREQUAL { $$ = $1; }
-	| SLASHEQUAL { $$ = $1; }
-	| PERCENTEQUAL { $$ = $1; }
-	| AMPEREQUAL { $$ = 0; }
-	| VBAREQUAL { $$ = 0; }
-	| CIRCUMFLEXEQUAL { $$ = 0; }
-	| LEFTSHIFTEQUAL { $$ = 0; }
-	| RIGHTSHIFTEQUAL { $$ = 0; }
-	| DOUBLESTAREQUAL { $$ = $1; }
-	| DOUBLESLASHEQUAL { $$ = $1; }
-	;
+    : PLUSEQUAL { $$ = $1; }
+    | MINEQUAL { $$ = $1; }
+    | STAREQUAL { $$ = $1; }
+    | SLASHEQUAL { $$ = $1; }
+    | PERCENTEQUAL { $$ = $1; }
+    | AMPEREQUAL { $$ = 0; }
+    | VBAREQUAL { $$ = 0; }
+    | CIRCUMFLEXEQUAL { $$ = 0; }
+    | LEFTSHIFTEQUAL { $$ = 0; }
+    | RIGHTSHIFTEQUAL { $$ = 0; }
+    | DOUBLESTAREQUAL { $$ = $1; }
+    | DOUBLESLASHEQUAL { $$ = $1; }
+    ;
 print_stmt // Used in: small_stmt
 	: PRINT opt_test
-    {
-        $$ = $2;
-        // std::cout << "print_stmt1" << std::endl;
-    }
+        {
+            $$ = new PrintNode($2);
+            pool.add($$);
+            // std::cout << "print_stmt1" << std::endl;
+        }
 	| PRINT RIGHTSHIFT test opt_test_2
-    {
-        $$ = NULL;
-        // std::cout << "print_stmt2" << std::endl;
-    }
+        {
+            $$ = NULL;
+            // std::cout << "print_stmt2" << std::endl;
+        }
 	;
 star_COMMA_test // Used in: star_COMMA_test, opt_test, listmaker, testlist_comp, testlist, pick_for_test
 	: star_COMMA_test COMMA test
-    {
-        $$ = $1; //should always be NULL
-        if ($3) {
-            ($3)->eval()->print();
+        {
+            $$ = $1; //should always be NULL
+            // if ($3) {
+            //     ($3)->eval()->print();
+            // }
         }
-    }
 	| %empty { $$ = NULL; }
 	;
 opt_test // Used in: print_stmt
 	: test star_COMMA_test opt_COMMA
-    {
-        $$ = $1;
-        if ($1) {
-            ($1)->eval()->print();
+        {
+            $$ = $1;
+            // if ($1) {
+            //     ($1)->eval()->print();
+            // }
+            // std::cout << "opt_test1" << std::endl;
         }
-        // std::cout << "opt_test1" << std::endl;
-    }
 	| %empty { $$ = NULL; }
 	;
 plus_COMMA_test // Used in: plus_COMMA_test, opt_test_2
@@ -420,19 +445,23 @@ assert_stmt // Used in: small_stmt
 	| ASSERT test
 	;
 compound_stmt // Used in: stmt
-	: if_stmt
-	| while_stmt
-	| for_stmt
-	| try_stmt
-	| with_stmt
-	| funcdef
-	| classdef
-	| decorated
-	;
+    : if_stmt { $$ = nullptr; }
+    | while_stmt { $$ = nullptr; }
+    | for_stmt { $$ = nullptr; }
+    | try_stmt { $$ = nullptr; }
+    | with_stmt { $$ = nullptr; }
+    | funcdef { $$ = nullptr; }
+    | classdef { $$ = nullptr; }
+    | decorated { $$ = nullptr; }
+    ;
 if_stmt // Used in: compound_stmt
-	: IF test COLON suite star_ELIF ELSE COLON suite
-	| IF test COLON suite star_ELIF
-	;
+    : IF test COLON suite star_ELIF ELSE COLON suite
+        {
+            $$ = nullptr;
+        }
+    | IF test COLON suite star_ELIF
+        { $$ = nullptr; }
+    ;
 star_ELIF // Used in: if_stmt, star_ELIF
 	: star_ELIF ELIF test COLON suite
 	| %empty
@@ -511,10 +540,10 @@ old_lambdef // Used in: old_test
 test // Used in: opt_EQUAL_test, print_stmt, star_COMMA_test, opt_test, plus_COMMA_test, raise_stmt, opt_COMMA_test, opt_test_3, exec_stmt, assert_stmt, if_stmt, star_ELIF, while_stmt, with_item, except_clause, opt_AS_COMMA, opt_IF_ELSE, listmaker, testlist_comp, lambdef, subscript, opt_test_only, sliceop, testlist, dictorsetmaker, star_test_COLON_test, opt_DOUBLESTAR_test, pick_argument, argument, testlist1
 	: or_test opt_IF_ELSE { $$ = $1; }
 	| lambdef
-    {
-        $$ = NULL;
-        std::cout << "impossible lambdef" << std::endl;
-    }
+        {
+            $$ = NULL;
+            std::cout << "impossible lambdef" << std::endl;
+        }
 	;
 opt_IF_ELSE // Used in: test
 	: IF or_test ELSE test
@@ -551,15 +580,15 @@ comp_op // Used in: comparison
 	;
 expr // Used in: exec_stmt, with_item, comparison, expr, exprlist, star_COMMA_expr
 	: xor_expr
-    {
-        $$ = $1;
-        //std::cout << "expr1" << std::endl;
-    }
+        {
+            $$ = $1;
+            //std::cout << "expr1" << std::endl;
+        }
 	| expr BAR xor_expr
-    {
-        $$ = $1;
-        //std::cout << "expr2" << std::endl;
-    }
+        {
+            $$ = $1;
+            //std::cout << "expr2" << std::endl;
+        }
 	;
 xor_expr // Used in: expr, xor_expr
 	: and_expr { $$ = $1; }
@@ -580,18 +609,18 @@ pick_LEFTSHIFT_RIGHTSHIFT // Used in: shift_expr
 arith_expr // Used in: shift_expr, arith_expr
 	: term { $$ = $1; }
 	| arith_expr pick_PLUS_MINUS term
-    {
-        switch ($2) {
-            case OP_PLUS:
-                $$ = new AddBinaryNode($1, $3);
-                pool.add($$);
-            break;
-            case OP_MINUS:
-                $$ = new SubBinaryNode($1, $3);
-                pool.add($$);
-            break;
+        {
+            switch ($2) {
+                case OP_PLUS:
+                    $$ = new AddBinaryNode($1, $3);
+                    pool.add($$);
+                break;
+                case OP_MINUS:
+                    $$ = new SubBinaryNode($1, $3);
+                    pool.add($$);
+                break;
+            }
         }
-    }
 	;
 pick_PLUS_MINUS // Used in: arith_expr
 	: PLUS
@@ -601,32 +630,32 @@ pick_PLUS_MINUS // Used in: arith_expr
 	;
 term // Used in: arith_expr, term
 	: factor
-    {
-        $$ = $1;
-        //std::cout << "term1" << std::endl;
-    }
-	| term pick_multop factor
-    {
-        switch ($2) {
-            case OP_STAR:
-                $$ = new MulBinaryNode($1, $3);
-                pool.add($$);
-                break;
-            case OP_SLASH:
-                $$ = new DivBinaryNode($1, $3);
-                pool.add($$);
-                break;
-            case OP_PERCENT:
-                $$ = new ModBinaryNode($1, $3);
-                pool.add($$);
-                break;
-            case OP_DOUBLESLASH:
-                $$ = new FlrDivBinaryNode($1, $3);
-                pool.add($$);
-                break;
+        {
+            $$ = $1;
+            //std::cout << "term1" << std::endl;
         }
-        //std::cout << "term2" << std::endl;
-    }
+	| term pick_multop factor
+        {
+            switch ($2) {
+                case OP_STAR:
+                    $$ = new MulBinaryNode($1, $3);
+                    pool.add($$);
+                    break;
+                case OP_SLASH:
+                    $$ = new DivBinaryNode($1, $3);
+                    pool.add($$);
+                    break;
+                case OP_PERCENT:
+                    $$ = new ModBinaryNode($1, $3);
+                    pool.add($$);
+                    break;
+                case OP_DOUBLESLASH:
+                    $$ = new FlrDivBinaryNode($1, $3);
+                    pool.add($$);
+                    break;
+            }
+            //std::cout << "term2" << std::endl;
+        }
 	;
 pick_multop // Used in: term
     : STAR //multiply
@@ -640,18 +669,18 @@ pick_multop // Used in: term
     ;
 factor // Used in: term, factor, power
     : pick_unop factor
-    {
-        switch ($1) {
-            case OP_PLUS:
-                $$ = new PositiveUnaryNode($2);
-                pool.add($$);
-                break;
-            case OP_MINUS:
-                $$ = new NegativeUnaryNode($2);
-                pool.add($$);
-                break;
+        {
+            switch ($1) {
+                case OP_PLUS:
+                    $$ = new PositiveUnaryNode($2);
+                    pool.add($$);
+                    break;
+                case OP_MINUS:
+                    $$ = new NegativeUnaryNode($2);
+                    pool.add($$);
+                    break;
+            }
         }
-    }
     | power
     {
         $$ = $1;
@@ -665,53 +694,61 @@ pick_unop // Used in: factor
 	;
 power // Used in: factor
     : atom star_trailer DOUBLESTAR factor
-    {
-        if ($3 == OP_DOUBLESTAR) {
-            $$ = new ExpBinaryNode($1, $4);
-            pool.add($$);
+        {
+            if ($3 == OP_DOUBLESTAR) {
+                $$ = new ExpBinaryNode($1, $4);
+                pool.add($$);
+            }
+            else {
+                std::cout << "DOUBLESTAR wrong" << std::endl;
+            }
         }
-        else {
-            std::cout << "DOUBLESTAR wrong" << std::endl;
-        }
-    }
     | atom star_trailer
-    {
-        $$ = $1;
-        //std::cout << "power2" << std::endl;
-    }
+        {
+            if($2) {
+                std::cout << "call function" << std::endl;
+            }
+            else {
+                $$ = $1;
+            }
+            //std::cout << "power2" << std::endl;
+        }
     ;
 star_trailer // Used in: power, star_trailer
-	: star_trailer trailer
-	| %empty
-	;
+    : star_trailer trailer { $$ = nullptr; }
+    | %empty { $$ = nullptr; }
+    ;
 atom // Used in: power
-	: LPAR opt_yield_test RPAR
-    {
-        $$ = $2;
-        // std::cout << "atom1" << std::endl;
-        if (!$2) { std::cout << "empty parens" << std::endl; }
-    }
-	| LSQB opt_listmaker RSQB { $$ = NULL; std::cout << "impossible atom2" << std::endl; }
-	| LBRACE opt_dictorsetmaker RBRACE { $$ = NULL; std::cout << "impossible atom3" << std::endl; }
-	| BACKQUOTE testlist1 BACKQUOTE { $$ = NULL; std::cout << "impossible atom4" << std::endl; }
-	| NAME
-    {
-        $$ = new IdentNode($1);
-        delete [] $1;
-        pool.add($$);
-    }
-	| INT
-    {
-        $$ = new IntLiteral($1);
-        pool.add($$);
-    }
-	| FLOAT
-    {
-        $$ = new FloatLiteral($1);
-        pool.add($$);
-    }
-	| plus_STRING { $$ = NULL; std::cout << "impossible atom8" << std::endl; }
-	;
+    : LPAR opt_yield_test RPAR
+        {
+            $$ = $2;
+            // std::cout << "atom1" << std::endl;
+            if (!$2) { std::cout << "empty parens" << std::endl; }
+        }
+    | LSQB opt_listmaker RSQB
+        { $$ = NULL; std::cout << "impossible atom2" << std::endl; }
+    | LBRACE opt_dictorsetmaker RBRACE
+        { $$ = NULL; std::cout << "impossible atom3" << std::endl; }
+    | BACKQUOTE testlist1 BACKQUOTE
+        { $$ = NULL; std::cout << "impossible atom4" << std::endl; }
+    | NAME
+        {
+            $$ = new IdentNode($1);
+            delete [] $1;
+            pool.add($$);
+        }
+    | INT
+        {
+            $$ = new IntLiteral($1);
+            pool.add($$);
+        }
+    | FLOAT
+        {
+            $$ = new FloatLiteral($1);
+            pool.add($$);
+        }
+    | plus_STRING { $$ = NULL; std::cout << "impossible atom8" << std::endl; }
+    ;
 pick_yield_expr_testlist_comp // Used in: opt_yield_test
 	: yield_expr { $$ = $1; }
 	| testlist_comp { $$ = $1; }
@@ -783,25 +820,25 @@ star_COMMA_expr // Used in: exprlist, star_COMMA_expr
 	| %empty
 	;
 testlist // Used in: expr_stmt, pick_yield_expr_testlist, return_stmt, for_stmt, opt_testlist, yield_expr
-	: test star_COMMA_test COMMA
-    {
-        $$ = $1;
-        //std::cout << "testlist1" << std::endl;
-    }
-	| test star_COMMA_test
-    {
-        $$ = $1;
-        // std::cout << "testlist 2" << std::endl;
-        // if(!$1) { std::cout << "testlist 2 NULL error" << std::endl; }
-        // else {
-        //     if(($1)->eval()) {
-        //         std::cout << "print: " << std::endl;
-        //         ($1)->eval()->print();
-        //     }
-        // }
-        // ($1)->eval()->print();
-    }
-	;
+    : test star_COMMA_test COMMA
+        {
+            $$ = $1;
+            //std::cout << "testlist1" << std::endl;
+        }
+    | test star_COMMA_test
+        {
+            $$ = $1;
+            // std::cout << "testlist 2" << std::endl;
+            // if(!$1) { std::cout << "testlist 2 NULL error" << std::endl; }
+            // else {
+            //     if(($1)->eval()) {
+            //         std::cout << "print: " << std::endl;
+            //         ($1)->eval()->print();
+            //     }
+            // }
+            // ($1)->eval()->print();
+        }
+    ;
 dictorsetmaker // Used in: opt_dictorsetmaker
 	: test COLON test pick_for_test_test
 	| test pick_for_test
@@ -883,9 +920,9 @@ testlist1 // Used in: atom, testlist1
 	| testlist1 COMMA test
 	;
 yield_expr // Used in: pick_yield_expr_testlist, yield_stmt, pick_yield_expr_testlist_comp
-	: YIELD testlist { $$ = $2; }
-	| YIELD { std::cout << "impossible YIELD" << std::endl; }
-	;
+    : YIELD testlist { std::cout << "impossible YIELD" << std::endl; $$ = $2; }
+    | YIELD { std::cout << "impossible YIELD" << std::endl; }
+    ;
 star_DOT // Used in: pick_dotted_name, star_DOT
 	: star_DOT DOT
 	| %empty
