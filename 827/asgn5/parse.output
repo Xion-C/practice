@@ -482,57 +482,57 @@ SLASHEQUAL (272) 60
 PERCENTEQUAL (273) 61
 DOUBLESTAREQUAL (274) 67
 DOUBLESLASHEQUAL (275) 68
-IMAG (276)
-AMPEREQUAL (277) 62
-AMPERSAND (278) 200
-AND (279) 179
-AS (280) 106 108 152 156
-ASSERT (281) 123 124
-AT (282) 7 8
-BACKQUOTE (283) 227
-BAR (284) 196
-BREAK (285) 86
-CIRCUMFLEX (286) 198
-CIRCUMFLEXEQUAL (287) 64
-CLASS (288) 278 279
-COLON (289) 15 133 134 135 137 138 139 140 141 142 143 144 145 147
+LESS (276) 184
+GREATER (277) 185
+EQEQUAL (278) 186
+GREATEREQUAL (279) 187
+LESSEQUAL (280) 188
+NOTEQUAL (281) 190
+IMAG (282)
+AMPEREQUAL (283) 62
+AMPERSAND (284) 200
+AND (285) 179
+AS (286) 106 108 152 156
+ASSERT (287) 123 124
+AT (288) 7 8
+BACKQUOTE (289) 227
+BAR (290) 196
+BREAK (291) 86
+CIRCUMFLEX (292) 198
+CIRCUMFLEXEQUAL (293) 64
+CLASS (294) 278 279
+COLON (295) 15 133 134 135 137 138 139 140 141 142 143 144 145 147
     149 170 171 246 247 257 262 263 270 272 278 279
-COMMA (290) 22 24 28 32 34 71 75 76 93 95 110 112 115 119 123 150 157
+COMMA (296) 22 24 28 32 34 71 75 76 93 95 110 112 115 119 123 150 157
     166 167 251 253 264 266 268 272 283 285 287 309
-CONTINUE (291) 87
-DEDENT (292) 161
-DEF (293) 15
-DEL (294) 79
-DOT (295) 102 117 250 255 312
-ELIF (296) 135
-ELSE (297) 133 137 139 145 174
-ENDMARKER (298) 2
-EQEQUAL (299) 186
-EXCEPT (300) 154 155
-EXEC (301) 121 122
-FINALLY (302) 142 147
-FOR (303) 139 140 298 299 304 305
-FROM (304) 100
-GLOBAL (305) 118
-GREATER (306) 185
-GREATEREQUAL (307) 187
-GRLT (308) 189
-IF (309) 133 134 174 300 301 306 307
-IMPORT (310) 99 100
-IN (311) 121 139 140 191 192 298 299 304 305
-INDENT (312) 161
-IS (313) 193 194
-LAMBDA (314) 170 171 246 247
-LBRACE (315) 226
-LEFTSHIFT (316) 203
-LEFTSHIFTEQUAL (317) 65
-LESS (318) 184
-LESSEQUAL (319) 188
-LPAR (320) 7 16 17 31 104 224 248 278
-LSQB (321) 225 249
-NEWLINE (322) 3 7 8 38 39 161
-NOT (323) 180 192 194
-NOTEQUAL (324) 190
+CONTINUE (297) 87
+DEDENT (298) 161
+DEF (299) 15
+DEL (300) 79
+DOT (301) 102 117 250 255 312
+ELIF (302) 135
+ELSE (303) 133 137 139 145 174
+ENDMARKER (304) 2
+EXCEPT (305) 154 155
+EXEC (306) 121 122
+FINALLY (307) 142 147
+FOR (308) 139 140 298 299 304 305
+FROM (309) 100
+GLOBAL (310) 118
+GRLT (311) 189
+IF (312) 133 134 174 300 301 306 307
+IMPORT (313) 99 100
+IN (314) 121 139 140 191 192 298 299 304 305
+INDENT (315) 161
+IS (316) 193 194
+LAMBDA (317) 170 171 246 247
+LBRACE (318) 226
+LEFTSHIFT (319) 203
+LEFTSHIFTEQUAL (320) 65
+LPAR (321) 7 16 17 31 104 224 248 278
+LSQB (322) 225 249
+NEWLINE (323) 3 7 8 38 39 161
+NOT (324) 180 192 194
 OR (325) 177
 PASS (326) 80
 PRINT (327) 69 70
@@ -1995,16 +1995,16 @@ State 75
   181 not_test: comparison .
   183 comparison: comparison . comp_op expr
 
-    EQEQUAL       shift, and go to state 143
+    LESS          shift, and go to state 143
     GREATER       shift, and go to state 144
-    GREATEREQUAL  shift, and go to state 145
-    GRLT          shift, and go to state 146
-    IN            shift, and go to state 147
-    IS            shift, and go to state 148
-    LESS          shift, and go to state 149
-    LESSEQUAL     shift, and go to state 150
-    NOT           shift, and go to state 151
-    NOTEQUAL      shift, and go to state 152
+    EQEQUAL       shift, and go to state 145
+    GREATEREQUAL  shift, and go to state 146
+    LESSEQUAL     shift, and go to state 147
+    NOTEQUAL      shift, and go to state 148
+    GRLT          shift, and go to state 149
+    IN            shift, and go to state 150
+    IS            shift, and go to state 151
+    NOT           shift, and go to state 152
 
     $default  reduce using rule 181 (not_test)
 
@@ -2842,9 +2842,9 @@ State 142
 
 State 143
 
-  186 comp_op: EQEQUAL .
+  184 comp_op: LESS .
 
-    $default  reduce using rule 186 (comp_op)
+    $default  reduce using rule 184 (comp_op)
 
 
 State 144
@@ -2856,26 +2856,47 @@ State 144
 
 State 145
 
+  186 comp_op: EQEQUAL .
+
+    $default  reduce using rule 186 (comp_op)
+
+
+State 146
+
   187 comp_op: GREATEREQUAL .
 
     $default  reduce using rule 187 (comp_op)
 
 
-State 146
+State 147
+
+  188 comp_op: LESSEQUAL .
+
+    $default  reduce using rule 188 (comp_op)
+
+
+State 148
+
+  190 comp_op: NOTEQUAL .
+
+    $default  reduce using rule 190 (comp_op)
+
+
+State 149
 
   189 comp_op: GRLT .
 
     $default  reduce using rule 189 (comp_op)
 
 
-State 147
+State 150
 
   191 comp_op: IN .
 
     $default  reduce using rule 191 (comp_op)
 
 
-State 148
+State 151
 
   193 comp_op: IS .
   194        | IS . NOT
@@ -2885,32 +2906,11 @@ State 148
     $default  reduce using rule 193 (comp_op)
 
 
-State 149
-
-  184 comp_op: LESS .
-
-    $default  reduce using rule 184 (comp_op)
-
-
-State 150
-
-  188 comp_op: LESSEQUAL .
-
-    $default  reduce using rule 188 (comp_op)
-
-
-State 151
+State 152
 
   192 comp_op: NOT . IN
 
     IN  shift, and go to state 243
-
-
-State 152
-
-  190 comp_op: NOTEQUAL .
-
-    $default  reduce using rule 190 (comp_op)
 
 
 State 153

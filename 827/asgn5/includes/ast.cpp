@@ -22,9 +22,19 @@ const Literal* CallNode::eval() const {
     return func->eval();
 }
 
+const Literal* SuiteNode::eval() const {
+    if(stmts.empty()) {
+        return nullptr;
+    }
+    for(const Node* n : stmts) {
+        n->eval();
+    }
+    return nullptr;
+}
+
 const Literal* PrintNode::eval() const {
     if(!prints) {
-        std::cout << "" << std::endl;;
+        std::cout << "" << std::endl;
     }
     else {
         prints->eval()->print();

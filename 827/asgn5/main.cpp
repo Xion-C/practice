@@ -9,8 +9,7 @@
 extern void init_scanner(FILE *);
 extern void free_tok();
 
-static FILE *
-open_file(const char *filename) {
+static FILE *open_file(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (!file) {
     fprintf(stderr, "Could not open file \"%s\"\n", filename);

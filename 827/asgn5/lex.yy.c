@@ -1205,12 +1205,12 @@ YY_RULE_SETUP
 case 30:
 YY_RULE_SETUP
 #line 212 "includes/scan.l"
-{ return LESS; }
+{ yylval.op = OP_LESS; return LESS; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
 #line 213 "includes/scan.l"
-{ return GREATER; }
+{ yylval.op = OP_GREATER; return GREATER; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
@@ -1230,22 +1230,22 @@ YY_RULE_SETUP
 case 35:
 YY_RULE_SETUP
 #line 219 "includes/scan.l"
-{ return EQEQUAL; }
+{ yylval.op = OP_EQEQUAL; return EQEQUAL; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
 #line 220 "includes/scan.l"
-{ return NOTEQUAL; }
+{ yylval.op = OP_NOTEQUAL; return NOTEQUAL; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
 #line 221 "includes/scan.l"
-{ return LESSEQUAL; }
+{ yylval.op = OP_LESSEQUAL; return LESSEQUAL; }
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
 #line 222 "includes/scan.l"
-{ return GREATEREQUAL; }
+{ yylval.op = OP_GREATEREQUAL; return GREATEREQUAL; }
 	YY_BREAK
 case 39:
 YY_RULE_SETUP

@@ -15,21 +15,26 @@
 extern void yyerror(const char*);
 extern void yyerror(const char*, const char);
 
-#define OP_PLUS 1
-#define OP_MINUS 2
-#define OP_STAR 3
-#define OP_SLASH 4
-#define OP_PERCENT 5
-#define OP_DOUBLESLASH 6
-#define OP_DOUBLESTAR 7
-#define OP_PLUSEQUAL 8
-#define OP_MINEQUAL 9
-#define OP_STAREQUAL 10
-#define OP_SLASHEQUAL 11
-#define OP_PERCENTEQUAL 12
-#define OP_DOUBLESTAREQUAL 13
-#define OP_DOUBELSLASHEQUAL 14
-
+#define OP_PLUS                 1
+#define OP_MINUS                2
+#define OP_STAR                 3
+#define OP_SLASH                4
+#define OP_PERCENT              5
+#define OP_DOUBLESLASH          6
+#define OP_DOUBLESTAR           7
+#define OP_PLUSEQUAL            8
+#define OP_MINEQUAL             9
+#define OP_STAREQUAL            10
+#define OP_SLASHEQUAL           11
+#define OP_PERCENTEQUAL         12
+#define OP_DOUBLESTAREQUAL      13
+#define OP_DOUBELSLASHEQUAL     14
+#define OP_EQEQUAL              15
+#define OP_GREATER              16
+#define OP_GREATEREQUAL         17
+#define OP_LESS                 18
+#define OP_LESSEQUAL            19
+#define OP_NOTEQUAL             20
 
 class FuncNode : public Node {
 public:
@@ -60,6 +65,18 @@ public:
     CallNode& operator=(const CallNode&) = delete;
 private:
     Node* func;
+};
+
+class SuiteNode : public Node {
+public:
+    SuiteNode() : Node(), stmts() {}
+    virtual ~SuiteNode() {}
+    void add(Node* s) { stmts.push_back(s); }
+    virtual const Literal* eval() const;
+    SuiteNode(const SuiteNode&) = delete;
+    SuiteNode& operator=(const SuiteNode&) = delete;
+private:
+    std::vector<Node *> stmts;
 };
 
 

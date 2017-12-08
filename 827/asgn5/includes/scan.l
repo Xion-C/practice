@@ -209,17 +209,17 @@ comment   #.*
 "//"       { yylval.op = OP_DOUBLESLASH; return DOUBLESLASH; }
 "**"       { yylval.op = OP_DOUBLESTAR; return DOUBLESTAR; }
 
-"<"        { return LESS; }
-">"        { return GREATER; }
+"<"        { yylval.op = OP_LESS; return LESS; }
+">"        { yylval.op = OP_GREATER; return GREATER; }
 "="        { return EQUAL; }
 
 "."        { return DOT; }
 "`"        { return BACKQUOTE; }
 
-"=="       { return EQEQUAL; }
-"!="       { return NOTEQUAL; }
-"<="       { return LESSEQUAL; }
-">="       { return GREATEREQUAL; }
+"=="       { yylval.op = OP_EQEQUAL; return EQEQUAL; }
+"!="       { yylval.op = OP_NOTEQUAL; return NOTEQUAL; }
+"<="       { yylval.op = OP_LESSEQUAL; return LESSEQUAL; }
+">="       { yylval.op = OP_GREATEREQUAL; return GREATEREQUAL; }
 "<>"       { return GRLT; }
 
 "~"        { return TILDE; }

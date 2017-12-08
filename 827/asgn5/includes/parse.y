@@ -28,9 +28,13 @@
 %token<identifier> NAME
 
 %token<op> PLUS MINUS STAR SLASH PERCENT DOUBLESLASH DOUBLESTAR
-%token<op> EQUAL PLUSEQUAL MINEQUAL STAREQUAL SLASHEQUAL PERCENTEQUAL DOUBLESTAREQUAL DOUBLESLASHEQUAL
+%token<op> EQUAL PLUSEQUAL MINEQUAL
+%token<op> STAREQUAL SLASHEQUAL PERCENTEQUAL
+%token<op> DOUBLESTAREQUAL DOUBLESLASHEQUAL
+%token<op> LESS GREATER EQEQUAL
+%token<op> GREATEREQUAL LESSEQUAL NOTEQUAL
 
-%type<op> pick_multop pick_PLUS_MINUS pick_unop augassign
+%type<op> pick_multop pick_PLUS_MINUS pick_unop augassign comp_op
 
 %type<node> atom power factor term
 %type<node> arith_expr shift_expr and_expr xor_expr expr
@@ -45,18 +49,18 @@
 %type<node> print_stmt star_trailer
 %type<node> compound_stmt if_stmt funcdef
 %type<node> flow_stmt return_stmt
+%type<node> suite plus_stmt
 
 // %token NUMBER
 %token IMAG
 
-
 // 83 tokens, in alphabetical order:
 %token AMPEREQUAL AMPERSAND AND AS ASSERT AT BACKQUOTE BAR BREAK CIRCUMFLEX
 %token CIRCUMFLEXEQUAL CLASS COLON COMMA CONTINUE DEDENT DEF DEL DOT
-%token ELIF ELSE ENDMARKER EQEQUAL
-%token  EXCEPT EXEC FINALLY FOR FROM GLOBAL GREATER GREATEREQUAL GRLT
-%token IF IMPORT IN INDENT IS LAMBDA LBRACE LEFTSHIFT LEFTSHIFTEQUAL LESS
-%token LESSEQUAL LPAR LSQB NEWLINE NOT NOTEQUAL
+%token ELIF ELSE ENDMARKER
+%token  EXCEPT EXEC FINALLY FOR FROM GLOBAL GRLT
+%token IF IMPORT IN INDENT IS LAMBDA LBRACE LEFTSHIFT LEFTSHIFTEQUAL
+%token LPAR LSQB NEWLINE NOT
 %token OR PASS PRINT RAISE RBRACE RETURN
 %token RIGHTSHIFT RIGHTSHIFTEQUAL RPAR RSQB SEMI
 %token STRING TILDE TRY VBAREQUAL WHILE WITH YIELD
@@ -168,34 +172,44 @@ star_fpdef_notest // Used in: fplist, star_fpdef_notest
     ;
 stmt // Used in: pick_NEWLINE_stmt, plus_stmt
     : simple_stmt { $$ = $1; }
-    | compound_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+    | compound_stmt
+        {
+            $$ = $1;
+            std::cout << "stmt: compound_stmt" << std::endl;
+        }
     ;
 simple_stmt // Used in: stmt, suite
     : small_stmt star_SEMI_small_stmt SEMI NEWLINE
         {
-            // std::cout << "simple_stmt1" << std::endl;
+            std::cout << "simple_stmt 1 impossible" << std::endl;
             $$ = $1;
         }
     | small_stmt star_SEMI_small_stmt NEWLINE
         {
-            // std::cout << "simple_stmt2" << std::endl;
+            // std::cout << "simple_stmt 2" << std::endl;
             $$ = $1;
+            // ($1)->eval()->print();
         }
     ;
-    star_SEMI_small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
+star_SEMI_small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
     : star_SEMI_small_stmt SEMI small_stmt
     | %empty
     ;
 small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
-    : expr_stmt { $$ = $1; }
+    : expr_stmt
+        { $$ = $1; }
     | print_stmt
-    {
-        //just print, no need to pass the node
-        $$ = NULL;
-    }
+        {
+            //just print, no need to pass the node
+            $$ = NULL;
+        }
     | del_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
     | pass_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
-    | flow_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
+    | flow_stmt
+        {
+            $$ = NULL;
+            std::cout << "flow" << std::endl;
+        }
     | import_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
     | global_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
     | exec_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
@@ -355,12 +369,12 @@ pass_stmt // Used in: small_stmt
 	: PASS
 	;
 flow_stmt // Used in: small_stmt
-	: break_stmt
-	| continue_stmt
-	| return_stmt
-	| raise_stmt
-	| yield_stmt
-	;
+    : break_stmt    { $$ = nullptr; }
+    | continue_stmt { $$ = nullptr; }
+    | return_stmt   { $$ = $1; }
+    | raise_stmt    { $$ = nullptr; }
+    | yield_stmt    { $$ = nullptr; }
+    ;
 break_stmt // Used in: flow_stmt
 	: BREAK
 	;
@@ -368,9 +382,13 @@ continue_stmt // Used in: flow_stmt
 	: CONTINUE
 	;
 return_stmt // Used in: flow_stmt
-	: RETURN testlist
-	| RETURN
-	;
+    : RETURN testlist
+        {
+            $$ = new ReturnNode($2);
+            pool.add($$);
+        }
+    | RETURN { $$ = nullptr; }
+    ;
 yield_stmt // Used in: flow_stmt
 	: yield_expr
 	;
@@ -445,14 +463,16 @@ assert_stmt // Used in: small_stmt
 	| ASSERT test
 	;
 compound_stmt // Used in: stmt
-    : if_stmt { $$ = nullptr; }
-    | while_stmt { $$ = nullptr; }
-    | for_stmt { $$ = nullptr; }
-    | try_stmt { $$ = nullptr; }
-    | with_stmt { $$ = nullptr; }
-    | funcdef { $$ = nullptr; }
-    | classdef { $$ = nullptr; }
-    | decorated { $$ = nullptr; }
+    : if_stmt
+        { $$ = nullptr; }
+    | while_stmt    { $$ = nullptr; }
+    | for_stmt      { $$ = nullptr; }
+    | try_stmt      { $$ = nullptr; }
+    | with_stmt     { $$ = nullptr; }
+    | funcdef
+        { $$ = nullptr; }
+    | classdef      { $$ = nullptr; }
+    | decorated     { $$ = nullptr; }
     ;
 if_stmt // Used in: compound_stmt
     : IF test COLON suite star_ELIF ELSE COLON suite
@@ -514,13 +534,32 @@ opt_AS_COMMA // Used in: except_clause
 	| %empty
 	;
 suite // Used in: funcdef, if_stmt, star_ELIF, while_stmt, for_stmt, try_stmt, plus_except, opt_ELSE, opt_FINALLY, with_stmt, classdef
-	: simple_stmt
-	| NEWLINE INDENT plus_stmt DEDENT
-	;
+    : simple_stmt
+        {
+            //
+            $$ = $1;
+            std::cout << "suite: simple_stmt" << std::endl;
+        }
+    | NEWLINE INDENT plus_stmt DEDENT
+        {
+            //
+            $$ = $3;
+            std::cout << "NEWLINE INDENT plus_stmt DEDENT" << std::endl;
+        }
+    ;
 plus_stmt // Used in: suite, plus_stmt
-	: plus_stmt stmt
-	| stmt
-	;
+    : plus_stmt stmt
+        {
+            $$ = $1;
+            dynamic_cast<SuiteNode*>($$)->add($2);
+        }
+    | stmt
+        {
+            $$ = new SuiteNode();
+            dynamic_cast<SuiteNode*>($$)->add($1);
+            pool.add($$);
+        }
+    ;
 testlist_safe // Used in: list_for
 	: old_test plus_COMMA_old_test opt_COMMA
 	| old_test
@@ -538,58 +577,85 @@ old_lambdef // Used in: old_test
 	| LAMBDA COLON old_test
 	;
 test // Used in: opt_EQUAL_test, print_stmt, star_COMMA_test, opt_test, plus_COMMA_test, raise_stmt, opt_COMMA_test, opt_test_3, exec_stmt, assert_stmt, if_stmt, star_ELIF, while_stmt, with_item, except_clause, opt_AS_COMMA, opt_IF_ELSE, listmaker, testlist_comp, lambdef, subscript, opt_test_only, sliceop, testlist, dictorsetmaker, star_test_COLON_test, opt_DOUBLESTAR_test, pick_argument, argument, testlist1
-	: or_test opt_IF_ELSE { $$ = $1; }
-	| lambdef
+    : or_test opt_IF_ELSE { $$ = $1; }
+    | lambdef
         {
             $$ = NULL;
             std::cout << "impossible lambdef" << std::endl;
         }
-	;
+    ;
 opt_IF_ELSE // Used in: test
-	: IF or_test ELSE test
-	| %empty
-	;
+    : IF or_test ELSE test
+        { std::cout << "test: opt_IF_ELSE" << std::endl; }
+    | %empty
+    ;
 or_test // Used in: old_test, test, opt_IF_ELSE, or_test, comp_for
-	: and_test { $$ = $1; }
-	| or_test OR and_test { $$ = $1; }
-	;
+    : and_test { $$ = $1; }
+    | or_test OR and_test { $$ = $1; }
+    ;
 and_test // Used in: or_test, and_test
-	: not_test { $$ = $1; }
-	| and_test AND not_test { $$ = $1; }
-	;
+    : not_test { $$ = $1; }
+    | and_test AND not_test { $$ = $1; }
+    ;
 not_test // Used in: and_test, not_test
-	: NOT not_test { $$ = $2; }
-	| comparison { $$ = $1; }
-	;
+    : NOT not_test { $$ = $2; }
+    | comparison { $$ = $1; }
+    ;
 comparison // Used in: not_test, comparison
-	: expr { $$ = $1; }
-	| comparison comp_op expr { $$ = $1; }
-	;
+    : expr { $$ = $1; }
+    | comparison comp_op expr
+        {
+            switch ($2) {
+                case OP_LESS :
+
+                    break;
+                case OP_GREATER :
+
+                    break;
+                case OP_EQEQUAL :
+
+                    break;
+                case OP_GREATEREQUAL :
+
+                    break;
+                case OP_LESSEQUAL :
+
+                    break;
+                case OP_NOTEQUAL :
+
+                    break;
+                default :
+                    throw std::string("comp_op error");
+                    break;
+            }
+            $$ = $1;
+        }
+    ;
 comp_op // Used in: comparison
-	: LESS
-	| GREATER
-	| EQEQUAL
-	| GREATEREQUAL
-	| LESSEQUAL
-	| GRLT
-	| NOTEQUAL
-	| IN
-	| NOT IN
-	| IS
-	| IS NOT
-	;
+    : LESS         { $$ = $1; }
+    | GREATER      { $$ = $1; }
+    | EQEQUAL      { $$ = $1; }
+    | GREATEREQUAL { $$ = $1; }
+    | LESSEQUAL    { $$ = $1; }
+    | GRLT         { $$ = 0; }
+    | NOTEQUAL     { $$ = $1; }
+    | IN           { $$ = 0; }
+    | NOT IN       { $$ = 0; }
+    | IS           { $$ = 0; }
+    | IS NOT       { $$ = 0; }
+    ;
 expr // Used in: exec_stmt, with_item, comparison, expr, exprlist, star_COMMA_expr
-	: xor_expr
+    : xor_expr
         {
             $$ = $1;
             //std::cout << "expr1" << std::endl;
         }
-	| expr BAR xor_expr
+    | expr BAR xor_expr
         {
             $$ = $1;
             //std::cout << "expr2" << std::endl;
         }
-	;
+    ;
 xor_expr // Used in: expr, xor_expr
 	: and_expr { $$ = $1; }
 	| xor_expr CIRCUMFLEX and_expr { $$ = $1; }
@@ -607,8 +673,8 @@ pick_LEFTSHIFT_RIGHTSHIFT // Used in: shift_expr
 	| RIGHTSHIFT
 	;
 arith_expr // Used in: shift_expr, arith_expr
-	: term { $$ = $1; }
-	| arith_expr pick_PLUS_MINUS term
+    : term { $$ = $1; }
+    | arith_expr pick_PLUS_MINUS term
         {
             switch ($2) {
                 case OP_PLUS:
