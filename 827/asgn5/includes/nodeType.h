@@ -146,11 +146,27 @@ int nodeGroup(const Node* node) {
         case T_IDENT:
             res = T_VAL;
             break;
-        case T_ASG:
+        case T_ASGBINARY:
         case T_PLUSASGBINARY:
         case T_MINASGBINARY:
-        
+        case T_MULASGBINARY:
+        case T_DIVASGBINARY:
+        case T_MODASGBINARY:
+        case T_EXPASGBINARY:
+        case T_FLRDIVASGBINARY:
+            res = T_ASG;
+            break;
+        case T_ADDBINARY:
+        case T_SUBBINARY:
+        case T_MULBINARY:
+        case T_DIVBINARY:
+        case T_FLRDIVBINARY:
+        case T_MODBINARY:
+        case T_EXPBINARY:
+            res = T_EXPR;
+            break;
     }
+    return res;
 }
 
 
