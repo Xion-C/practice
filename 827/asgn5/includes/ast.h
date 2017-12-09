@@ -94,15 +94,15 @@ private:
 /* identifier */
 class IdentNode : public Node {
 public:
-  IdentNode(const std::string id) : Node(), ident(id) { }
-  virtual ~IdentNode() {}
-  const std::string getIdent() const { return ident; }
-  virtual const Literal* eval() const;
-  virtual void print() const {
+    IdentNode(const std::string id) : Node(), ident(id) { }
+    virtual ~IdentNode() {}
+    const std::string getIdent() const { return ident; }
+    virtual const Literal* eval() const;
+    virtual void print() const {
       std::cout << "IDENTIFIER: " << ident << std::endl;
-  }
+    }
 private:
-  std::string ident;
+    std::string ident;
 };
 
 /******************* UnaryNode *******************/
@@ -133,77 +133,77 @@ public:
 /******************* BinaryNode *******************/
 class BinaryNode : public Node {
 public:
-  BinaryNode(Node* l, Node* r) : Node(), left(l), right(r) {}
-  virtual ~BinaryNode() {}
-  virtual const Literal* eval() const = 0;
-  Node* getLeft()  const { return left; }
-  Node* getRight() const { return right; }
-  BinaryNode(const BinaryNode&) = delete;
-  BinaryNode& operator=(const BinaryNode&) = delete;
+    BinaryNode(Node* l, Node* r) : Node(), left(l), right(r) {}
+    virtual ~BinaryNode() {}
+    virtual const Literal* eval() const = 0;
+    Node* getLeft()  const { return left; }
+    Node* getRight() const { return right; }
+    BinaryNode(const BinaryNode&) = delete;
+    BinaryNode& operator=(const BinaryNode&) = delete;
 protected:
-  Node *left;
-  Node *right;
+    Node *left;
+    Node *right;
 };
 
 /*------------------ Assignment ------------------*/
 class AsgBinaryNode : public BinaryNode {
 public:
-  AsgBinaryNode(Node* left, Node* right);
-  virtual const Literal* eval() const;
+    AsgBinaryNode(Node* left, Node* right);
+    virtual const Literal* eval() const;
 };
 
 class PlusAsgBinaryNode : public BinaryNode {
 public:
-    PlusAsgBinaryNode(Node* left, Node* right);
+    PlusAsgBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
     virtual const Literal* eval() const;
 };
 
 class MinAsgBinaryNode : public BinaryNode {
 public:
-    MinAsgBinaryNode(Node* left, Node* right);
+    MinAsgBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
     virtual const Literal* eval() const;
 };
 
 class MulAsgBinaryNode : public BinaryNode {
 public:
-    MulAsgBinaryNode(Node* left, Node* right);
+    MulAsgBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
     virtual const Literal* eval() const;
 };
 
 class DivAsgBinaryNode : public BinaryNode {
 public:
-    DivAsgBinaryNode(Node* left, Node* right);
+    DivAsgBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
     virtual const Literal* eval() const;
 };
 
 class ModAsgBinaryNode : public BinaryNode {
 public:
-    ModAsgBinaryNode(Node* left, Node* right);
+    ModAsgBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
     virtual const Literal* eval() const;
 };
 
 class ExpAsgBinaryNode : public BinaryNode {
 public:
-    ExpAsgBinaryNode(Node* left, Node* right);
+    ExpAsgBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
     virtual const Literal* eval() const;
 };
 
 class FlrDivAsgBinaryNode : public BinaryNode {
 public:
-    FlrDivAsgBinaryNode(Node* left, Node* right);
+    FlrDivAsgBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
     virtual const Literal* eval() const;
 };
 
 /*------------------ Arithmetic ------------------*/
 class AddBinaryNode : public BinaryNode {
 public:
-  AddBinaryNode(Node* left, Node* right) : BinaryNode(left, right) { }
+  AddBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
   virtual const Literal* eval() const;
 };
 
 class SubBinaryNode : public BinaryNode {
 public:
-  SubBinaryNode(Node* left, Node* right) : BinaryNode(left, right) { }
+  SubBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
   virtual const Literal* eval() const;
 };
 
@@ -215,25 +215,25 @@ public:
 
 class DivBinaryNode : public BinaryNode {
 public:
-  DivBinaryNode(Node* left, Node* right) : BinaryNode(left, right) { }
+  DivBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
   virtual const Literal* eval() const;
 };
 
 class FlrDivBinaryNode : public BinaryNode {
 public:
-  FlrDivBinaryNode(Node* left, Node* right) : BinaryNode(left, right) { }
+  FlrDivBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
   virtual const Literal* eval() const;
 };
 
 class ModBinaryNode : public BinaryNode {
 public:
-  ModBinaryNode(Node* left, Node* right) : BinaryNode(left, right) { }
+  ModBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
   virtual const Literal* eval() const;
 };
 
 class ExpBinaryNode : public BinaryNode {
 public:
-  ExpBinaryNode(Node* left, Node* right) : BinaryNode(left, right) { }
+  ExpBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
   virtual const Literal* eval() const;
 };
 

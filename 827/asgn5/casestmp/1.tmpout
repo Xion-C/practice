@@ -1,9 +1,5 @@
-INT: 70
-INT: 13
-INT: -6
-INT: 6
-INT: 350
-INT: 1
-INT: 175
-INT: 170
+NEWLINE INDENT plus_stmt DEDENT
+NEWLINE INDENT plus_stmt DEDENT
+NEWLINE INDENT plus_stmt DEDENT
+No statement could be evaluated 
 Program syntactically correct

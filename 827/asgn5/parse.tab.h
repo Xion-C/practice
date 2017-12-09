@@ -138,13 +138,13 @@ extern int yydebug;
 typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 18 "includes/parse.y" /* yacc.c:1909  */
+#line 19 "includes/parse.y" /* yacc.c:1909  */
 
-  Node* node;
-  int intNumber;
-  float fltNumber;
-  char *identifier;
-  int op;
+    Node* node;
+    int intNumber;
+    float fltNumber;
+    char *identifier;
+    int op;
 
 #line 150 "parse.tab.h" /* yacc.c:1909  */
 };

@@ -13,7 +13,7 @@ const Literal* FuncNode::eval() const {
 
 const Literal* ReturnNode::eval() const {
     if(!rvalue) {
-        throw "error";
+        throw std::string("return error");
     }
     return rvalue->eval();
 }
@@ -43,9 +43,11 @@ const Literal* PrintNode::eval() const {
 }
 
 const Literal* IdentNode::eval() const {
-  const Literal* val = SymbolTable::getInstance().getValue(ident);
-  if(val == NULL) { throw "ident error"; }
-  return val;
+    const Literal* val = SymbolTable::getInstance().getValue(ident);
+    if(val == NULL) {
+      throw std::string("ident error");
+    }
+    return val;
 }
 
 const Literal* PositiveUnaryNode::eval() const {
@@ -60,135 +62,113 @@ const Literal* NegativeUnaryNode::eval() const {
 
 AsgBinaryNode::AsgBinaryNode(Node* left, Node* right) :
   BinaryNode(left, right) {
-  const Literal* res = right->eval();
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  SymbolTable::getInstance().setValue(n, res);
+  // const Literal* res = right->eval();
+  // const std::string n = static_cast<IdentNode*>(left)->getIdent();
+  // SymbolTable::getInstance().setValue(n, res);
 }
 const Literal* AsgBinaryNode::eval() const {
-  if (!left || !right) {
-    throw "error";
-  }
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  const Literal* res = SymbolTable::getInstance().getValue(n);
-  return res;
+    if (!left) {
+        throw std::string("asg error, left is nullptr");
+    }
+    else if (!right) {
+        throw std::string("asg error, right is nullptr");
+    }
+    const Literal* res = right->eval();
+    std::string n;
+    AsgBinaryNode* leftAsg = dynamic_cast<AsgBinaryNode*>(left);
+    if(leftAsg) {
+        n = static_cast<IdentNode*>(leftAsg->getRight())->getIdent();
+        SymbolTable::getInstance().setValue(n, res);
+        // std::cout << "set " << n << std::endl;
+        leftAsg->eval();
+    }
+    else {
+        n = static_cast<IdentNode*>(left)->getIdent();
+        SymbolTable::getInstance().setValue(n, res);
+        // std::cout << "set " << n << std::endl;
+    }
+    if (!res) {
+        throw std::string("asg error, no right value");
+    }
+    // const std::string n = static_cast<IdentNode*>(left)->getIdent();
+    return res;
 }
 
 
-PlusAsgBinaryNode::PlusAsgBinaryNode(Node* left, Node* right) :
-  BinaryNode(left, right) {
-  const Literal* res = (*(left->eval()))+(*(right->eval()));
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  SymbolTable::getInstance().setValue(n, res);
-}
 const Literal* PlusAsgBinaryNode::eval() const {
-  if (!left || !right) {
-    throw "error";
-  }
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  const Literal* res = SymbolTable::getInstance().getValue(n);
-  return res;
+    if (!left || !right) {
+        throw std::string("PlusAsg error");
+    }
+    const Literal* res = (*(left->eval()))+(*(right->eval()));
+    const std::string n = static_cast<IdentNode*>(left)->getIdent();
+    SymbolTable::getInstance().setValue(n, res);
+    return res;
 }
 
-
-MinAsgBinaryNode::MinAsgBinaryNode(Node* left, Node* right) :
-  BinaryNode(left, right) {
-  const Literal* res = (*(left->eval()))-(*(right->eval()));
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  SymbolTable::getInstance().setValue(n, res);
-}
 const Literal* MinAsgBinaryNode::eval() const {
-  if (!left || !right) {
-    throw "error";
-  }
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  const Literal* res = SymbolTable::getInstance().getValue(n);
-  return res;
+    if (!left || !right) {
+        throw std::string("error");
+    }
+    const Literal* res = (*(left->eval()))-(*(right->eval()));
+    const std::string n = static_cast<IdentNode*>(left)->getIdent();
+    SymbolTable::getInstance().setValue(n, res);
+    return res;
 }
 
-MulAsgBinaryNode::MulAsgBinaryNode(Node* left, Node* right) :
-  BinaryNode(left, right) {
-  const Literal* res = (*(left->eval()))*(*(right->eval()));
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  SymbolTable::getInstance().setValue(n, res);
-}
 const Literal* MulAsgBinaryNode::eval() const {
-  if (!left || !right) {
-    throw "error";
-  }
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  const Literal* res = SymbolTable::getInstance().getValue(n);
-  return res;
+    if (!left || !right) {
+        throw std::string("error");
+    }
+    const Literal* res = (*(left->eval()))*(*(right->eval()));
+    const std::string n = static_cast<IdentNode*>(left)->getIdent();
+    SymbolTable::getInstance().setValue(n, res);
+    return res;
 }
 
-
-DivAsgBinaryNode::DivAsgBinaryNode(Node* left, Node* right) :
-  BinaryNode(left, right) {
-  const Literal* res = (*(left->eval())).operator/(*(right->eval()));
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  SymbolTable::getInstance().setValue(n, res);
-}
 const Literal* DivAsgBinaryNode::eval() const {
-  if (!left || !right) {
-    throw "error";
-  }
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  const Literal* res = SymbolTable::getInstance().getValue(n);
-  return res;
+    if (!left || !right) {
+        throw std::string("error");
+    }
+    const Literal* res = (*(left->eval())).operator/(*(right->eval()));
+    const std::string n = static_cast<IdentNode*>(left)->getIdent();
+    SymbolTable::getInstance().setValue(n, res);
+    return res;
 }
 
-
-ModAsgBinaryNode::ModAsgBinaryNode(Node* left, Node* right) :
-  BinaryNode(left, right) {
-  const Literal* res = (*(left->eval()))%(*(right->eval()));
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  SymbolTable::getInstance().setValue(n, res);
-}
 const Literal* ModAsgBinaryNode::eval() const {
-  if (!left || !right) {
-    throw "error";
-  }
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  const Literal* res = SymbolTable::getInstance().getValue(n);
-  return res;
+    if (!left || !right) {
+        throw std::string("error");
+    }
+    const Literal* res = (*(left->eval()))%(*(right->eval()));
+    const std::string n = static_cast<IdentNode*>(left)->getIdent();
+    SymbolTable::getInstance().setValue(n, res);
+    return res;
 }
 
-
-ExpAsgBinaryNode::ExpAsgBinaryNode(Node* left, Node* right) :
-  BinaryNode(left, right) {
-  const Literal* res = (*(left->eval())).doubleStar(*(right->eval()));
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  SymbolTable::getInstance().setValue(n, res);
-}
 const Literal* ExpAsgBinaryNode::eval() const {
-  if (!left || !right) {
-    throw "error";
-  }
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  const Literal* res = SymbolTable::getInstance().getValue(n);
-  return res;
+    if (!left || !right) {
+        throw std::string("error");
+    }
+    const Literal* res = (*(left->eval())).doubleStar(*(right->eval()));
+    const std::string n = static_cast<IdentNode*>(left)->getIdent();
+    SymbolTable::getInstance().setValue(n, res);
+    return res;
 }
 
-
-FlrDivAsgBinaryNode::FlrDivAsgBinaryNode(Node* left, Node* right) :
-  BinaryNode(left, right) {
-  const Literal* res = (*(left->eval())).doubleSlash(*(right->eval()));
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  SymbolTable::getInstance().setValue(n, res);
-}
 const Literal* FlrDivAsgBinaryNode::eval() const {
-  if (!left || !right) {
-    throw "error";
-  }
-  const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  const Literal* res = SymbolTable::getInstance().getValue(n);
-  return res;
+    if (!left || !right) {
+        throw std::string("error");
+    }
+    const Literal* res = (*(left->eval())).doubleSlash(*(right->eval()));
+    const std::string n = static_cast<IdentNode*>(left)->getIdent();
+    SymbolTable::getInstance().setValue(n, res);
+    return res;
 }
-
 
 /********************************************/
 const Literal* AddBinaryNode::eval() const {
   if (!left || !right) {
-    throw "error";
+    throw std::string("error");
   }
   const Literal* x = left->eval();
   const Literal* y = right->eval();
@@ -198,7 +178,7 @@ const Literal* AddBinaryNode::eval() const {
 
 const Literal* SubBinaryNode::eval() const {
   if (!left || !right) {
-    throw "error";
+    throw std::string("error");
   }
   const Literal* x = left->eval();
   const Literal* y = right->eval();
@@ -207,7 +187,7 @@ const Literal* SubBinaryNode::eval() const {
 
 const Literal* MulBinaryNode::eval() const {
   if (!left || !right) {
-    throw "error";
+    throw std::string("error");
   }
   const Literal* x = left->eval();
   const Literal* y = right->eval();
@@ -216,7 +196,7 @@ const Literal* MulBinaryNode::eval() const {
 
 const Literal* DivBinaryNode::eval() const {
   if (!left || !right) {
-    throw "error";
+    throw std::string("error");
   }
   const Literal* x = left->eval();
   const Literal* y = right->eval();
@@ -225,7 +205,7 @@ const Literal* DivBinaryNode::eval() const {
 
 const Literal* FlrDivBinaryNode::eval() const {
   if (!left || !right) {
-    throw "error";
+    throw std::string("error");
   }
   const Literal* x = left->eval();
   const Literal* y = right->eval();
@@ -234,7 +214,7 @@ const Literal* FlrDivBinaryNode::eval() const {
 
 const Literal* ModBinaryNode::eval() const {
   if (!left || !right) {
-    throw "error";
+    throw std::string("error");
   }
   const Literal* x = left->eval();
   const Literal* y = right->eval();
@@ -243,7 +223,7 @@ const Literal* ModBinaryNode::eval() const {
 
 const Literal* ExpBinaryNode::eval() const {
   if (!left || !right) {
-    throw "error";
+    throw std::string("error");
   }
   const Literal* x = left->eval();
   const Literal* y = right->eval();

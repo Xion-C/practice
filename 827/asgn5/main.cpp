@@ -12,8 +12,8 @@ extern void free_tok();
 static FILE *open_file(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (!file) {
-    fprintf(stderr, "Could not open file \"%s\"\n", filename);
-    exit(EXIT_FAILURE);
+        fprintf(stderr, "Could not open file \"%s\"\n", filename);
+        exit(EXIT_FAILURE);
     }
     return file;
 }
@@ -38,8 +38,8 @@ int main(int argc, char * argv[]) {
           PoolOfNodes::getInstance().drainThePool();
       }
     }
-    catch( ... ) {
-      std::cout << "opps, something wrong" << std::endl;
+    catch(const std::string& msg) {
+      std::cout << "opps: " << msg << std::endl;
     }
 
     free_tok();
