@@ -1,9 +1,10 @@
-FLOAT: 38.5
-FLOAT: 8.5
-FLOAT: -6
-FLOAT: 6
-FLOAT: 68.75
-FLOAT: 4.4
-FLOAT: 27.5
-FLOAT: 34.375
+NEWLINE INDENT plus_stmt DEDENT
+NEWLINE INDENT plus_stmt DEDENT
+NEWLINE INDENT plus_stmt DEDENT
+NEWLINE INDENT plus_stmt DEDENT
+NEWLINE INDENT plus_stmt DEDENT
+NEWLINE INDENT plus_stmt DEDENT
+No statement could be evaluated 
+NEWLINE INDENT plus_stmt DEDENT
+No statement could be evaluated 
 Program syntactically correct
