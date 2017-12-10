@@ -53,6 +53,7 @@
 %type<node> compound_stmt if_stmt funcdef
 %type<node> flow_stmt return_stmt
 %type<node> suite plus_stmt
+%type<node> trailer opt_arglist arglist
 
 // %token NUMBER
 %token IMAG
@@ -124,9 +125,9 @@ decorator // Used in: decorators
 	| AT dotted_name NEWLINE
 	;
 opt_arglist // Used in: decorator, trailer
-	: arglist
-	| %empty
-	;
+    : arglist { $$ = nullptr; }
+    | %empty { $$ = nullptr; }
+    ;
 decorators // Used in: decorators, decorated
 	: decorators decorator
 	| decorator
@@ -140,6 +141,7 @@ funcdef // Used in: decorated, compound_stmt
         {
             // std::cout << "func define" << std::endl;
             $$ = new FuncNode($2, $5);
+            pool.add($$);
 
             delete [] $2;
         }
@@ -471,13 +473,13 @@ assert_stmt // Used in: small_stmt
 	;
 compound_stmt // Used in: stmt
     : if_stmt
-        { $$ = nullptr; }
+        { $$ = $1; }
     | while_stmt    { $$ = nullptr; }
     | for_stmt      { $$ = nullptr; }
     | try_stmt      { $$ = nullptr; }
     | with_stmt     { $$ = nullptr; }
     | funcdef
-        { $$ = nullptr; }
+        { $$ = $1; }
     | classdef      { $$ = nullptr; }
     | decorated     { $$ = nullptr; }
     ;
@@ -778,6 +780,9 @@ power // Used in: factor
         {
             if($2) {
                 std::cout << "call function" << std::endl;
+                std::string fname = reinterpret_cast<IdentNode*>($1)->getIdent();
+                $$ = new CallNode(fname);
+                pool.add($$);
             }
             else {
                 $$ = $1;
@@ -786,7 +791,7 @@ power // Used in: factor
         }
     ;
 star_trailer // Used in: power, star_trailer
-    : star_trailer trailer { $$ = nullptr; }
+    : star_trailer trailer { $$ = $2; }
     | %empty { $$ = nullptr; }
     ;
 atom // Used in: power
@@ -853,10 +858,15 @@ lambdef // Used in: test
 	| LAMBDA COLON test
 	;
 trailer // Used in: star_trailer
-	: LPAR opt_arglist RPAR
-	| LSQB subscriptlist RSQB
-	| DOT NAME { delete [] $2; }
-	;
+    : LPAR opt_arglist RPAR
+        {
+            //should be parameters
+            $$ = new IdentNode("");
+            pool.add($$);
+        }
+    | LSQB subscriptlist RSQB { $$ = nullptr; }
+    | DOT NAME { $$ = nullptr; delete [] $2; }
+    ;
 subscriptlist // Used in: trailer
 	: subscript star_COMMA_subscript COMMA
 	| subscript star_COMMA_subscript
@@ -935,8 +945,11 @@ opt_testlist // Used in: classdef
 	| %empty
 	;
 arglist // Used in: opt_arglist
-	: star_argument_COMMA pick_argument
-	;
+    : star_argument_COMMA pick_argument
+        {
+            $$ = nullptr;
+        }
+    ;
 star_argument_COMMA // Used in: arglist, star_argument_COMMA
 	: star_argument_COMMA argument COMMA
 	| %empty

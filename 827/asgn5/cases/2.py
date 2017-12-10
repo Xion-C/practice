@@ -3,16 +3,16 @@ def f():
     y=2
     z=3
     def g():
-        print 101
+        print x+101
         def h():
-            print 102
-        print 103
-    if x>0:
-        y=22
-    else:
-        y=11
+            print y+102
+        h()
+        print z+103
+    g()
     def gg():
         print 1011
+    gg()
 def ff():
     print 104
-# f()
+f()
+ff()

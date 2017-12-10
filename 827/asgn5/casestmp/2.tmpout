@@ -1,10 +1,37 @@
 NEWLINE INDENT plus_stmt DEDENT
+call function
+NEWLINE INDENT plus_stmt DEDENT
+call function
 NEWLINE INDENT plus_stmt DEDENT
 NEWLINE INDENT plus_stmt DEDENT
 NEWLINE INDENT plus_stmt DEDENT
+call function
 NEWLINE INDENT plus_stmt DEDENT
 NEWLINE INDENT plus_stmt DEDENT
-No statement could be evaluated 
-NEWLINE INDENT plus_stmt DEDENT
-No statement could be evaluated 
+call function
+fname:f
+#1
+#2
+#3
+#4
+fname:g
+INT: 102
+#1
+#2
+fname:h
+INT: 104
+#1
+#3
+INT: 106
+#4
+#5
+#6
+fname:gg
+INT: 1011
+#1
+#7
+call function
+fname:ff
+INT: 104
+#1
 Program syntactically correct

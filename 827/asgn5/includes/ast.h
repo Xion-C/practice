@@ -51,17 +51,6 @@ private:
     Node* rvalue;
 };
 
-class CallNode : public Node {
-public:
-    CallNode(Node* f) : Node(), func(f) {}
-    virtual ~CallNode() {}
-    virtual const Literal* eval() const;
-    CallNode(const CallNode&) = delete;
-    CallNode& operator=(const CallNode&) = delete;
-private:
-    Node* func;
-};
-
 class PrintNode : public Node {
 public:
     PrintNode(Node* p) : Node(), prints(p) {}
@@ -237,6 +226,8 @@ public:
     FuncNode(std::string id, Node* s) :
     Node(), name(id), paras(), virableTable(), outerFunc(), nestedFuncTable(), suite(s), returnValue(), p(this) {}
     virtual ~FuncNode() {}
+    const std::string getName() const { return name; }
+    const Node* getSuite() const { return suite; }
     virtual const Literal* eval() const;
     FuncNode(const FuncNode&) = delete;
     FuncNode& operator=(const FuncNode&) = delete;
@@ -249,6 +240,17 @@ private:
     Node* suite;
     Literal* returnValue;
     const FuncNode* p;
+};
+
+class CallNode : public Node {
+public:
+    CallNode(std::string name ) : Node(), funcname(name) {}
+    virtual ~CallNode() {}
+    virtual const Literal* eval() const;
+    CallNode(const CallNode&) = delete;
+    CallNode& operator=(const CallNode&) = delete;
+private:
+    std::string funcname;
 };
 
 

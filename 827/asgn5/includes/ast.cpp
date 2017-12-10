@@ -14,10 +14,6 @@ const Literal* ReturnNode::eval() const {
     return rvalue->eval();
 }
 
-const Literal* CallNode::eval() const {
-    return func->eval();
-}
-
 const Literal* PrintNode::eval() const {
     if(!prints) {
         std::cout << "" << std::endl;
@@ -221,11 +217,16 @@ const Literal* SuiteNode::eval() const {
     if(stmts.empty()) {
         return nullptr;
     }
+    int i = 1;
     for(const Node* n : stmts) {
-        n->eval();
+        if(n) {
+            n->eval();
+            std::cout << "#" << i++ << std::endl;
+        }
     }
     return nullptr;
 }
+
 
 const Literal* FuncNode::eval() const {
     //FuncNode* f = this;
@@ -233,3 +234,13 @@ const Literal* FuncNode::eval() const {
     Scope::getInstance().getFuncTable().setFunc(name, this);
     return nullptr;
 }
+
+const Literal* CallNode::eval() const {
+    const FuncNode* func = Scope::getInstance().getFuncTable().getFunc(funcname);
+    std::cout << "fname:" <<func->getName()<< std::endl;
+    func->getSuite()->eval();
+
+    return func->eval();
+}
+
+// const
