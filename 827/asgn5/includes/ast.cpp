@@ -231,12 +231,19 @@ const Literal* SuiteNode::eval() const {
 const Literal* FuncNode::eval() const {
     //FuncNode* f = this;
     // Scope::getInstance().getFuncTable().setFunc(name, const_cast<FuncNode*>(this));
+    const Node* cfnode = Scope::getInstance().getCurrentFunc();
+    const FuncNode* cf = dynamic_cast<const Node*>(cfnode);
+    if(cfnode && !cf) {
+        std::cout << "funcnode error" << std::endl;
+    }
+
     Scope::getInstance().getFuncTable().setFunc(name, this);
+    getOuterFunc()
     return nullptr;
 }
 
 const Literal* CallNode::eval() const {
-    const FuncNode* func = Scope::getInstance().getFuncTable().getFunc(funcname);
+    const FuncNode* func = dynamic_cast<const FuncNode*>(Scope::getInstance().getFuncTable().getFunc(funcname));
     std::cout << "fname:" <<func->getName()<< std::endl;
     func->getSuite()->eval();
 

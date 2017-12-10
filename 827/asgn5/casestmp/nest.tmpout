@@ -4,32 +4,24 @@ NEWLINE INDENT plus_stmt DEDENT
 call function
 NEWLINE INDENT plus_stmt DEDENT
 call function
-NEWLINE INDENT plus_stmt DEDENT
-NEWLINE INDENT plus_stmt DEDENT
-call function
 fname:f
 #1
+INT: 7
 #2
 #3
-#4
 fname:g
-INT: 102
 #1
+INT: 17
 #2
-fname:h
-INT: 104
-#1
 #3
-INT: 106
+fname:h
+#1
+INT: 77
+#2
 #4
+INT: 77
 #5
-#6
-fname:gg
-INT: 1011
-#1
-#7
-call function
-fname:ff
-INT: 104
-#1
+#4
+INT: 77
+#5
 Program syntactically correct

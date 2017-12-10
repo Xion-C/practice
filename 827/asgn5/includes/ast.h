@@ -228,6 +228,8 @@ public:
     virtual ~FuncNode() {}
     const std::string getName() const { return name; }
     const Node* getSuite() const { return suite; }
+    const FuncNode* getOuterFunc() const { return outerFunc; }
+    void setOuterFunc(const FuncNode* of) { outerFunc = of; }
     virtual const Literal* eval() const;
     FuncNode(const FuncNode&) = delete;
     FuncNode& operator=(const FuncNode&) = delete;

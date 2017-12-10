@@ -1,0 +1,9 @@
+NEWLINE INDENT plus_stmt DEDENT
+NEWLINE INDENT plus_stmt DEDENT
+NEWLINE INDENT plus_stmt DEDENT
+NEWLINE INDENT plus_stmt DEDENT
+call function
+fname:f
+#1
+INT: 17
+Program syntactically correct
