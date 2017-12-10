@@ -7,10 +7,6 @@
 #include "ast.h"
 #include "symbolTable.h"
 
-const Literal* FuncNode::eval() const {
-    return nullptr;
-}
-
 const Literal* ReturnNode::eval() const {
     if(!rvalue) {
         throw std::string("return error");
@@ -20,16 +16,6 @@ const Literal* ReturnNode::eval() const {
 
 const Literal* CallNode::eval() const {
     return func->eval();
-}
-
-const Literal* SuiteNode::eval() const {
-    if(stmts.empty()) {
-        return nullptr;
-    }
-    for(const Node* n : stmts) {
-        n->eval();
-    }
-    return nullptr;
 }
 
 const Literal* PrintNode::eval() const {
@@ -228,4 +214,19 @@ const Literal* ExpBinaryNode::eval() const {
   const Literal* x = left->eval();
   const Literal* y = right->eval();
   return (*x).doubleStar(*y);
+}
+
+
+const Literal* SuiteNode::eval() const {
+    if(stmts.empty()) {
+        return nullptr;
+    }
+    for(const Node* n : stmts) {
+        n->eval();
+    }
+    return nullptr;
+}
+
+const Literal* FuncNode::eval() const {
+    return nullptr;
 }

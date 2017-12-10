@@ -11,6 +11,7 @@
 #include <string>
 #include <map>
 #include "literal.h"
+#include "scopeControl.h"
 
 extern void yyerror(const char*);
 extern void yyerror(const char*, const char);
@@ -36,15 +37,6 @@ extern void yyerror(const char*, const char);
 #define OP_LESSEQUAL            19
 #define OP_NOTEQUAL             20
 
-class FuncNode : public Node {
-public:
-    FuncNode() : Node() {}
-    virtual ~FuncNode() {}
-    virtual const Literal* eval() const;
-    FuncNode(const FuncNode&) = delete;
-    FuncNode& operator=(const FuncNode&) = delete;
-};
-
 class ReturnNode : public Node {
 public:
     ReturnNode(Node* r) : Node(), rvalue(r) {}
@@ -66,19 +58,6 @@ public:
 private:
     Node* func;
 };
-
-class SuiteNode : public Node {
-public:
-    SuiteNode() : Node(), stmts() {}
-    virtual ~SuiteNode() {}
-    void add(Node* s) { stmts.push_back(s); }
-    virtual const Literal* eval() const;
-    SuiteNode(const SuiteNode&) = delete;
-    SuiteNode& operator=(const SuiteNode&) = delete;
-private:
-    std::vector<Node *> stmts;
-};
-
 
 class PrintNode : public Node {
 public:
@@ -235,6 +214,37 @@ class ExpBinaryNode : public BinaryNode {
 public:
   ExpBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
   virtual const Literal* eval() const;
+};
+
+class SuiteNode : public Node {
+public:
+    SuiteNode() : Node(), stmts() {}
+    virtual ~SuiteNode() {}
+    void add(Node* s) { stmts.push_back(s); }
+    virtual const Literal* eval() const;
+    SuiteNode(const SuiteNode&) = delete;
+    SuiteNode& operator=(const SuiteNode&) = delete;
+private:
+    std::vector<Node *> stmts;
+};
+
+
+class FuncNode : public Node {
+public:
+    FuncNode(std::string id, Node* s) :
+    Node(), name(id), paras(), virableTable(), outerFunc(), nestedFuncTable(), suite(s), returnValue() {}
+    virtual ~FuncNode() {}
+    virtual const Literal* eval() const;
+    FuncNode(const FuncNode&) = delete;
+    FuncNode& operator=(const FuncNode&) = delete;
+private:
+    std::string name;
+    std::vector<Node*> paras;
+    std::map<std::string, const Literal*> virableTable;
+    FuncNode* outerFunc;
+    std::map<std::string, const FuncNode*> nestedFuncTable;
+    Node* suite;
+    Literal* returnValue;
 };
 
 

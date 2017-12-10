@@ -1,5 +1,7 @@
+scope in :1
 NEWLINE INDENT plus_stmt DEDENT
 NEWLINE INDENT plus_stmt DEDENT
 NEWLINE INDENT plus_stmt DEDENT
+scope out :0
 No statement could be evaluated 
 Program syntactically correct
