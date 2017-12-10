@@ -12,6 +12,9 @@
 #include <map>
 #include "literal.h"
 #include "scopeControl.h"
+#include "global.h"
+#include "symbolTable.h"
+#include "funcTable.h"
 
 extern void yyerror(const char*);
 extern void yyerror(const char*, const char);
@@ -232,7 +235,7 @@ private:
 class FuncNode : public Node {
 public:
     FuncNode(std::string id, Node* s) :
-    Node(), name(id), paras(), virableTable(), outerFunc(), nestedFuncTable(), suite(s), returnValue() {}
+    Node(), name(id), paras(), virableTable(), outerFunc(), nestedFuncTable(), suite(s), returnValue(), p(this) {}
     virtual ~FuncNode() {}
     virtual const Literal* eval() const;
     FuncNode(const FuncNode&) = delete;
@@ -245,6 +248,7 @@ private:
     std::map<std::string, const FuncNode*> nestedFuncTable;
     Node* suite;
     Literal* returnValue;
+    const FuncNode* p;
 };
 
 

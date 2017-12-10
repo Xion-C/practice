@@ -1,20 +1,10 @@
-scope in :1
-scope in :2
-scope in :3
-NEWLINE INDENT plus_stmt DEDENT
-scope out :2
-NEWLINE INDENT plus_stmt DEDENT
-scope out :1
 NEWLINE INDENT plus_stmt DEDENT
 NEWLINE INDENT plus_stmt DEDENT
-scope in :2
 NEWLINE INDENT plus_stmt DEDENT
-scope out :1
 NEWLINE INDENT plus_stmt DEDENT
-scope out :0
+NEWLINE INDENT plus_stmt DEDENT
+NEWLINE INDENT plus_stmt DEDENT
 No statement could be evaluated 
-scope in :1
 NEWLINE INDENT plus_stmt DEDENT
-scope out :0
 No statement could be evaluated 
 Program syntactically correct

@@ -33,6 +33,9 @@ ast.o: includes/ast.cpp includes/ast.h includes/literal.h
 symbolTable.o: includes/symbolTable.cpp includes/symbolTable.h
 	$(CCC) $(CFLAGS) -c includes/symbolTable.cpp
 
+funcTable.o: includes/funcTable.cpp includes/funcTable.h
+	$(CCC) $(CFLAGS) -c includes/funcTable.cpp
+
 poolOfNodes.o: includes/poolOfNodes.cpp includes/poolOfNodes.h \
   includes/node.h
 	$(CCC) $(CFLAGS) -c includes/poolOfNodes.cpp

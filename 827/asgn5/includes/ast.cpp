@@ -29,7 +29,7 @@ const Literal* PrintNode::eval() const {
 }
 
 const Literal* IdentNode::eval() const {
-    const Literal* val = SymbolTable::getInstance().getValue(ident);
+    const Literal* val = Scope::getInstance().getVariableTable().getValue(ident);
     if(val == NULL) {
       throw std::string("ident error");
     }
@@ -50,7 +50,7 @@ AsgBinaryNode::AsgBinaryNode(Node* left, Node* right) :
   BinaryNode(left, right) {
   // const Literal* res = right->eval();
   // const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  // SymbolTable::getInstance().setValue(n, res);
+  // Scope::getInstance().getVariableTable().setValue(n, res);
 }
 const Literal* AsgBinaryNode::eval() const {
     if (!left) {
@@ -64,13 +64,13 @@ const Literal* AsgBinaryNode::eval() const {
     AsgBinaryNode* leftAsg = dynamic_cast<AsgBinaryNode*>(left);
     if(leftAsg) {
         n = static_cast<IdentNode*>(leftAsg->getRight())->getIdent();
-        SymbolTable::getInstance().setValue(n, res);
+        Scope::getInstance().getVariableTable().setValue(n, res);
         // std::cout << "set " << n << std::endl;
         leftAsg->eval();
     }
     else {
         n = static_cast<IdentNode*>(left)->getIdent();
-        SymbolTable::getInstance().setValue(n, res);
+        Scope::getInstance().getVariableTable().setValue(n, res);
         // std::cout << "set " << n << std::endl;
     }
     if (!res) {
@@ -87,7 +87,7 @@ const Literal* PlusAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval()))+(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    SymbolTable::getInstance().setValue(n, res);
+    Scope::getInstance().getVariableTable().setValue(n, res);
     return res;
 }
 
@@ -97,7 +97,7 @@ const Literal* MinAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval()))-(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    SymbolTable::getInstance().setValue(n, res);
+    Scope::getInstance().getVariableTable().setValue(n, res);
     return res;
 }
 
@@ -107,7 +107,7 @@ const Literal* MulAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval()))*(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    SymbolTable::getInstance().setValue(n, res);
+    Scope::getInstance().getVariableTable().setValue(n, res);
     return res;
 }
 
@@ -117,7 +117,7 @@ const Literal* DivAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval())).operator/(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    SymbolTable::getInstance().setValue(n, res);
+    Scope::getInstance().getVariableTable().setValue(n, res);
     return res;
 }
 
@@ -127,7 +127,7 @@ const Literal* ModAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval()))%(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    SymbolTable::getInstance().setValue(n, res);
+    Scope::getInstance().getVariableTable().setValue(n, res);
     return res;
 }
 
@@ -137,7 +137,7 @@ const Literal* ExpAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval())).doubleStar(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    SymbolTable::getInstance().setValue(n, res);
+    Scope::getInstance().getVariableTable().setValue(n, res);
     return res;
 }
 
@@ -147,7 +147,7 @@ const Literal* FlrDivAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval())).doubleSlash(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    SymbolTable::getInstance().setValue(n, res);
+    Scope::getInstance().getVariableTable().setValue(n, res);
     return res;
 }
 
@@ -228,5 +228,8 @@ const Literal* SuiteNode::eval() const {
 }
 
 const Literal* FuncNode::eval() const {
+    //FuncNode* f = this;
+    // Scope::getInstance().getFuncTable().setFunc(name, const_cast<FuncNode*>(this));
+    Scope::getInstance().getFuncTable().setFunc(name, this);
     return nullptr;
 }

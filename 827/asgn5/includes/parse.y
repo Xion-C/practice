@@ -12,7 +12,7 @@
     void yyerror (const char *);
 
     PoolOfNodes& pool = PoolOfNodes::getInstance(); //prevent memory leak
-    SyntaxScope& scope = SyntaxScope::getInstance();
+    //SyntaxScope& scope = SyntaxScope::getInstance();
     // Node* temp[64];
     // int tempcount = 0;
 %}
@@ -136,14 +136,11 @@ decorated // Used in: compound_stmt
 	| decorators funcdef
 	;
 funcdef // Used in: decorated, compound_stmt
-    : DEF NAME parameters { scope.scopeIn();
-                            std::cout << "scope in :" << scope.getScope() << std::endl; } COLON suite
+    : DEF NAME parameters COLON suite
         {
             // std::cout << "func define" << std::endl;
-            $$ = new FuncNode($2, $6);
+            $$ = new FuncNode($2, $5);
 
-            scope.scopeOut();
-            std::cout << "scope out :" << scope.getScope() << std::endl;
             delete [] $2;
         }
     ;
