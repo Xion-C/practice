@@ -7,23 +7,6 @@
 #include "ast.h"
 #include "symbolTable.h"
 
-const Literal* ReturnNode::eval() const {
-    if(!rvalue) {
-        throw std::string("return error");
-    }
-    return rvalue->eval();
-}
-
-const Literal* PrintNode::eval() const {
-    if(!prints) {
-        std::cout << "" << std::endl;
-    }
-    else {
-        prints->eval()->print();
-    }
-    return nullptr;
-}
-
 const Literal* IdentNode::eval() const {
     const Literal* val = ScopeControl::getInstance().getValue(ident);
     if(val == NULL) {
@@ -267,8 +250,35 @@ const Literal* NotEqualBinaryNode::eval() const {
     return (*x).notEqual(*y);
 }
 
+/***********************************************************/
 
+const Literal* PrintNode::eval() const {
+    if(!prints) {
+        std::cout << "" << std::endl;
+    }
+    else {
+        const Literal* node = prints->eval();
+        if(!node) {
+            std::cout << "None" << std::endl;
+        }
+        else {
+            node->print();
+        }
+    }
+    return nullptr;
+}
 
+const Literal* ReturnNode::eval() const {
+    const Literal* res;
+    if(!rvalue) {
+        res = nullptr;
+    }
+    else {
+        res = rvalue->eval();
+    }
+    ScopeControl::getInstance().setValue("__RETURN__", res);
+    return res;
+}
 
 const Literal* SuiteNode::eval() const {
     if(stmts.empty()) {
@@ -307,6 +317,7 @@ const Literal* CallNode::eval() const {
 const Literal* IfNode::eval() const {
     if(!test) return nullptr;
     const Literal* t_res = test->eval();
+    // t_res->print(); //print 0 or 1
     if(!t_res) throw std::string("if test error");
     if(t_res->isTrue()) {
         if(ifsuite) {

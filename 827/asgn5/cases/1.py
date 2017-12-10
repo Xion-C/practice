@@ -11,4 +11,6 @@ def f():
         print y
         print z
     print y
-f()
+    return
+print f()
+print

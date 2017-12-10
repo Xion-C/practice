@@ -1,19 +1,14 @@
-a=1.1
-b=6
-c=-a+b*(a+b)
-d=12
-a+=10
-b-=(2*a-c)
-c*=a
-d/=5
-print a,b,c,d
-e=f=g=11
-print e,f,g
-h=i=j=33.3
-print h,i,j
-e**=(f-g+2)
-print e
-i//=(e+d*2-130)
-print i
-g%=e*d
-print g
+def f():
+    a=b=c=d=10
+    a*=c
+    if b+d>a:
+        print b+d
+    else:
+        def g():
+            x=99
+            return x
+        print g()
+    return a
+def h():
+    return 11.11
+print f()+h()

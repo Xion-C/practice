@@ -40,28 +40,6 @@ extern void yyerror(const char*, const char);
 #define OP_LESSEQUAL            19
 #define OP_NOTEQUAL             20
 
-class ReturnNode : public Node {
-public:
-    ReturnNode(Node* r) : Node(), rvalue(r) {}
-    virtual ~ReturnNode() {}
-    virtual const Literal* eval() const;
-    ReturnNode(const ReturnNode&) = delete;
-    ReturnNode& operator=(const ReturnNode&) = delete;
-private:
-    Node* rvalue;
-};
-
-class PrintNode : public Node {
-public:
-    PrintNode(Node* p) : Node(), prints(p) {}
-    virtual ~PrintNode() {}
-    virtual const Literal* eval() const;
-    PrintNode(const PrintNode&) = delete;
-    PrintNode& operator=(const PrintNode&) = delete;
-private:
-    Node* prints;
-};
-
 /* identifier */
 class IdentNode : public Node {
 public:
@@ -246,7 +224,29 @@ public:
 };
 
 
+/*******************************************************/
+class PrintNode : public Node {
+public:
+    PrintNode(Node* p) : Node(), prints(p) {}
+    virtual ~PrintNode() {}
+    virtual const Literal* eval() const;
+    PrintNode(const PrintNode&) = delete;
+    PrintNode& operator=(const PrintNode&) = delete;
+private:
+    Node* prints;
+};
 
+
+class ReturnNode : public Node {
+public:
+    ReturnNode(Node* r) : Node(), rvalue(r) {}
+    virtual ~ReturnNode() {}
+    virtual const Literal* eval() const;
+    ReturnNode(const ReturnNode&) = delete;
+    ReturnNode& operator=(const ReturnNode&) = delete;
+private:
+    Node* rvalue;
+};
 
 class SuiteNode : public Node {
 public:

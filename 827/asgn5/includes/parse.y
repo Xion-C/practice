@@ -187,12 +187,8 @@ star_fpdef_notest // Used in: fplist, star_fpdef_notest
     | %empty
     ;
 stmt // Used in: pick_NEWLINE_stmt, plus_stmt
-    : simple_stmt { $$ = $1; }
-    | compound_stmt
-        {
-            // std::cout << "stmt: compound_stmt" << std::endl;
-            $$ = $1;
-        }
+    : simple_stmt       { $$ = $1; }
+    | compound_stmt     { $$ = $1; }
     ;
 simple_stmt // Used in: stmt, suite
     : small_stmt star_SEMI_small_stmt SEMI NEWLINE
@@ -223,7 +219,7 @@ small_stmt // Used in: simple_stmt, star_SEMI_small_stmt
     | flow_stmt
         {
             $$ = $1;
-            std::cout << "flow(return)" << std::endl;
+            // std::cout << "flow(return)" << std::endl;
         }
     | import_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
     | global_stmt { $$ = NULL; std::cout << "impossible" << std::endl; }
@@ -396,7 +392,11 @@ return_stmt // Used in: flow_stmt
             $$ = new ReturnNode($2);
             pool.add($$);
         }
-    | RETURN { $$ = nullptr; }
+    | RETURN
+        {
+            $$ = new ReturnNode(nullptr);
+            pool.add($$);
+        }
     ;
 yield_stmt // Used in: flow_stmt
 	: yield_expr
@@ -547,7 +547,6 @@ opt_AS_COMMA // Used in: except_clause
 suite // Used in: funcdef, if_stmt, star_ELIF, while_stmt, for_stmt, try_stmt, plus_except, opt_ELSE, opt_FINALLY, with_stmt, classdef
     : simple_stmt
         {
-            //
             $$ = $1;
             // std::cout << "suite: simple_stmt" << std::endl;
         }
@@ -589,11 +588,7 @@ old_lambdef // Used in: old_test
 	;
 test // Used in: opt_EQUAL_test, print_stmt, star_COMMA_test, opt_test, plus_COMMA_test, raise_stmt, opt_COMMA_test, opt_test_3, exec_stmt, assert_stmt, if_stmt, star_ELIF, while_stmt, with_item, except_clause, opt_AS_COMMA, opt_IF_ELSE, listmaker, testlist_comp, lambdef, subscript, opt_test_only, sliceop, testlist, dictorsetmaker, star_test_COLON_test, opt_DOUBLESTAR_test, pick_argument, argument, testlist1
     : or_test opt_IF_ELSE { $$ = $1; }
-    | lambdef
-        {
-            $$ = NULL;
-            std::cout << "impossible lambdef" << std::endl;
-        }
+    | lambdef { $$ = nullptr; }
     ;
 opt_IF_ELSE // Used in: test
     : IF or_test ELSE test
@@ -645,7 +640,6 @@ comparison // Used in: not_test, comparison
                     throw std::string("comp_op error");
                     break;
             }
-            $$ = $1;
         }
     ;
 comp_op // Used in: comparison
