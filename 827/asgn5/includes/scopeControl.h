@@ -11,9 +11,11 @@
 class SyntaxScope {
 public:
     //
+    static SyntaxScope& getInstance();
 private:
     FuncNode* currentFunc;
     int currentScope;
+    SyntaxScope() : currentScope(0) {}
 }
 
 #endif
