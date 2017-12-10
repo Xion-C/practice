@@ -12,67 +12,31 @@
 
 #include "global.h"
 
-class Node;
+class Literal;
 
-// class Global;
-// class SymbolTable;
-
-// class GlobalVaribleTable : public SymbolTable {
-// public:
-//     static GlobalVaribleTable& getInstance() {
-//         static GlobalVaribleTable instance;
-//         return instance;
-//     }
-// private:
-//     GlobalVaribleTable() {}
-// };
-
-class Scope {
+class ScopeControl {
 public:
-    static Scope& getInstance() {
-        static Scope instance;
-        return instance;
-    }
-    // void scopeIn(const Node* func) {
-    // // void scopeIn() {
-    //     currentFunc = func;
-    //     currentScope++;
-    // }
-    void scopeIn(const Node* func);
+    static ScopeControl& getInstance();
 
-    // void scopeOut() {
-    //     if(currentFunc) {
-    //         const Node* cf = currentFunc->getOuterFunc();
-    //         currentFunc = cf;
-    //         currentScope--;
-    //     }
-    //     else {
-    //         throw std::string("scope error");
-    //     }
-    // }
-    void scopeOut();
+    //set value in variableTables
+    void  setValue(const std::string& name, const Literal* node);
+    //set function in funcTables
+    void  setFunc(const std::string& name, const Node* node);
 
-    int getScope() {
-        return currentScope;
-    }
+    const Literal* getValue(const std::string & name);
+    const Node* getFunc(const std::string & name);
 
-    // SymbolTable& getVariableTable() {
-    //     return Global::getInstance().getVariables();
-    // }
-    SymbolTable& getVariableTable();
+    void  pushScope();
+    void  popScope();
 
-    // FuncTable& getFuncTable() {
-    //     return Global::getInstance().getFuncs();
-    // }
-    FuncTable& getFuncTable();
+    bool currentExist(const std::string & name) const;
 
-    const Node* getCurrentFunc() const {
-        return currentFunc;
-    }
 private:
-    const Node* currentFunc;
     int currentScope;
-    Scope() : currentFunc(), currentScope(0) {}
+    std::vector<SymbolTable> variableTables;
+    std::vector<FuncTable> funcTables;
+    ScopeControl();
 };
+
 
 #endif

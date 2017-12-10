@@ -5,8 +5,7 @@
 #include "literal.h"
 
 const Node* FuncTable::getFunc(const std::string& name) const {
-    std::map<std::string, const Node*>::const_iterator it =
-      table.find(name);
+    std::map<std::string, const Node*>::const_iterator it = table.find(name);
     if ( it == table.end() ) {
         std::cout << "can not find: " << name << std::endl;
         //throw (name+std::string(" not found"));
@@ -17,4 +16,10 @@ const Node* FuncTable::getFunc(const std::string& name) const {
 
 void FuncTable::setFunc(const std::string& name, const Node* f) {
     table[name] = f;
+}
+
+bool FuncTable::exist(const std::string& name) const {
+    std::map<std::string, const Node*>::const_iterator it = table.find(name);
+    if ( it == table.end() ) return false;
+    else return true;
 }

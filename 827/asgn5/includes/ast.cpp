@@ -25,7 +25,7 @@ const Literal* PrintNode::eval() const {
 }
 
 const Literal* IdentNode::eval() const {
-    const Literal* val = Scope::getInstance().getVariableTable().getValue(ident);
+    const Literal* val = ScopeControl::getInstance().getValue(ident);
     if(val == NULL) {
       throw std::string("ident error");
     }
@@ -46,7 +46,7 @@ AsgBinaryNode::AsgBinaryNode(Node* left, Node* right) :
   BinaryNode(left, right) {
   // const Literal* res = right->eval();
   // const std::string n = static_cast<IdentNode*>(left)->getIdent();
-  // Scope::getInstance().getVariableTable().setValue(n, res);
+  // ScopeControl::getInstance().setValue(n, res);
 }
 const Literal* AsgBinaryNode::eval() const {
     if (!left) {
@@ -60,13 +60,13 @@ const Literal* AsgBinaryNode::eval() const {
     AsgBinaryNode* leftAsg = dynamic_cast<AsgBinaryNode*>(left);
     if(leftAsg) {
         n = static_cast<IdentNode*>(leftAsg->getRight())->getIdent();
-        Scope::getInstance().getVariableTable().setValue(n, res);
+        ScopeControl::getInstance().setValue(n, res);
         // std::cout << "set " << n << std::endl;
         leftAsg->eval();
     }
     else {
         n = static_cast<IdentNode*>(left)->getIdent();
-        Scope::getInstance().getVariableTable().setValue(n, res);
+        ScopeControl::getInstance().setValue(n, res);
         // std::cout << "set " << n << std::endl;
     }
     if (!res) {
@@ -83,7 +83,7 @@ const Literal* PlusAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval()))+(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    Scope::getInstance().getVariableTable().setValue(n, res);
+    ScopeControl::getInstance().setValue(n, res);
     return res;
 }
 
@@ -93,7 +93,7 @@ const Literal* MinAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval()))-(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    Scope::getInstance().getVariableTable().setValue(n, res);
+    ScopeControl::getInstance().setValue(n, res);
     return res;
 }
 
@@ -103,7 +103,7 @@ const Literal* MulAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval()))*(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    Scope::getInstance().getVariableTable().setValue(n, res);
+    ScopeControl::getInstance().setValue(n, res);
     return res;
 }
 
@@ -113,7 +113,7 @@ const Literal* DivAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval())).operator/(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    Scope::getInstance().getVariableTable().setValue(n, res);
+    ScopeControl::getInstance().setValue(n, res);
     return res;
 }
 
@@ -123,7 +123,7 @@ const Literal* ModAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval()))%(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    Scope::getInstance().getVariableTable().setValue(n, res);
+    ScopeControl::getInstance().setValue(n, res);
     return res;
 }
 
@@ -133,7 +133,7 @@ const Literal* ExpAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval())).doubleStar(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    Scope::getInstance().getVariableTable().setValue(n, res);
+    ScopeControl::getInstance().setValue(n, res);
     return res;
 }
 
@@ -143,7 +143,7 @@ const Literal* FlrDivAsgBinaryNode::eval() const {
     }
     const Literal* res = (*(left->eval())).doubleSlash(*(right->eval()));
     const std::string n = static_cast<IdentNode*>(left)->getIdent();
-    Scope::getInstance().getVariableTable().setValue(n, res);
+    ScopeControl::getInstance().setValue(n, res);
     return res;
 }
 
@@ -212,16 +212,79 @@ const Literal* ExpBinaryNode::eval() const {
   return (*x).doubleStar(*y);
 }
 
+/* compare */
+const Literal* LessBinaryNode::eval() const {
+    if (!left || !right) {
+      throw std::string("error");
+    }
+    const Literal* x = left->eval();
+    const Literal* y = right->eval();
+    return (*x).less(*y);
+}
+
+const Literal* GreaterBinaryNode::eval() const {
+    if (!left || !right) {
+      throw std::string("error");
+    }
+    const Literal* x = left->eval();
+    const Literal* y = right->eval();
+    return (*x).greater(*y);
+}
+
+const Literal* EqequalBinaryNode::eval() const {
+    if (!left || !right) {
+      throw std::string("error");
+    }
+    const Literal* x = left->eval();
+    const Literal* y = right->eval();
+    return (*x).eqequal(*y);
+}
+
+const Literal* LessEqualBinaryNode::eval() const {
+    if (!left || !right) {
+      throw std::string("error");
+    }
+    const Literal* x = left->eval();
+    const Literal* y = right->eval();
+    return (*x).lessEqual(*y);
+}
+
+const Literal* GreaterEqualBinaryNode::eval() const {
+    if (!left || !right) {
+      throw std::string("error");
+    }
+    const Literal* x = left->eval();
+    const Literal* y = right->eval();
+    return (*x).greaterEqual(*y);
+}
+
+const Literal* NotEqualBinaryNode::eval() const {
+    if (!left || !right) {
+      throw std::string("error");
+    }
+    const Literal* x = left->eval();
+    const Literal* y = right->eval();
+    return (*x).notEqual(*y);
+}
+
+
+
 
 const Literal* SuiteNode::eval() const {
     if(stmts.empty()) {
         return nullptr;
     }
-    int i = 1;
+    // int i = 1;
     for(const Node* n : stmts) {
         if(n) {
             n->eval();
-            std::cout << "#" << i++ << std::endl;
+            // std::cout << "#" << i++ << std::endl;
+            if(ScopeControl::getInstance().currentExist("__RETURN__")) {
+                return ScopeControl::getInstance().getValue("__RETURN__");
+            }
+        }
+        else {
+            std::cout << "null statement" << std::endl;
         }
     }
     return nullptr;
@@ -229,25 +292,31 @@ const Literal* SuiteNode::eval() const {
 
 
 const Literal* FuncNode::eval() const {
-    //FuncNode* f = this;
-    // Scope::getInstance().getFuncTable().setFunc(name, const_cast<FuncNode*>(this));
-    const Node* cfnode = Scope::getInstance().getCurrentFunc();
-    const FuncNode* cf = dynamic_cast<const Node*>(cfnode);
-    if(cfnode && !cf) {
-        std::cout << "funcnode error" << std::endl;
-    }
-
-    Scope::getInstance().getFuncTable().setFunc(name, this);
-    getOuterFunc()
+    ScopeControl::getInstance().setFunc(name, suite);
     return nullptr;
 }
 
 const Literal* CallNode::eval() const {
-    const FuncNode* func = dynamic_cast<const FuncNode*>(Scope::getInstance().getFuncTable().getFunc(funcname));
-    std::cout << "fname:" <<func->getName()<< std::endl;
-    func->getSuite()->eval();
+    ScopeControl& scope = ScopeControl::getInstance();
+    scope.pushScope();
+    const Literal* res = scope.getFunc(name)->eval();
+    scope.popScope();
+    return res;
+}
 
-    return func->eval();
+const Literal* IfNode::eval() const {
+    if(!test) return nullptr;
+    const Literal* t_res = test->eval();
+    if(!t_res) throw std::string("if test error");
+    if(t_res->isTrue()) {
+        if(ifsuite) {
+            ifsuite->eval();
+        }
+    }
+    else if(elsesuite) {
+        elsesuite->eval();
+    }
+    return nullptr;
 }
 
 // const

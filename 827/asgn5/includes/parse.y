@@ -472,24 +472,26 @@ assert_stmt // Used in: small_stmt
 	| ASSERT test
 	;
 compound_stmt // Used in: stmt
-    : if_stmt
-        { $$ = $1; }
+    : if_stmt       { $$ = $1; }
     | while_stmt    { $$ = nullptr; }
     | for_stmt      { $$ = nullptr; }
     | try_stmt      { $$ = nullptr; }
     | with_stmt     { $$ = nullptr; }
-    | funcdef
-        { $$ = $1; }
+    | funcdef       { $$ = $1; }
     | classdef      { $$ = nullptr; }
     | decorated     { $$ = nullptr; }
     ;
 if_stmt // Used in: compound_stmt
     : IF test COLON suite star_ELIF ELSE COLON suite
         {
-            $$ = nullptr;
+            $$ = new IfNode($2, $4, $8);
+            pool.add($$);
         }
     | IF test COLON suite star_ELIF
-        { $$ = nullptr; }
+        {
+            $$ = new IfNode($2, $4, nullptr);
+            pool.add($$);
+        }
     ;
 star_ELIF // Used in: if_stmt, star_ELIF
 	: star_ELIF ELIF test COLON suite
@@ -547,13 +549,13 @@ suite // Used in: funcdef, if_stmt, star_ELIF, while_stmt, for_stmt, try_stmt, p
         {
             //
             $$ = $1;
-            std::cout << "suite: simple_stmt" << std::endl;
+            // std::cout << "suite: simple_stmt" << std::endl;
         }
     | NEWLINE INDENT plus_stmt DEDENT
         {
             //
             $$ = $3;
-            std::cout << "NEWLINE INDENT plus_stmt DEDENT" << std::endl;
+            // std::cout << "NEWLINE INDENT plus_stmt DEDENT" << std::endl;
         }
     ;
 plus_stmt // Used in: suite, plus_stmt
@@ -616,22 +618,28 @@ comparison // Used in: not_test, comparison
         {
             switch ($2) {
                 case OP_LESS :
-
+                    $$ = new LessBinaryNode($1, $3);
+                    pool.add($$);
                     break;
                 case OP_GREATER :
-
+                    $$ = new GreaterBinaryNode($1, $3);
+                    pool.add($$);
                     break;
                 case OP_EQEQUAL :
-
-                    break;
-                case OP_GREATEREQUAL :
-
+                    $$ = new EqequalBinaryNode($1, $3);
+                    pool.add($$);
                     break;
                 case OP_LESSEQUAL :
-
+                    $$ = new LessEqualBinaryNode($1, $3);
+                    pool.add($$);
+                    break;
+                case OP_GREATEREQUAL :
+                    $$ = new GreaterBinaryNode($1, $3);
+                    pool.add($$);
                     break;
                 case OP_NOTEQUAL :
-
+                    $$ = new NotEqualBinaryNode($1, $3);
+                    pool.add($$);
                     break;
                 default :
                     throw std::string("comp_op error");
@@ -779,10 +787,13 @@ power // Used in: factor
     | atom star_trailer
         {
             if($2) {
-                std::cout << "call function" << std::endl;
-                std::string fname = reinterpret_cast<IdentNode*>($1)->getIdent();
-                $$ = new CallNode(fname);
-                pool.add($$);
+                // std::cout << "call function" << std::endl;
+                // std::string fname = reinterpret_cast<IdentNode*>($1)->getIdent();
+                if (dynamic_cast<const IdentNode*>($1)) {
+                    std::string fname = dynamic_cast<const IdentNode*>($1)->getIdent();
+                    $$ = new CallNode(fname);
+                    pool.add($$);
+                }
             }
             else {
                 $$ = $1;

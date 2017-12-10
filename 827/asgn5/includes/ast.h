@@ -208,6 +208,46 @@ public:
   virtual const Literal* eval() const;
 };
 
+/* compare */
+class LessBinaryNode : public BinaryNode {
+public:
+    LessBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
+    virtual const Literal* eval() const;
+};
+
+class GreaterBinaryNode : public BinaryNode {
+public:
+    GreaterBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
+    virtual const Literal* eval() const;
+};
+
+class EqequalBinaryNode : public BinaryNode {
+public:
+    EqequalBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
+    virtual const Literal* eval() const;
+};
+
+class LessEqualBinaryNode : public BinaryNode {
+public:
+    LessEqualBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
+    virtual const Literal* eval() const;
+};
+
+class GreaterEqualBinaryNode : public BinaryNode {
+public:
+    GreaterEqualBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
+    virtual const Literal* eval() const;
+};
+
+class NotEqualBinaryNode : public BinaryNode {
+public:
+    NotEqualBinaryNode(Node* left, Node* right) : BinaryNode(left, right) {}
+    virtual const Literal* eval() const;
+};
+
+
+
+
 class SuiteNode : public Node {
 public:
     SuiteNode() : Node(), stmts() {}
@@ -226,10 +266,6 @@ public:
     FuncNode(std::string id, Node* s) :
     Node(), name(id), paras(), virableTable(), outerFunc(), nestedFuncTable(), suite(s), returnValue(), p(this) {}
     virtual ~FuncNode() {}
-    const std::string getName() const { return name; }
-    const Node* getSuite() const { return suite; }
-    const FuncNode* getOuterFunc() const { return outerFunc; }
-    void setOuterFunc(const FuncNode* of) { outerFunc = of; }
     virtual const Literal* eval() const;
     FuncNode(const FuncNode&) = delete;
     FuncNode& operator=(const FuncNode&) = delete;
@@ -246,13 +282,26 @@ private:
 
 class CallNode : public Node {
 public:
-    CallNode(std::string name ) : Node(), funcname(name) {}
+    CallNode(std::string name ) : Node(), name(name) {}
     virtual ~CallNode() {}
     virtual const Literal* eval() const;
     CallNode(const CallNode&) = delete;
     CallNode& operator=(const CallNode&) = delete;
 private:
-    std::string funcname;
+    std::string name;
+};
+
+class IfNode : public Node {
+public:
+    IfNode(Node* t, Node* s1, Node* s2) : Node(), test(t), ifsuite(s1), elsesuite(s2) {}
+    virtual ~IfNode() {}
+    virtual const Literal* eval() const;
+    IfNode(const IfNode&) = delete;
+    IfNode& operator=(const IfNode&) = delete;
+private:
+    Node* test;
+    Node* ifsuite;
+    Node* elsesuite;
 };
 
 

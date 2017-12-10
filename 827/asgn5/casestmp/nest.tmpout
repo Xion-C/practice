@@ -1,27 +1,6 @@
-NEWLINE INDENT plus_stmt DEDENT
-call function
-NEWLINE INDENT plus_stmt DEDENT
-call function
-NEWLINE INDENT plus_stmt DEDENT
-call function
-fname:f
-#1
 INT: 7
-#2
-#3
-fname:g
-#1
 INT: 17
-#2
-#3
-fname:h
-#1
 INT: 77
-#2
-#4
-INT: 77
-#5
-#4
-INT: 77
-#5
+INT: 17
+INT: 7
 Program syntactically correct

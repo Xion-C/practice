@@ -1,9 +1,4 @@
-NEWLINE INDENT plus_stmt DEDENT
-NEWLINE INDENT plus_stmt DEDENT
-NEWLINE INDENT plus_stmt DEDENT
-call function
-fname:f
-#1
-#2
-#3
+INT: 1
+INT: 22
+INT: 22
 Program syntactically correct

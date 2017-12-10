@@ -8,22 +8,12 @@
 
 class Literal;
 
-// class SymbolTable {
-// public:
-//     static SymbolTable& getInstance();
-//     void setValue(const std::string& name, const Literal* val);
-//     const Literal* getValue(const std::string& name) const;
-// private:
-//     std::map<std::string, const Literal*> table;
-//     SymbolTable() : table() {}
-// };
-
-
 class SymbolTable {
 public:
     SymbolTable() : table() {}
     void setValue(const std::string& name, const Literal* val);
     const Literal* getValue(const std::string& name) const;
+    bool exist(const std::string& name) const;
 private:
     std::map<std::string, const Literal*> table;
 };
