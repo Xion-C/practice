@@ -1,12 +1,18 @@
-x = 5.5
-2*x + 5*x
-y = 2.5
-2*x - y
-2*y - 2*x
-2*x - 2 * y
-
-x * 5*y
-
-2*x/y
-4*x/2*y
-5*y/2*x
+def f():
+    x=1
+    y=2
+    z=3
+    def g():
+        print 101
+        def h():
+            print 102
+        print 103
+    if x>0:
+        y=22
+    else:
+        y=11
+    def gg():
+        print 1011
+def ff():
+    print 104
+# f()
