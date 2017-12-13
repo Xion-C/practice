@@ -40,6 +40,8 @@ depend :
 	makedepend ${PROGFILES}
 
 clean:
-	rm -f assn2 *.o
+	rm -f $(OBJS)
+	rm -f $(EXEC)
+
 
 # DO NOT DELETE

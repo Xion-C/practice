@@ -1,3 +1,5 @@
+#include <string>
+#include <string.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -97,7 +99,7 @@ void textureMap_loader(const char *path) {
         printf("texture map - width: %d, height: %d, channels: %d\n", w, h, n);
     }
     else {
-        printf("cannot find texture map\n", w, h, n);
+        printf("cannot find texture map\n");
         return;
     }
 
@@ -182,8 +184,8 @@ void write_frame(color_t **frame, int w, int h) {
     char name[128];
     const char* pre = "frame";
     const char* etn = ".jpg";
-    itoa(count, nchar, 10);
-    sprintf(name, "%s%s%s", pre, nchar, etn);
+    //itoa(count, nchar, 10);
+    sprintf(name, "%s%d%s", pre, count, etn);
 
     unsigned char* image = new unsigned char[w * h * 3];
     color2uchar(image, frame, w, h);
@@ -202,12 +204,12 @@ void write_frame(color_t **frame, int w, int h) {
 
 void write_frame(color_t frame[HEIGHT][WIDTH]) {
     static int count = 0;
-    char nchar[64];
+    //char nchar[64];
     char name[128];
     const char* pre = "frame";
     const char* etn = ".jpg";
-    itoa(count, nchar, 10);
-    sprintf(name, "%s%s%s", pre, nchar, etn);
+    //itoa(count, nchar, 10);
+    sprintf(name, "%s%d%s", pre, count, etn);
 
     unsigned char* image = new unsigned char[WIDTH * HEIGHT * 3];
     for (int i = 0; i < HEIGHT; i++) {
@@ -228,4 +230,3 @@ void write_frame(color_t frame[HEIGHT][WIDTH]) {
 
     delete[] image;
 }
-
