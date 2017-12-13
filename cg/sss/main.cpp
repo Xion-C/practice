@@ -64,7 +64,9 @@ const char* menu[] = {
     "press R for rotation\n",
     "press E for scale\n",
     "press V for perspective\n",
-    "press W for switching wireframe/color\n"
+    "press W for switching wireframe/color\n",
+    "press Z for subsurface scattering(single pass)\n",
+    "press X for subsurface scattering(6 pass)\n"
 };
 const char* kcontrol[] = {
     "************************************************************************\n",
@@ -325,7 +327,7 @@ void show_menu(int type) {
         printf("%s%s%s%s", kcontrol[0], kcontrol[2], kcontrol[4], kcontrol[0]);
     }
     else {
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 8; i++) {
             printf("%s", menu[i]);
         }
         printf("%s", menu[0]);

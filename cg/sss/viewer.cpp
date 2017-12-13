@@ -27,6 +27,7 @@ int frame_set(color_t frame[HEIGHT][WIDTH], float zbuffer[HEIGHT][WIDTH], int x,
     int x_ = x + biasx;
     int y_ = y + biasy;
     if (x_ > WIDTH || y_ > HEIGHT || x_ < 0 || y_ < 0) {
+        return 0;
     }
     else if (zbuffer_set(zbuffer, x, y, zbuf)) {
         frame[y_][x_] = color;
@@ -91,6 +92,7 @@ int zbuffer_set(float zbuffer[HEIGHT][WIDTH], int x, int y, float zbuf) {
         }
         return 0;
     }
+    return 0;
 }
 
 
@@ -191,7 +193,7 @@ color_t shader_simplelight(const primitive_t& f, const vector_t& light, const ve
 
 void texture_uv2xy(int& x, int& y, const float& alpha, const float& beta, const primitive_t& f) {
     point_t tp1, tp2, tp3;
-    vector_t tv12, tv13, tv1p;
+    vector_t tv12, tv13;
     tp1.x = f.vt1.u * objdata.texw;
     tp1.y = f.vt1.v * objdata.texh;
     tp2.x = f.vt2.u * objdata.texw;
@@ -210,7 +212,7 @@ void texture_uv2xy(int& x, int& y, const float& alpha, const float& beta, const 
 
 void normal_uv2xy(int& x, int& y, const float& alpha, const float& beta, const primitive_t& f) {
     point_t np1, np2, np3;
-    vector_t nv12, nv13, nv1p;
+    vector_t nv12, nv13;
     np1.x = f.vt1.u * objdata.norw;
     np1.y = f.vt1.v * objdata.norh;
     np2.x = f.vt2.u * objdata.norw;
@@ -613,7 +615,7 @@ void view_obj() {
                 render.depth[i][j] = sqrt(saturate((render.depth[i][j] - dmin) / (dmax - dmin)*1.2, 0, 1));
             }
             //render.frame[i][j] = { render.depth[i][j],render.depth[i][j],render.depth[i][j] };
-            if (addflag && render.depth[i][j] < 0.8) {
+            if ((sssflag || sssflag2) && render.depth[i][j] < 0.8) {
                 render.frame[i][j].r = saturate(render.frame[i][j].r + pow((1 - render.depth[i][j]),15)*0.25, 0, 1);
                 render.frame[i][j].g = saturate(render.frame[i][j].g + pow((1 - render.depth[i][j]),10)*0.08, 0, 1);
                 render.frame[i][j].b = saturate(render.frame[i][j].b + pow((1 - render.depth[i][j]),10)*0.05, 0, 1);
