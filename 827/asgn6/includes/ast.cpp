@@ -314,7 +314,7 @@ const Literal* CallNode::eval() const {
     ScopeControl& scope = ScopeControl::getInstance();
     const FuncNode* func = dynamic_cast<const FuncNode*>(scope.getFunc(name));
     if(!args) {
-        if(!func->getParas()) {
+        if(func->getParas()) {
             throw std::string("invalid functions paras1");
         }
         else {

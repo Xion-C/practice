@@ -15,6 +15,9 @@
 #include <math.h>
 
 #include <GL/glut.h>   // The GL Utility Toolkit (Glut) Header
+
+//#include <SOIL.h>
+
 #include "viewer.h"
 #include "cgmath.h"
 

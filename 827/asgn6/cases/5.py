@@ -1,14 +1,19 @@
-1.1+2.2
-3.3-4.4
-5.5*6.6
-7.7/8.8
-9.9//10.10
-11.11%12.12
-13.13**2
-x = 1 + 1
-y = 1.1 / 2.2
-z = x * y
-a = 12%5
-b = 13//6
-c = 1.2**2
-print(x+y-a*b/c)
+def f(x):
+  if x == 0:
+     return 1
+  return f(x-1) + x
+
+def g(y):
+ if y == 0:
+   return 2
+ print f(5)
+ return g(y-1)+4
+print g(5)
+
+
+def h():
+ print f(7)
+
+h()
+
+print f(7)

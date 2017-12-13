@@ -129,7 +129,12 @@ decorator // Used in: decorators
 	;
 opt_arglist // Used in: decorator, trailer
     : arglist { $$ = $1; }
-    | %empty { $$ = nullptr; }
+    | %empty
+        {
+            //$$ = nullptr;
+            $$ = new TracerNode();
+            pool.add($$);
+        }
     ;
 decorators // Used in: decorators, decorated
 	: decorators decorator
@@ -905,9 +910,7 @@ lambdef // Used in: test
 trailer // Used in: star_trailer
     : LPAR opt_arglist RPAR
         {
-            //should be parameters
-            $$ = new TracerNode();
-            pool.add($$);
+            $$ = $2;
         }
     | LSQB subscriptlist RSQB { $$ = nullptr; }
     | DOT NAME { $$ = nullptr; delete [] $2; }

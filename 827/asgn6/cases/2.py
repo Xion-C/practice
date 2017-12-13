@@ -1,18 +1,8 @@
-def f():
-    x=1
-    y=2
-    z=3
-    def g():
-        print x+101
-        def h():
-            print y+102
-        h()
-        print z+103
-    g()
-    def gg():
-        print 1011
-    gg()
-def ff():
-    print 104
-f()
-ff()
+def factorial(n):
+    if n == 1:
+        print 1
+        return 1
+    else:
+        print n * factorial(n-1)
+        return n * factorial(n-1)
+print factorial(4)
