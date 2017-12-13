@@ -1,7 +1,7 @@
-def f(x):
-    x=1
-    y=2
-    z=3
+def f(x, y, z):
+    x+=1
+    y+=2
+    z+=3
     if x>0:
         y=22
         print x,y,z
@@ -10,6 +10,6 @@ def f(x):
         print y
     print y
     return
-print f(55)
+print f(55, 66, 77)
 print
 print 1,2,3

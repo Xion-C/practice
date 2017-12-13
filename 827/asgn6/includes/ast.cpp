@@ -314,8 +314,8 @@ const Literal* CallNode::eval() const {
     ScopeControl& scope = ScopeControl::getInstance();
     const FuncNode* func = dynamic_cast<const FuncNode*>(scope.getFunc(name));
     if(!args) {
-        if(func->getParas()) {
-            throw std::string("invalid functions paras");
+        if(!func->getParas()) {
+            throw std::string("invalid functions paras1");
         }
         else {
             scope.pushScope();
@@ -326,13 +326,13 @@ const Literal* CallNode::eval() const {
     }
     else {
         if(!func->getParas()) {
-            throw std::string("invalid functions paras");
+            throw std::string("invalid functions paras2");
         }
         else {
             const FuncParasNode* fps = dynamic_cast<const FuncParasNode*>(func->getParas());
             const ArgsNode* ags = dynamic_cast<const ArgsNode*>(args);
             if((!fps && ags) || (fps && !ags) || (fps->getParaSize() != ags->getArgSize())) {
-                throw std::string("invalid functions paras");
+                throw std::string("invalid functions paras3");
             }
             else {
                 scope.pushScope();
@@ -343,7 +343,7 @@ const Literal* CallNode::eval() const {
                     //id = fps->getPara(i);
                     //val = ags->getArg(i);
                     std::string n = id->getIdent();
-                    val = ags->getArg(i)->eval();
+                    val = ags->getArg(i);
                     ScopeControl::getInstance().setValue(n, val);
                 }
                 const Literal* res = scope.getSuite(name)->eval();

@@ -323,7 +323,7 @@ public:
     virtual ~ArgsNode() {}
     virtual const Literal* eval() const;
     void add(Node* s) { args.push_back(s); }
-    virtual const Literal* getArg(int n) const { return args[n]; }
+    virtual const Literal* getArg(int n) const { return args[n]->eval(); }
     virtual int getArgSize() const { return args.size(); }
     // ArgsNode(const ArgsNode&) = delete;
     // ArgsNode& operator=(const ArgsNode&) = delete;
