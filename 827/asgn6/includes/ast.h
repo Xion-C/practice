@@ -10,9 +10,9 @@
 #include <iostream>
 #include <string>
 #include <map>
+#include <vector>
 #include "literal.h"
 #include "scopeControl.h"
-#include "global.h"
 #include "symbolTable.h"
 #include "funcTable.h"
 
@@ -40,7 +40,7 @@ extern void yyerror(const char*, const char);
 #define OP_LESSEQUAL            19
 #define OP_NOTEQUAL             20
 
-/* identifier */
+/************************ DATA STRUCTURE ************************/
 class IdentNode : public Node {
 public:
     IdentNode(const std::string id) : Node(), ident(id) { }
@@ -54,7 +54,21 @@ private:
     std::string ident;
 };
 
-/******************* UnaryNode *******************/
+class ElementsNode : public Node {
+public:
+    ElementsNode() : Node(), elements() { }
+    virtual ~ElementsNode() {}
+    virtual const Literal* eval() const;
+    virtual void add(Node* element) { elements.push_back(element); }
+    virtual void addBegin(Node* element) {
+        elements.insert(elements.begin(), element);
+    }
+    virtual void print() const;
+private:
+    std::vector<Node*> elements;
+};
+
+/************************ OPERATOR ************************/
 class UnaryNode : public Node {
 public:
     UnaryNode(Node* r) : Node(), right(r) {}
@@ -79,7 +93,7 @@ public:
     virtual const Literal* eval() const;
 };
 
-/******************* BinaryNode *******************/
+/* BinaryNode */
 class BinaryNode : public Node {
 public:
     BinaryNode(Node* l, Node* r) : Node(), left(l), right(r) {}
@@ -224,29 +238,16 @@ public:
 };
 
 
-/*******************************************************/
-class ParasNode : public Node {
-public:
-    ParasNode() : Node(), paras() {}
-    virtual ~ParasNode() {}
-    virtual void print() const;
-    void add(Node* p) { paras.push_back(p); }
-    virtual const Literal* eval() const;
-    ParasNode(const ParasNode&) = delete;
-    ParasNode& operator=(const ParasNode&) = delete;
-private:
-    std::vector<Node*> paras;
-};
-
+/************************ STATEMENT ************************/
 class PrintNode : public Node {
 public:
-    PrintNode(Node* p) : Node(), paras(p) {}
+    PrintNode(Node* p) : Node(), elements(p) {}
     virtual ~PrintNode() {}
     virtual const Literal* eval() const;
     PrintNode(const PrintNode&) = delete;
     PrintNode& operator=(const PrintNode&) = delete;
 private:
-    Node* paras;
+    Node* elements;
 };
 
 class ReturnNode : public Node {
@@ -260,47 +261,16 @@ private:
     Node* rvalue;
 };
 
-class SuiteNode : public Node {
-public:
-    SuiteNode() : Node(), stmts() {}
-    virtual ~SuiteNode() {}
-    void add(Node* s) { stmts.push_back(s); }
-    virtual const Literal* eval() const;
-    SuiteNode(const SuiteNode&) = delete;
-    SuiteNode& operator=(const SuiteNode&) = delete;
-private:
-    std::vector<Node*> stmts;
-};
-
-
-class FuncNode : public Node {
-public:
-    FuncNode(std::string id, Node* s) :
-    Node(), name(id), paras(), virableTable(), outerFunc(), nestedFuncTable(), suite(s), returnValue(), p(this) {}
-    virtual ~FuncNode() {}
-    virtual const Literal* eval() const;
-    FuncNode(const FuncNode&) = delete;
-    FuncNode& operator=(const FuncNode&) = delete;
-private:
-    std::string name;
-    std::vector<Node*> paras;
-    std::map<std::string, const Literal*> virableTable;
-    FuncNode* outerFunc;
-    std::map<std::string, const FuncNode*> nestedFuncTable;
-    Node* suite;
-    Literal* returnValue;
-    const FuncNode* p;
-};
-
 class CallNode : public Node {
 public:
-    CallNode(std::string name ) : Node(), name(name) {}
+    CallNode(std::string name, Node* a) : Node(), name(name), args(a) {}
     virtual ~CallNode() {}
     virtual const Literal* eval() const;
     CallNode(const CallNode&) = delete;
     CallNode& operator=(const CallNode&) = delete;
 private:
     std::string name;
+    Node* args;
 };
 
 class IfNode : public Node {
@@ -316,5 +286,71 @@ private:
     Node* elsesuite;
 };
 
+class FuncNode : public Node {
+public:
+    FuncNode(std::string id, Node* p, Node* s) :
+    Node(), name(id), paras(p), suite(s) {}
+    virtual ~FuncNode() {}
+    virtual const Literal* eval() const;
+    virtual const Node* getSuite() const { return suite; }
+    virtual const Node* getParas() const { return paras; }
+    virtual const Node* getPara(int n) const;
+    virtual int getParaSize() const;
+    FuncNode(const FuncNode&) = delete;
+    FuncNode& operator=(const FuncNode&) = delete;
+private:
+    std::string name;
+    Node* paras;
+    Node* suite;
+};
+
+/************************ FUNCTION ************************/
+class SuiteNode : public Node {
+public:
+    SuiteNode() : Node(), stmts() {}
+    virtual ~SuiteNode() {}
+    void add(Node* s) { stmts.push_back(s); }
+    virtual const Literal* eval() const;
+    SuiteNode(const SuiteNode&) = delete;
+    SuiteNode& operator=(const SuiteNode&) = delete;
+private:
+    std::vector<Node*> stmts;
+};
+
+class ArgsNode : public Node {
+public:
+    ArgsNode() : Node(), args() {}
+    virtual ~ArgsNode() {}
+    virtual const Literal* eval() const;
+    void add(Node* s) { args.push_back(s); }
+    virtual const Literal* getArg(int n) const { return args[n]->eval(); }
+    virtual int getArgSize() const { return args.size(); }
+    // ArgsNode(const ArgsNode&) = delete;
+    // ArgsNode& operator=(const ArgsNode&) = delete;
+private:
+    std::vector<Node*> args;
+};
+
+class FuncParasNode : public Node {
+public:
+    FuncParasNode() : Node(), paras() {}
+    virtual ~FuncParasNode() {}
+    virtual const Literal* eval() const;
+    void add(Node* s) { paras.push_back(s); }
+    virtual const Node* getPara(int n) const { return paras[n]; }
+    virtual int getParaSize() const { return paras.size(); }
+    // FuncParasNode(const FuncParasNode&) = delete;
+    // FuncParasNode& operator=(const FuncParasNode&) = delete;
+private:
+    std::vector<Node*> paras;
+};
+/************************ Tracer ************************/
+//just use to track the parser
+class TracerNode : public Node {
+public:
+    TracerNode() : Node() {}
+    virtual ~TracerNode() {}
+    virtual const Literal* eval() const;
+};
 
 #endif

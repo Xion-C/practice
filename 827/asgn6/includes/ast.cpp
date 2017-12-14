@@ -7,6 +7,7 @@
 #include "ast.h"
 #include "symbolTable.h"
 
+/************************ DATA STRUCTURE ************************/
 const Literal* IdentNode::eval() const {
     const Literal* val = ScopeControl::getInstance().getValue(ident);
     if(val == NULL) {
@@ -15,6 +16,32 @@ const Literal* IdentNode::eval() const {
     return val;
 }
 
+const Literal* ElementsNode::eval() const {
+    return nullptr;
+}
+void ElementsNode::print() const {
+    for(const Node* element : elements) {
+        if(!element) {
+            std::cout << "None" << std::endl;
+        }
+        else {
+            const Node* node = element->eval();
+            if(!node) {
+                if(dynamic_cast<const IdentNode*>(node)) {
+                    element->print();
+                }
+                else {
+                    std::cout << "None" << std::endl;
+                }
+            }
+            else {
+                node->print();
+            }
+        }
+    }
+}
+
+/************************ OPERATOR ************************/
 const Literal* PositiveUnaryNode::eval() const {
     const Literal* res = right->eval();
     return res;
@@ -251,29 +278,22 @@ const Literal* NotEqualBinaryNode::eval() const {
 }
 
 /***********************************************************/
-void ParasNode::print() const {
-    for(const Node* node : paras) {
-        node->eval()->print();
-    }
-}
-const Literal* ParasNode::eval() const {
-    //if()
-    return nullptr;
-}
-
 const Literal* PrintNode::eval() const {
-    if(!paras) {
+    if(!elements) {
         std::cout << "" << std::endl;
     }
+    else if (dynamic_cast<const ElementsNode*>(elements)) {
+        elements->print();
+    }
     else {
-        const Literal* node = paras->eval();
+        const Literal* node = elements->eval();
         if(!node) {
             std::cout << "None" << std::endl;
         }
         else {
             node->print();
         }
-        //paras->eval()->print();
+        //elements->eval()->print();
     }
     return nullptr;
 }
@@ -290,6 +310,92 @@ const Literal* ReturnNode::eval() const {
     return res;
 }
 
+const Literal* CallNode::eval() const {
+    ScopeControl& scope = ScopeControl::getInstance();
+    const FuncNode* func = dynamic_cast<const FuncNode*>(scope.getFunc(name));
+    if(!args) {
+        if(func->getParas()) {
+            throw std::string("invalid functions paras1");
+        }
+        else {
+            scope.pushScope();
+            const Literal* res = scope.getSuite(name)->eval();
+            scope.popScope();
+            return res;
+        }
+    }
+    else {
+        if(!func->getParas()) {
+            throw std::string("invalid functions paras2");
+        }
+        else {
+            const FuncParasNode* fps = dynamic_cast<const FuncParasNode*>(func->getParas());
+            const ArgsNode* ags = dynamic_cast<const ArgsNode*>(args);
+            if((!fps && ags) || (fps && !ags) || (fps->getParaSize() != ags->getArgSize())) {
+                throw std::string("invalid functions paras3");
+            }
+            else {
+                scope.pushScope();
+                const IdentNode* id;
+                const Literal* val;
+                for(int i = 0; i < fps->getParaSize(); i++) {
+                    id = dynamic_cast<const IdentNode*>(fps->getPara(i));
+                    //id = fps->getPara(i);
+                    //val = ags->getArg(i);
+                    std::string n = id->getIdent();
+                    val = ags->getArg(i);
+                    ScopeControl::getInstance().setValue(n, val);
+                }
+                const Literal* res = scope.getSuite(name)->eval();
+                scope.popScope();
+                return res;
+            }
+        }
+    }
+    return nullptr;
+}
+
+const Literal* IfNode::eval() const {
+    if(!test) return nullptr;
+    const Literal* t_res = test->eval();
+    // t_res->print(); //print 0 or 1
+    if(!t_res) throw std::string("if test error");
+    if(t_res->isTrue()) {
+        if(ifsuite) {
+            ifsuite->eval();
+        }
+    }
+    else if(elsesuite) {
+        elsesuite->eval();
+    }
+    return nullptr;
+}
+
+const Literal* FuncNode::eval() const {
+    //ScopeControl::getInstance().setFunc(name, suite);
+    ScopeControl::getInstance().setFunc(name, this);
+    return nullptr;
+}
+const Node* FuncNode::getPara(int n) const {
+    const FuncParasNode* fp = dynamic_cast<const FuncParasNode*>(paras);
+    if(fp) {
+        return fp->getPara(n);
+    }
+    else {
+        throw std::string("FuncParasNode type error");
+    }
+}
+int FuncNode::getParaSize() const {
+    const FuncParasNode* fp = dynamic_cast<const FuncParasNode*>(paras);
+    if(fp) {
+        return fp->getParaSize();
+    }
+    else {
+        throw std::string("FuncParasNode type error");
+    }
+}
+
+/************************ FUNCTION ************************/
 const Literal* SuiteNode::eval() const {
     if(stmts.empty()) {
         return nullptr;
@@ -310,33 +416,18 @@ const Literal* SuiteNode::eval() const {
     return nullptr;
 }
 
-
-const Literal* FuncNode::eval() const {
-    ScopeControl::getInstance().setFunc(name, suite);
+const Literal* ArgsNode::eval() const {
     return nullptr;
 }
 
-const Literal* CallNode::eval() const {
-    ScopeControl& scope = ScopeControl::getInstance();
-    scope.pushScope();
-    const Literal* res = scope.getFunc(name)->eval();
-    scope.popScope();
-    return res;
+const Literal* FuncParasNode::eval() const {
+    return nullptr;
 }
 
-const Literal* IfNode::eval() const {
-    if(!test) return nullptr;
-    const Literal* t_res = test->eval();
-    // t_res->print(); //print 0 or 1
-    if(!t_res) throw std::string("if test error");
-    if(t_res->isTrue()) {
-        if(ifsuite) {
-            ifsuite->eval();
-        }
-    }
-    else if(elsesuite) {
-        elsesuite->eval();
-    }
+/************************ Tracer ************************/
+//just use to track the parser
+const Literal* TracerNode::eval() const {
+    std::cout << "impossible to evaluate Tracer" << std::endl;
     return nullptr;
 }
 
