@@ -9,6 +9,16 @@
 #include "loader.h"
 #include "viewer.h"
 
+bool file_exists(const char * filename)
+{
+    if (FILE * file = fopen(filename, "r"))
+    {
+        fclose(file);
+        return true;
+    }
+    return false;
+}
+
 void obj_loader(const char *path) {
     FILE * objfile = fopen(path, "r");
     if (objfile == NULL) {
@@ -210,7 +220,7 @@ void write_frame(color_t frame[HEIGHT][WIDTH]) {
     //itoa(count, nchar, 10);
     sprintf(name, "%s%d%s", pre, count, etn);
 
-    while (_access(name, 0) != -1)
+    while (file_exists(name))
     {
         sprintf(name, "%s%d%s", pre, ++count, etn);
     }

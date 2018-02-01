@@ -1,10 +1,10 @@
 #pragma once
 #include <stdio.h>
-#include <io.h>
 #include <stdlib.h>
 #include <string.h>
 #include "common.h"
 
+bool file_exists(const char * filename);
 void obj_loader(const char *path);
 void textureMap_loader(const char *path);
 void normalMap_loader(const char *path);
