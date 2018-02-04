@@ -14,7 +14,7 @@ public:
         std::cout << this << " - " << "convert" << std::endl;
         strcpy(buf, s);
     }
-    string(const string & s) : buf(new char(strlen(s.buf) + 1)) {
+    string(const string & s) : buf(new char[strlen(s.buf) + 1]) {
         std::cout << this << " - " << "copy" << std::endl;
         strcpy(buf, s.buf);
     }
@@ -39,14 +39,17 @@ private:
 
 class Pokemon {
 public:
-    Pokemon(string n) {}
+    Pokemon(string n) : name(n) {}
 private:
     string name;
 };
 
 int main() {
 
-    Pokemon a("halo");
+    Pokemon a("aa");
+    Pokemon b("bb");
+    Pokemon c("cc");
+    std::cout << "end" << '\n';
 
     //string b("vb");
 
