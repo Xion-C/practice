@@ -110,14 +110,13 @@ void DrawGradientRect(
     SDL_Color color1,
     SDL_Color color2)
 {
+    Uint8 r, g, b;
     for (int y = rect.y; y < (rect.y + rect.h); ++y) {
         float c = static_cast<float>(y - rect.y) / rect.h;
-        SDL_Color color = {
-            color1.r + (color2.r - color1.r) * c,
-            color1.g + (color2.g - color1.g) * c,
-            color1.b + (color2.b - color1.b) * c,
-            255
-        };
+        r = color1.r + round((color2.r - color1.r) * c);
+        g = color1.g + round((color2.g - color1.g) * c);
+        b = color1.b + round((color2.b - color1.b) * c);
+        SDL_Color color = { r, g, b, 255 };
         SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
         SDL_RenderDrawLine(renderer, rect.x, y, rect.x + rect.w, y);
     }

@@ -1,5 +1,5 @@
-#define SDL_MAIN_HANDLED 
-#include <SDL_main.h> 
+// #define SDL_MAIN_HANDLED
+// #include <SDL_main.h>
 #include <iostream>
 
 #include <SDL2/SDL.h>
@@ -21,7 +21,6 @@ int main(void) {
     SDL_RenderClear(renderer);
 
     // Draw a minion
-    SDL_Point center = { 320, 240 };
     SDL_Color white = { 255, 255, 255, 255 };
     SDL_Color black = { 0, 0, 0, 255 };
     SDL_Color lightgray = { 220, 220, 220, 255 };
@@ -32,6 +31,7 @@ int main(void) {
     SDL_Color jeansdarkblue = { 0, 100, 150, 255 };
     SDL_Color lightblack = { 49, 49, 49, 255 };
     SDL_Color darkblack = { 20, 20, 20, 255 };
+    SDL_Color purple = { 145, 75, 215, 255 };
 
     SDL_Point headcenter = { 320, 185 };
     SDL_Point jeanscenter = { 320, 325 };
@@ -41,7 +41,7 @@ int main(void) {
     DrawGradientRect(renderer, { 0, 0, WIDTH, HEIGHT }, lightgray, darkgray);
 
     // draw hair
-    DrawRadialLine(renderer, headcenter, 130, 210, 330, 10, 1, lightblack);
+    DrawRadialLine(renderer, headcenter, 135, 210, 330, 10, 1, lightblack);
 
     // body
     DrawFilledCircle(renderer, headcenter, 120, bananayellow);
@@ -108,6 +108,22 @@ int main(void) {
     DrawPartialAnnulus(renderer, { 350, 465 }, 0, 20, 0, 179, darkblack);
     DrawFilledRect(renderer, { 287, 450, 25, 14 }, darkblack);
     DrawFilledRect(renderer, { 328, 450, 25, 14 }, darkblack);
+
+    //Bello!
+    DrawPartialAnnulus(renderer, { 480, 65 }, 5, 15, 0, 270, purple);
+    DrawPartialAnnulus(renderer, { 480, 85 }, 5, 15, 90, 360, purple);
+    DrawThickLine(renderer, { 470, 60 }, { 470, 90 }, 10, purple);
+    DrawPartialAnnulus(renderer, { 510, 85 }, 6, 14, 0, 180, purple);
+    DrawPartialAnnulus(renderer, { 510, 85 }, 6, 14, 245, 360, purple);
+    DrawThickLine(renderer, { 500, 85 }, { 523, 85 }, 3, purple);
+    DrawThickLine(renderer, { 530, 60 }, { 530, 100 }, 10, purple);
+    DrawFilledCircle(renderer, { 531, 60 }, 6, purple);
+    DrawThickLine(renderer, { 545, 60 }, { 545, 100 }, 10, purple);
+    DrawFilledCircle(renderer, { 546, 60 }, 6, purple);
+    DrawPartialAnnulus(renderer, { 570, 85 }, 5, 15, 0, 360, purple);
+    DrawThickLine(renderer, { 595, 55 }, { 595, 85 }, 10, purple);
+    DrawFilledCircle(renderer, { 596, 95 }, 6, purple);
+
 
     // generate frame
     SDL_RenderPresent(renderer);
