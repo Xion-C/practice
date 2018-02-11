@@ -24,7 +24,7 @@ int main(void) {
     SDL_Color white = { 255, 255, 255, 255 };
     SDL_Color black = { 0, 0, 0, 255 };
     SDL_Color lightgray = { 220, 220, 220, 255 };
-    SDL_Color darkgray = { 50, 50, 50, 255 };
+    SDL_Color darkgray = { 80, 80, 80, 255 };
     SDL_Color gray = { 125, 125, 125, 255 };
     SDL_Color bananayellow = { 231, 218, 77, 255 };
     SDL_Color jeansblue = { 0, 117, 169, 255 };
