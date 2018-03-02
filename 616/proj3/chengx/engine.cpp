@@ -21,7 +21,8 @@ Engine::Engine() :
     io( IoMod::getInstance() ),
     clock( Clock::getInstance() ),
     renderer( rc->getRenderer() ),
-    world("back", Gamedata::getInstance().getXmlInt("back/factor") ),
+    back_layer1("layer1", Gamedata::getInstance().getXmlInt("back/factor") ),
+    back_layer2("back", Gamedata::getInstance().getXmlInt("back/factor") ),
     viewport( Viewport::getInstance() ),
     star(new Sprite("YellowStar")),
     spinningStar(new MultiSprite("SpinningStar")),
@@ -34,7 +35,9 @@ Engine::Engine() :
 }
 
 void Engine::draw() const {
-    world.draw();
+    back_layer2.draw();
+    back_layer1.draw();
+
 
     star->draw();
     spinningStar->draw();
@@ -46,7 +49,8 @@ void Engine::draw() const {
 void Engine::update(Uint32 ticks) {
     star->update(ticks);
     spinningStar->update(ticks);
-    world.update();
+    back_layer2.update();
+    back_layer1.update();
     viewport.update(); // always update viewport last
 }
 

@@ -12,13 +12,13 @@
 <username>xcheng2</username>
 
 <view>
-  <width>854</width>
+  <width>900</width>
   <height>480</height>
 </view>
 
 <world>
-  <width>2000</width>
-  <height>800</height>
+  <width>5000</width>
+  <height>600</height>
 </world>
 
 <back>
@@ -26,6 +26,12 @@
   <factor>1</factor>
   <transparency>false</transparency>
 </back>
+
+<layer1>
+    <file>assets/layer1.png</file>
+    <factor>10</factor>
+    <transparency>true</transparency>
+</layer1>
 
 <font name="font">
   <file>fonts/arial.ttf</file>

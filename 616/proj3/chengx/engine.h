@@ -19,7 +19,8 @@ private:
     Clock& clock;
 
     SDL_Renderer * const renderer;
-    World world;
+    World back_layer1;
+    World back_layer2;
     Viewport& viewport;
 
     Drawable* star;
