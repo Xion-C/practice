@@ -21,6 +21,7 @@ private:
     SDL_Renderer * const renderer;
     World back_layer1;
     World back_layer2;
+    World back_layer3;
     Viewport& viewport;
 
     // Drawable* star;

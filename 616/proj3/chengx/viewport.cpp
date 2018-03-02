@@ -35,7 +35,7 @@ void Viewport::draw() const {
                                    {30, 255, 150, 0});
     IoMod::getInstance().writeText("Xin Cheng",
                                    30, viewHeight - 30,
-                                   {255, 150, 100, 0});
+                                   {0, 0, 100, 0});
 }
 
 void Viewport::update() {

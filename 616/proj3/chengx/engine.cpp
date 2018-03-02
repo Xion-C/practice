@@ -6,6 +6,7 @@
 #include <iomanip>
 #include "sprite.h"
 #include "multisprite.h"
+#include "twowayMultisprite.h"
 #include "gamedata.h"
 #include "engine.h"
 #include "frameGenerator.h"
@@ -30,7 +31,8 @@ Engine::Engine() :
     clock( Clock::getInstance() ),
     renderer( rc->getRenderer() ),
     back_layer1("layer1", Gamedata::getInstance().getXmlInt("layer1/factor") ),
-    back_layer2("back", Gamedata::getInstance().getXmlInt("back/factor") ),
+    back_layer2("layer2", Gamedata::getInstance().getXmlInt("layer2/factor") ),
+    back_layer3("layer3", Gamedata::getInstance().getXmlInt("layer3/factor") ),
     viewport( Viewport::getInstance() ),
     // star(new Sprite("YellowStar")),
     // spinningStar(new MultiSprite("SpinningStar")),
@@ -49,11 +51,19 @@ Engine::Engine() :
         sprites_vec.emplace_back(new MultiSprite("character2"));
     }
 
-    Viewport::getInstance().setObjectToTrack(sprites_vec[0]);
+    for(int i = 0;
+        i < Gamedata::getInstance().getXmlInt("character3/number");
+        i++) {
+        sprites_vec.emplace_back(new TwoWayMultiSprite("character3"));
+    }
+
+    // Viewport::getInstance().setObjectToTrack(sprites_vec[0]);
+    Viewport::getInstance().setObjectToTrack(sprites_vec[sprites_vec.size() - 1]);
     std::cout << "Loading complete" << std::endl;
 }
 
 void Engine::draw() const {
+    back_layer3.draw();
     back_layer2.draw();
     back_layer1.draw();
 
@@ -76,6 +86,7 @@ void Engine::update(Uint32 ticks) {
     }
     back_layer1.update();
     back_layer2.update();
+    back_layer3.update();
     viewport.update(); // always update viewport last
 }
 

@@ -17,21 +17,27 @@
 </view>
 
 <world>
-    <width>5000</width>
+    <width>2000</width>
     <height>600</height>
 </world>
-
-<back>
-    <file>assets/checkerboard.bmp</file>
-    <factor>2</factor>
-    <transparency>false</transparency>
-</back>
 
 <layer1>
     <file>assets/layer1.png</file>
     <factor>1</factor>
     <transparency>false</transparency>
 </layer1>
+
+<layer2>
+    <file>assets/layer2.png</file>
+    <factor>2</factor>
+    <transparency>false</transparency>
+</layer2>
+
+<layer3>
+    <file>assets/layer3.png</file>
+    <factor>4</factor>
+    <transparency>false</transparency>
+</layer3>
 
 <font name="font">
     <file>fonts/arial.ttf</file>
@@ -43,8 +49,8 @@
 </font>
 
 <character1>
-    <file>assets/yellowstar32.png</file>
-    <number>100</number>
+    <file>assets/character1.png</file>
+    <number>5</number>
     <startLoc x="227" y="240"/>
     <speedX>300</speedX>
     <speedY>300</speedY>
@@ -52,15 +58,25 @@
 </character1>
 
 <character2>
-    <file>assets/spinstar.png</file>
-    <number>10</number>
+    <file>assets/character2.png</file>
+    <number>3</number>
     <startLoc x="50" y="140"/>
-    <frames>4</frames>
+    <frames>2</frames>
     <frameInterval>50</frameInterval>
     <speedX>200</speedX>
     <speedY>200</speedY>
     <transparency>false</transparency>
 </character2>
 
+<character3>
+    <file>assets/character3.png</file>
+    <number>2</number>
+    <startLoc x="50" y="140"/>
+    <frames>2</frames>
+    <frameInterval>50</frameInterval>
+    <speedX>800</speedX>
+    <speedY>200</speedY>
+    <transparency>false</transparency>
+</character3>
 
 </GameData>

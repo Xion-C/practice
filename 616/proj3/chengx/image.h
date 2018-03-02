@@ -14,6 +14,7 @@ public:
     void regenerateTexture();
     void draw(int x, int y) const;
     void draw(int x, int y, float scale) const;
+    void draw(int x, int y, float scale, const SDL_RendererFlip flip) const;
     void draw(int sx, int sy, int dx, int dy) const;
 
     inline int getWidth()  const {

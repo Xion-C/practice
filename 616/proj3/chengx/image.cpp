@@ -50,6 +50,16 @@ void Image::draw(int x, int y, float scale) const {
     SDL_RenderCopy(renderer, texture, &view, &dest);
 }
 
+void Image::draw(int x, int y, float scale, const SDL_RendererFlip flip) const {
+    x -= Viewport::getInstance().getX();
+    y -= Viewport::getInstance().getY();
+    int tempHeight = scale*view.h;
+    int tempWidth =  scale*view.w;
+    SDL_Rect dest =  {x, y, tempWidth, tempHeight};
+    //SDL_RenderCopy(renderer, texture, &view, &dest);
+    SDL_RenderCopyEx(renderer, texture, &view, &dest, 0, NULL, flip);
+}
+
 void Image::draw(int sx, int sy, int dx, int dy) const {
     SDL_Rect src = { sx, sy, view.w, view.h };
     SDL_Rect dst = { dx, dy, getWidth(), getHeight() };

@@ -20,9 +20,10 @@ engine.o: engine.cpp sprite.h drawable.h /usr/include/SDL2/SDL.h \
  /usr/include/SDL2/SDL_messagebox.h /usr/include/SDL2/SDL_power.h \
  /usr/include/SDL2/SDL_render.h /usr/include/SDL2/SDL_system.h \
  /usr/include/SDL2/SDL_timer.h /usr/include/SDL2/SDL_version.h vector2f.h \
- image.h multisprite.h gamedata.h parseXML.h engine.h ioMod.h \
- /usr/include/SDL2/SDL_ttf.h /usr/include/SDL2/SDL.h renderContext.h \
- imageFactory.h spriteSheet.h clock.h world.h viewport.h frameGenerator.h
+ image.h multisprite.h twowayMultisprite.h gamedata.h parseXML.h engine.h \
+ ioMod.h /usr/include/SDL2/SDL_ttf.h /usr/include/SDL2/SDL.h \
+ renderContext.h imageFactory.h spriteSheet.h clock.h world.h viewport.h \
+ frameGenerator.h
 
 sprite.h:
 
@@ -119,6 +120,8 @@ vector2f.h:
 image.h:
 
 multisprite.h:
+
+twowayMultisprite.h:
 
 gamedata.h:
 
