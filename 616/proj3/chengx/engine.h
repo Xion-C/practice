@@ -8,31 +8,31 @@
 
 class Engine {
 public:
-  Engine ();
-  ~Engine ();
-  void play();
-  void switchSprite();
+    Engine ();
+    ~Engine ();
+    void play();
+    void switchSprite();
 
 private:
-  const RenderContext* rc;
-  const IoMod& io;
-  Clock& clock;
+    const RenderContext* rc;
+    const IoMod& io;
+    Clock& clock;
 
-  SDL_Renderer * const renderer;
-  World world;
-  Viewport& viewport;
+    SDL_Renderer * const renderer;
+    World world;
+    Viewport& viewport;
 
-  Drawable* star;
-  Drawable* spinningStar;
-  int currentSprite;
+    Drawable* star;
+    Drawable* spinningStar;
+    int currentSprite;
 
-  bool makeVideo;
+    bool makeVideo;
 
-  void draw() const;
-  void update(Uint32);
+    void draw() const;
+    void update(Uint32);
 
-  Engine(const Engine&) = delete;
-  Engine& operator=(const Engine&) = delete;
-  void printScales() const;
-  void checkForCollisions();
+    Engine(const Engine&) = delete;
+    Engine& operator=(const Engine&) = delete;
+    void printScales() const;
+    void checkForCollisions();
 };

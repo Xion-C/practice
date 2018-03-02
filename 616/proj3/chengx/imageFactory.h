@@ -27,15 +27,16 @@ private:
     std::map<std::string, std::vector<SDL_Texture*> > multiTextures;
     std::map<std::string, std::vector<Image*> > multiImages;
 
-  ImageFactory() :
-    gdata( Gamedata::getInstance() ),
-    surfaces(),
-    textures(),
-    images(),
-    multiSurfaces(),
-    multiTextures(),
-    multiImages()
-  {}
-  ImageFactory(const ImageFactory&) = delete;
-  ImageFactory& operator=(const ImageFactory&) = delete;
+    ImageFactory() :
+        gdata( Gamedata::getInstance() ),
+        surfaces(),
+        textures(),
+        images(),
+        multiSurfaces(),
+        multiTextures(),
+        multiImages()
+    {
+    }
+    ImageFactory(const ImageFactory&) = delete;
+    ImageFactory& operator=(const ImageFactory&) = delete;
 };
