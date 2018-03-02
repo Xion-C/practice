@@ -23,8 +23,10 @@ private:
     World back_layer2;
     Viewport& viewport;
 
-    Drawable* star;
-    Drawable* spinningStar;
+    // Drawable* star;
+    // Drawable* spinningStar;
+    std::vector<Drawable*> sprites_vec;
+
     int currentSprite;
 
     bool makeVideo;

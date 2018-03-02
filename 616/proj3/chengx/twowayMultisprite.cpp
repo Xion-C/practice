@@ -1,8 +1,8 @@
-#include "multisprite.h"
+#include "twowayMultisprite.h"
 #include "gamedata.h"
 #include "renderContext.h"
 
-void MultiSprite::advanceFrame(Uint32 ticks) {
+void TwoWayMultiSprite::advanceFrame(Uint32 ticks) {
     timeSinceLastFrame += ticks;
     if (timeSinceLastFrame > frameInterval) {
         currentFrame = (currentFrame+1) % numberOfFrames;
@@ -10,7 +10,7 @@ void MultiSprite::advanceFrame(Uint32 ticks) {
     }
 }
 
-Vector2f MultiSprite::makeVelocity(int vx, int vy) const {
+Vector2f TwoWayMultiSprite::makeVelocity(int vx, int vy) const {
     float newvx = Gamedata::getInstance().getRandFloat(vx-50,vx+50);;
     float newvy = Gamedata::getInstance().getRandFloat(vy-50,vy+50);;
     newvx *= [] (){ if(rand()%2) return -1; else return 1; } ();
@@ -19,7 +19,7 @@ Vector2f MultiSprite::makeVelocity(int vx, int vy) const {
     return Vector2f(newvx, newvy);
 }
 
-MultiSprite::MultiSprite( const std::string& name) :
+TwoWayMultiSprite::TwoWayMultiSprite( const std::string& name) :
     Drawable(name,
              Vector2f(Gamedata::getInstance().getXmlInt(name+"/startLoc/x"),
                       Gamedata::getInstance().getXmlInt(name+"/startLoc/y")),
@@ -37,7 +37,7 @@ MultiSprite::MultiSprite( const std::string& name) :
 {
 }
 
-MultiSprite::MultiSprite(const MultiSprite& s) :
+TwoWayMultiSprite::TwoWayMultiSprite(const TwoWayMultiSprite& s) :
     Drawable(s),
     images(s.images),
     currentFrame(s.currentFrame),
@@ -49,7 +49,7 @@ MultiSprite::MultiSprite(const MultiSprite& s) :
 {
 }
 
-MultiSprite& MultiSprite::operator=(const MultiSprite& s) {
+TwoWayMultiSprite& TwoWayMultiSprite::operator=(const TwoWayMultiSprite& s) {
     Drawable::operator=(s);
     images = (s.images);
     currentFrame = (s.currentFrame);
@@ -61,11 +61,11 @@ MultiSprite& MultiSprite::operator=(const MultiSprite& s) {
     return *this;
 }
 
-void MultiSprite::draw() const {
+void TwoWayMultiSprite::draw() const {
     images[currentFrame]->draw(getX(), getY(), getScale());
 }
 
-void MultiSprite::update(Uint32 ticks) {
+void TwoWayMultiSprite::update(Uint32 ticks) {
     advanceFrame(ticks);
 
     Vector2f incr = getVelocity() * static_cast<float>(ticks) * 0.001;

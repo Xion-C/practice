@@ -1,14 +1,14 @@
-#ifndef MULTISPRITE__H
-#define MULTISPRITE__H
+#ifndef TWOWAYMULTISPRITE_H_
+#define TWOWAYMULTISPRITE_H_
 #include <string>
 #include <vector>
 #include <cmath>
 #include "drawable.h"
 
-class MultiSprite : public Drawable {
+class TwoWayMultiSprite : public Drawable {
 public:
-    MultiSprite(const std::string&);
-    MultiSprite(const MultiSprite&);
+    TwoWayMultiSprite(const std::string&);
+    TwoWayMultiSprite(const TwoWayMultiSprite&);
 
     virtual void draw() const;
     virtual void update(Uint32 ticks);
@@ -38,6 +38,6 @@ protected:
 
     void advanceFrame(Uint32 ticks);
     Vector2f makeVelocity(int, int) const;
-    MultiSprite& operator=(const MultiSprite&);
+    TwoWayMultiSprite& operator=(const TwoWayMultiSprite&);
 };
 #endif

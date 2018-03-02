@@ -11,8 +11,16 @@
 #include "frameGenerator.h"
 
 Engine::~Engine() {
-    delete star;
-    delete spinningStar;
+    // delete star;
+    // delete spinningStar;
+    for(auto sprite : sprites_vec) {
+        if(sprite != nullptr) {
+            delete sprite;
+        }
+        else {
+            throw std::string("null sprite pointer");
+        }
+    }
     std::cout << "Terminating program" << std::endl;
 }
 
@@ -21,16 +29,27 @@ Engine::Engine() :
     io( IoMod::getInstance() ),
     clock( Clock::getInstance() ),
     renderer( rc->getRenderer() ),
-    back_layer1("layer1", Gamedata::getInstance().getXmlInt("back/factor") ),
+    back_layer1("layer1", Gamedata::getInstance().getXmlInt("layer1/factor") ),
     back_layer2("back", Gamedata::getInstance().getXmlInt("back/factor") ),
     viewport( Viewport::getInstance() ),
-    star(new Sprite("YellowStar")),
-    spinningStar(new MultiSprite("SpinningStar")),
+    // star(new Sprite("YellowStar")),
+    // spinningStar(new MultiSprite("SpinningStar")),
+    sprites_vec(),
     currentSprite(0),
     makeVideo( false )
 {
+    for(int i = 0;
+        i < Gamedata::getInstance().getXmlInt("character1/number");
+        i++) {
+        sprites_vec.emplace_back(new Sprite("character1"));
+    }
+    for(int i = 0;
+        i < Gamedata::getInstance().getXmlInt("character2/number");
+        i++) {
+        sprites_vec.emplace_back(new MultiSprite("character2"));
+    }
 
-    Viewport::getInstance().setObjectToTrack(star);
+    Viewport::getInstance().setObjectToTrack(sprites_vec[0]);
     std::cout << "Loading complete" << std::endl;
 }
 
@@ -38,31 +57,37 @@ void Engine::draw() const {
     back_layer2.draw();
     back_layer1.draw();
 
+    // star->draw();
+    // spinningStar->draw();
 
-    star->draw();
-    spinningStar->draw();
+    for(auto sprite : sprites_vec) {
+        sprite->draw();
+    }
 
     viewport.draw();
     SDL_RenderPresent(renderer);
 }
 
 void Engine::update(Uint32 ticks) {
-    star->update(ticks);
-    spinningStar->update(ticks);
-    back_layer2.update();
+    // star->update(ticks);
+    // spinningStar->update(ticks);
+    for(auto sprite : sprites_vec) {
+        sprite->update(ticks);
+    }
     back_layer1.update();
+    back_layer2.update();
     viewport.update(); // always update viewport last
 }
 
 void Engine::switchSprite(){
-    ++currentSprite;
-    currentSprite = currentSprite % 2;
-    if ( currentSprite ) {
-        Viewport::getInstance().setObjectToTrack(spinningStar);
-    }
-    else {
-        Viewport::getInstance().setObjectToTrack(star);
-    }
+    // ++currentSprite;
+    // currentSprite = currentSprite % 3;
+    // if ( currentSprite ) {
+    //     Viewport::getInstance().setObjectToTrack(spinningStar);
+    // }
+    // else {
+    //     Viewport::getInstance().setObjectToTrack(star);
+    // }
 }
 
 void Engine::play() {
