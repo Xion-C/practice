@@ -62,7 +62,13 @@ MultiSprite& MultiSprite::operator=(const MultiSprite& s) {
 }
 
 void MultiSprite::draw() const {
-    images[currentFrame]->draw(getX(), getY(), getScale());
+    if(getVelocityX() >= 0) {
+        images[currentFrame]->draw(getX(), getY(), getScale());
+    }
+    else {
+        SDL_RendererFlip flip = SDL_FLIP_HORIZONTAL;
+        images[currentFrame]->draw(getX(), getY(), getScale(), flip);
+    }
 }
 
 void MultiSprite::update(Uint32 ticks) {

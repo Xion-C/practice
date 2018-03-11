@@ -13,11 +13,11 @@
 
 <view>
     <width>854</width>
-    <height>480</height>
+    <height>600</height>
 </view>
 
 <world>
-    <width>2000</width>
+    <width>4000</width>
     <height>600</height>
 </world>
 
