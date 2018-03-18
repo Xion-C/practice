@@ -8,3 +8,6 @@ If images with the same name exist in both directories, the command above will o
 
 If you want to move the files from /images, with rsync, you can pass the option --remove-source-files. Then rsync copies all the files in turn, and removes each file when it's done. This is a lot slower than moving if the source and destination directories are on the same filesystem.
 
+
+
+
