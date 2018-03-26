@@ -92,6 +92,10 @@ void Engine::update(Uint32 ticks) {
 
 void Engine::switchSprite(){
     ++currentSprite;
+    if(currentSprite >= sprites_vec.size()) {
+        currentSprite = 0;
+    }
+    Viewport::getInstance().setObjectToTrack(sprites_vec[currentSprite]);
     // currentSprite = currentSprite % 3;
     // if ( currentSprite ) {
     //     Viewport::getInstance().setObjectToTrack(spinningStar);
