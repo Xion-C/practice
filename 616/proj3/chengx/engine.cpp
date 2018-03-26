@@ -91,7 +91,7 @@ void Engine::update(Uint32 ticks) {
 }
 
 void Engine::switchSprite(){
-    // ++currentSprite;
+    ++currentSprite;
     // currentSprite = currentSprite % 3;
     // if ( currentSprite ) {
     //     Viewport::getInstance().setObjectToTrack(spinningStar);
