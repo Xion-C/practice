@@ -41,20 +41,20 @@ Engine::Engine() :
     makeVideo( false )
 {
     for(int i = 0;
-        i < Gamedata::getInstance().getXmlInt("character1/number");
+        i < Gamedata::getInstance().getXmlInt("Cloud/number");
         i++) {
-        sprites_vec.emplace_back(new Sprite("character1"));
+        sprites_vec.emplace_back(new Sprite("Cloud"));
     }
     for(int i = 0;
-        i < Gamedata::getInstance().getXmlInt("character2/number");
+        i < Gamedata::getInstance().getXmlInt("Sword/number");
         i++) {
-        sprites_vec.emplace_back(new MultiSprite("character2"));
+        sprites_vec.emplace_back(new MultiSprite("Sword"));
     }
 
     for(int i = 0;
-        i < Gamedata::getInstance().getXmlInt("character3/number");
+        i < Gamedata::getInstance().getXmlInt("XCheng/number");
         i++) {
-        sprites_vec.emplace_back(new TwoWayMultiSprite("character3"));
+        sprites_vec.emplace_back(new TwoWayMultiSprite("XCheng"));
     }
 
     // Viewport::getInstance().setObjectToTrack(sprites_vec[0]);

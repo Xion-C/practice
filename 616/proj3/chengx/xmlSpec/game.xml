@@ -12,29 +12,29 @@
 <username>xcheng2</username>
 
 <view>
-    <width>854</width>
+    <width>1067</width>
     <height>600</height>
 </view>
 
 <world>
-    <width>4000</width>
+    <width>2000</width>
     <height>600</height>
 </world>
 
 <layer1>
-    <file>assets/layer1.png</file>
+    <file>assets/Ground.png</file>
     <factor>1</factor>
     <transparency>false</transparency>
 </layer1>
 
 <layer2>
-    <file>assets/layer2.png</file>
+    <file>assets/Mountain.png</file>
     <factor>2</factor>
     <transparency>false</transparency>
 </layer2>
 
 <layer3>
-    <file>assets/layer3.png</file>
+    <file>assets/Sky.png</file>
     <factor>4</factor>
     <transparency>false</transparency>
 </layer3>
@@ -48,35 +48,35 @@
     <alpha>0</alpha>
 </font>
 
-<character1>
-    <file>assets/character1.png</file>
+<Cloud>
+    <file>assets/Cloud.png</file>
     <number>5</number>
     <startLoc x="227" y="240"/>
     <speedX>300</speedX>
     <speedY>300</speedY>
     <transparency>false</transparency>
-</character1>
+</Cloud>
 
-<character2>
-    <file>assets/character2.png</file>
+<Sword>
+    <file>assets/Sword.png</file>
     <number>3</number>
     <startLoc x="50" y="140"/>
-    <frames>2</frames>
+    <frames>8</frames>
     <frameInterval>50</frameInterval>
-    <speedX>200</speedX>
+    <speedX>600</speedX>
     <speedY>200</speedY>
     <transparency>false</transparency>
-</character2>
+</Sword>
 
-<character3>
-    <file>assets/character3.png</file>
-    <number>2</number>
-    <startLoc x="50" y="140"/>
-    <frames>2</frames>
-    <frameInterval>50</frameInterval>
-    <speedX>800</speedX>
-    <speedY>200</speedY>
+<XCheng>
+    <file>assets/XCheng.png</file>
+    <number>1</number>
+    <startLoc x="50" y="350"/>
+    <frames>4</frames>
+    <frameInterval>200</frameInterval>
+    <speedX>300</speedX>
+    <speedY>0</speedY>
     <transparency>false</transparency>
-</character3>
+</XCheng>
 
 </GameData>

@@ -59,7 +59,15 @@ constexpr float SCALE_EPSILON = 2e-7;
 
 void Sprite::draw() const {
     if(getScale() < SCALE_EPSILON) return;
-    image->draw(getX(), getY(), getScale());
+    //image->draw(getX(), getY(), getScale());
+    if(getVelocityX() >= 0) {
+        image->draw(getX(), getY(), getScale());
+    }
+    else {
+        SDL_RendererFlip flip = SDL_FLIP_HORIZONTAL;
+        image->draw(getX(), getY(), getScale(), flip);
+    }
+
 }
 
 void Sprite::update(Uint32 ticks) {
