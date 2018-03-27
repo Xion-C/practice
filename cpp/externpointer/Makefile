@@ -7,6 +7,9 @@ OBJS = main.o pointer.o
 
 EXEC = run
 
+# automatic variables: $< - the name of the prerequisite of
+# the rule; $@ - the name of the target of the rule
+
 $(EXEC): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(LDFLAGS)
 
