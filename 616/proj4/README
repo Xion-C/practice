@@ -13,5 +13,5 @@ Project description: Adding a Player Object
 The easiest part of this project: edit game.xml
 
 Problems that I had in completing this project:
-    -
+    - In the final project, I'm planing to add some enemies. The enemies will attack the player. The player could hide or defense(like, press s to crouch will reduce the damage). The player could also fight the enemies. When cleaning out all the enemies, the player win; if the player's HP reduced to 0, game over.
     - All the art resources including the background and sprites are drawn by myself

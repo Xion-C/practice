@@ -5,6 +5,7 @@
 #include "clock.h"
 #include "world.h"
 #include "viewport.h"
+#include "hud.h"
 
 class CollisionStrategy;
 class SmartSprite;
@@ -36,8 +37,11 @@ private:
     std::vector<CollisionStrategy*> strategies;
     int currentStrategy;
     bool collision;
-
     bool makeVideo;
+
+    HUD hud;
+    bool hud_on;
+
 
     void draw() const;
     void update(Uint32);

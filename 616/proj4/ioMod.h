@@ -1,3 +1,6 @@
+#ifndef IOMOD__H
+#define IOMOD__H
+
 #include <iostream>
 #include <string>
 #include <SDL.h>
@@ -23,3 +26,5 @@ private:
     IOMod(const IOMod&);
     IOMod& operator=(const IOMod&);
 };
+
+#endif

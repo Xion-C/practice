@@ -32,7 +32,8 @@ SmartSprite::SmartSprite(const std::string& name, const Vector2f& pos,
     playerWidth(w),
     playerHeight(h),
     currentMode(NORMAL),
-    safeDistance(Gamedata::getInstance().getXmlFloat(name+"/safeDistance"))
+    safeDistance(Gamedata::getInstance().getXmlFloat(name+"/safeDistance")),
+    duration(0)
 {
 }
 
@@ -43,8 +44,14 @@ SmartSprite::SmartSprite(const SmartSprite& s) :
     playerWidth(s.playerWidth),
     playerHeight(s.playerHeight),
     currentMode(s.currentMode),
-    safeDistance(s.safeDistance)
+    safeDistance(s.safeDistance),
+    duration(0)
 {
+}
+
+void SmartSprite::speedUp(const Vector2f& v, Uint32 ticks) {
+    setVelocity(v);
+    duration = ticks;
 }
 
 void SmartSprite::update(Uint32 ticks) {

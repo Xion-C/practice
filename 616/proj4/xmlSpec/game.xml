@@ -21,6 +21,17 @@
     <height>600</height>
 </world>
 
+<HUD>
+    <posX>10</posX>
+    <posY>10</posY>
+    <width>300</width>
+    <height>150</height>
+    <info>
+        Press W/A/S/D to move
+        Press
+    </info>
+</HUD>
+
 <layer1>
     <file>assets/Ground.png</file>
     <factor>1</factor>
@@ -50,11 +61,11 @@
 
 <Cloud>
     <file>assets/Cloud.png</file>
-    <number>5</number>
+    <number>8</number>
     <startLoc x="227" y="240"/>
     <speedX>300</speedX>
     <speedY>300</speedY>
-    <safeDistance>75</safeDistance>
+    <safeDistance>120</safeDistance>
     <transparency>false</transparency>
 </Cloud>
 
@@ -73,10 +84,15 @@
     <file>assets/XCheng.png</file>
     <startLoc x="50" y="350"/>
     <frames>4</frames>
+    <transparency>false</transparency>
     <frameInterval>200</frameInterval>
     <speedX>200</speedX>
     <speedY>100</speedY>
-    <transparency>false</transparency>
+    <idle>
+        <file>assets/XCheng.Idle.png</file>
+        <frames>1</frames>
+        <transparency>false</transparency>
+    </idle>
 </XCheng>
 
 </GameData>

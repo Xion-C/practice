@@ -40,7 +40,9 @@ Engine::Engine() :
     strategies(),
     currentStrategy(0),
     collision(false),
-    makeVideo( false )
+    makeVideo( false ),
+    hud(renderer),
+    hud_on(true)
 {
     int n = Gamedata::getInstance().getXmlInt("Cloud/number");
     //clouds.reserve(n);
@@ -56,7 +58,7 @@ Engine::Engine() :
     strategies.push_back(new PerPixelCollisionStrategy);
     strategies.push_back(new MidPointCollisionStrategy);
 
-    Viewport::getInstance().setObjectToTrack(player->getPlayer());
+    Viewport::getInstance().setObjectToTrack(player);
     std::cout << "Loading complete" << std::endl;
 }
 
@@ -68,11 +70,13 @@ void Engine::draw() const {
     for(auto cloud : clouds) {
         cloud->draw();
     }
-    if ( collision ) {
-        IOMod::getInstance().writeText("Oops: Collision", 500, 90);
-    }
+    // if ( collision ) {
+    //     IOMod::getInstance().writeText("Oops: Collision", 500, 90);
+    // }
 
     player->draw();
+
+    if(hud_on) hud.display();
 
     viewport.draw();
     SDL_RenderPresent(renderer);
@@ -81,14 +85,24 @@ void Engine::draw() const {
 void Engine::checkForCollisions() {
     auto it = clouds.begin();
     while ( it != clouds.end() ) {
+        // if ( strategies[currentStrategy]->execute(*player, **it) ) {
+        //     SmartSprite* doa = *it;
+        //     player->detach(doa);
+        //     delete doa;
+        //     it = clouds.erase(it);
+        //     collision = true;
+        // }
+        // else ++it;
+
+        // ai
         if ( strategies[currentStrategy]->execute(*player, **it) ) {
-            SmartSprite* doa = *it;
-            player->detach(doa);
-            delete doa;
-            it = clouds.erase(it);
-            collision = true;
+            // SmartSprite* doa = *it;
+            // // int player_signX = player->getVelocityX() > 0 ? 1 : -1;
+            // // int cloud_singX = doa->getVelocityX() >0 ? 1 : -1;
+            // doa->setVelocity(-2 * (doa->getVelocity()));
         }
-        else ++it;
+        it++;
+
     }
 }
 
@@ -142,6 +156,9 @@ void Engine::play() {
                     std::cout << "Terminating frame capture" << std::endl;
                     makeVideo = false;
                 }
+                if (keystate[SDL_SCANCODE_F1]) {
+                    hud_on = !hud_on;
+                }
             }
         }
 
@@ -152,18 +169,26 @@ void Engine::play() {
             clock.incrFrame();
 
             // movement control
+            // bool stop = true;
             if (keystate[SDL_SCANCODE_A]) {
                 static_cast<Player*>(player)->left();
+                // stop = false;
             }
             if (keystate[SDL_SCANCODE_D]) {
                 static_cast<Player*>(player)->right();
+                // stop = false;
             }
             if (keystate[SDL_SCANCODE_W]) {
                 static_cast<Player*>(player)->up();
+                // stop = false;
             }
             if (keystate[SDL_SCANCODE_S]) {
                 static_cast<Player*>(player)->down();
+                // stop = false;
             }
+            // if(stop) {
+            //     static_cast<Player*>(player)->stop();
+            // }
             draw();
             update(ticks);
             if ( makeVideo ) {

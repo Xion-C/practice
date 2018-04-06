@@ -6,47 +6,34 @@
 #include <vector>
 #include <list>
 #include <cmath>
-#include "multisprite.h"
+#include "drawable.h"
 #include "vector2f.h"
 
 class SmartSprite;
 
-class Player {
+class Player : public Drawable {
 public:
     Player(const std::string&);
     Player(const Player&);
 
-    void draw() const {
-        player.draw();
-    }
-    void update(Uint32 ticks);
-    const MultiSprite* getPlayer() const {
-        return &player;
-    }
+    virtual void draw() const;
+    virtual void update(Uint32 ticks);
 
-    const std::string& getName() const {
-        return player.getName();
-    }
-    int getX() const {
-        return player.getX();
-    }
-    int getY() const {
-        return player.getY();
-    }
-    Vector2f getPosition() const {
-        return player.getPosition();
-    }
-    const Image* getImage() const {
-        return player.getImage();
+    virtual const Image* getImage() const {
+        return images[currentFrame];
     }
     int getScaledWidth()  const {
-        return player.getScaledWidth();
+        return getScale()*images[currentFrame]->getWidth();
     }
     int getScaledHeight()  const {
-        return player.getScaledHeight();
+        return getScale()*images[currentFrame]->getHeight();
     }
-    const SDL_Surface* getSurface() const {
-        return player.getSurface();
+    virtual const SDL_Surface* getSurface() const {
+        return images[currentFrame]->getSurface();
+    }
+
+    void setMotion(int s) {
+        motion_state = s;
     }
 
     void right();
@@ -60,14 +47,27 @@ public:
     }
     void detach( SmartSprite* o );
 
-    Player& operator=(const Player&) = delete;
-
 private:
-    MultiSprite player;
-    Vector2f initialVelocity;
+    std::vector<Image *> images;
+    std::vector<Image *> idle_frames;
+    // 0b0000 (down, up, walk, oirentation)
+    Uint8 motion_state;
+
+    unsigned currentFrame;
+    unsigned numberOfFrames;
+    unsigned frameInterval;
+    float timeSinceLastFrame;
     int worldWidth;
     int worldHeight;
+
+    Vector2f initialVelocity;
+
+    void advanceFrame(Uint32 ticks);
+
+    Player& operator=(const Player&);
+
     std::list<SmartSprite*> observers;
+
 };
 
 #endif
