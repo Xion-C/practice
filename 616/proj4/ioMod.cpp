@@ -3,17 +3,17 @@
 #include "gamedata.h"
 #include "renderContext.h"
 
-IoMod& IoMod::getInstance() {
-    static IoMod instance;
+IOMod& IOMod::getInstance() {
+    static IOMod instance;
     return instance;
 }
 
-IoMod::~IoMod() {
+IOMod::~IOMod() {
     TTF_CloseFont(font);
     TTF_Quit();
 }
 
-IoMod::IoMod() :
+IOMod::IOMod() :
     init(TTF_Init()),
     renderer( RenderContext::getInstance()->getRenderer() ),
     font(TTF_OpenFont(Gamedata::getInstance().getXmlStr("font/file").c_str(),
@@ -32,7 +32,7 @@ IoMod::IoMod() :
     textColor.a = Gamedata::getInstance().getXmlInt("font/alpha");
 }
 
-SDL_Texture* IoMod::readTexture(const std::string& filename) {
+SDL_Texture* IOMod::readTexture(const std::string& filename) {
     SDL_Texture *texture = IMG_LoadTexture(renderer, filename.c_str());
     if ( texture == NULL ) {
         throw std::string("Couldn't load ") + filename;
@@ -40,7 +40,7 @@ SDL_Texture* IoMod::readTexture(const std::string& filename) {
     return texture;
 }
 
-SDL_Surface* IoMod::readSurface(const std::string& filename) {
+SDL_Surface* IOMod::readSurface(const std::string& filename) {
     SDL_Surface *surface = IMG_Load(filename.c_str());
     if ( !surface ) {
         throw std::string("Couldn't load ") + filename;
@@ -48,7 +48,7 @@ SDL_Surface* IoMod::readSurface(const std::string& filename) {
     return surface;
 }
 
-void IoMod::writeText(const std::string& msg, int x, int y) const {
+void IOMod::writeText(const std::string& msg, int x, int y) const {
     // SDL_Surface* surface =
     //   TTF_RenderText_Solid(font, msg.c_str(), textColor);
     //
@@ -64,7 +64,7 @@ void IoMod::writeText(const std::string& msg, int x, int y) const {
     writeText(msg, x, y, textColor);
 }
 
-void IoMod::writeText(const std::string& msg, int x, int y, SDL_Color fontColor) const {
+void IOMod::writeText(const std::string& msg, int x, int y, SDL_Color fontColor) const {
     SDL_Surface* surface =
         TTF_RenderText_Solid(font, msg.c_str(), fontColor);
 

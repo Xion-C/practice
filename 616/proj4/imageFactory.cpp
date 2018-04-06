@@ -62,7 +62,7 @@ Image* ImageFactory::getImage(const std::string& name) {
     std::map<std::string, Image*>::const_iterator it = images.find(name);
     if ( it == images.end() ) {
         SDL_Surface * const surface =
-            IoMod::getInstance().readSurface( gdata.getXmlStr(name+"/file"));
+            IOMod::getInstance().readSurface( gdata.getXmlStr(name+"/file"));
         bool transparency = gdata.getXmlBool(name+"/transparency");
         if ( transparency ) {
             int keyColor = SDL_MapRGBA(surface->format, 255, 0, 255, 255);
@@ -87,7 +87,7 @@ std::vector<Image*> ImageFactory::getImages(const std::string& name) {
         return pos->second;
     }
 
-    IoMod& iomod = IoMod::getInstance();
+    IOMod& iomod = IOMod::getInstance();
     RenderContext* renderContext  = RenderContext::getInstance();
     std::string sheetPath = gdata.getXmlStr(name+"/file");
     SDL_Surface* spriteSurface = iomod.readSurface(sheetPath);

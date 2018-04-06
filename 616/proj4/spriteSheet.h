@@ -30,11 +30,9 @@ public:
     SpriteSheet& operator=(SpriteSheet&&)=default;
 
     SpriteSheet(SDL_Surface* _src, int w, int h, const NonOwningT)
-        : src(_src),view {
-        0,0,w,h
-    }
-    ,Nr(_src->h/h),Nc(_src->w/w),N(Nr*Nc)
-    ,owning(false)
+        : src(_src),view({ 0,0,w,h }),
+        Nr(_src->h/h),Nc(_src->w/w),N(Nr*Nc),
+        owning(false)
     {
     }
     SpriteSheet(SDL_Surface* _src, int w, int h)

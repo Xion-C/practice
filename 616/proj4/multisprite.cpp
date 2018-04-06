@@ -23,8 +23,8 @@ MultiSprite::MultiSprite( const std::string& name) :
     Drawable(name,
              Vector2f(Gamedata::getInstance().getXmlInt(name+"/startLoc/x"),
                       Gamedata::getInstance().getXmlInt(name+"/startLoc/y")),
-             makeVelocity(Gamedata::getInstance().getXmlInt(name+"/speedX"),
-                          Gamedata::getInstance().getXmlInt(name+"/speedY"))
+             Vector2f(Gamedata::getInstance().getXmlInt(name+"/speedX"),
+                      Gamedata::getInstance().getXmlInt(name+"/speedY"))
              ),
     images( RenderContext::getInstance()->getImages(name) ),
 
@@ -62,6 +62,7 @@ MultiSprite& MultiSprite::operator=(const MultiSprite& s) {
 }
 
 void MultiSprite::draw() const {
+    // images[currentFrame]->draw(getX(), getY(), getScale());
     if(getVelocityX() >= 0) {
         images[currentFrame]->draw(getX(), getY(), getScale());
     }

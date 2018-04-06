@@ -6,16 +6,22 @@
 #include "world.h"
 #include "viewport.h"
 
+class CollisionStrategy;
+class SmartSprite;
+class Player;
+
 class Engine {
 public:
     Engine ();
     ~Engine ();
     void play();
-    void switchSprite();
+    // void switchSprite();
+    Engine(const Engine&) = delete;
+    Engine& operator=(const Engine&) = delete;
 
 private:
     const RenderContext* rc;
-    const IoMod& io;
+    const IOMod& io;
     Clock& clock;
 
     SDL_Renderer * const renderer;
@@ -24,19 +30,18 @@ private:
     World back_layer3;
     Viewport& viewport;
 
-    // Drawable* star;
-    // Drawable* spinningStar;
-    std::vector<Drawable*> sprites_vec;
+    Player* player;
+    std::vector<SmartSprite*> clouds;
 
-    unsigned int currentSprite;
+    std::vector<CollisionStrategy*> strategies;
+    int currentStrategy;
+    bool collision;
 
     bool makeVideo;
 
     void draw() const;
     void update(Uint32);
 
-    Engine(const Engine&) = delete;
-    Engine& operator=(const Engine&) = delete;
     void printScales() const;
     void checkForCollisions();
 };

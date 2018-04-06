@@ -4,8 +4,12 @@
 #include <SDL.h>
 #include <string>
 #include <vector>
+#include <list>
 #include <cmath>
 #include "multisprite.h"
+#include "vector2f.h"
+
+class SmartSprite;
 
 class Player {
 public:
@@ -29,6 +33,9 @@ public:
     int getY() const {
         return player.getY();
     }
+    Vector2f getPosition() const {
+        return player.getPosition();
+    }
     const Image* getImage() const {
         return player.getImage();
     }
@@ -48,6 +55,11 @@ public:
     void down();
     void stop();
 
+    void attach( SmartSprite* o ) {
+        observers.push_back(o);
+    }
+    void detach( SmartSprite* o );
+
     Player& operator=(const Player&) = delete;
 
 private:
@@ -55,6 +67,7 @@ private:
     Vector2f initialVelocity;
     int worldWidth;
     int worldHeight;
+    std::list<SmartSprite*> observers;
 };
 
 #endif

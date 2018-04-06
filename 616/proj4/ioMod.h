@@ -3,10 +3,10 @@
 #include <SDL.h>
 #include <SDL_ttf.h>
 
-class IoMod {
+class IOMod {
 public:
-    static IoMod& getInstance();
-    ~IoMod();
+    static IOMod& getInstance();
+    ~IOMod();
     SDL_Texture* readTexture(const std::string& filename);
     SDL_Surface* readSurface(const std::string& filename);
     void writeText(const std::string&, int, int) const;
@@ -19,7 +19,7 @@ private:
     SDL_Renderer* renderer;
     TTF_Font* font;
     SDL_Color textColor;
-    IoMod();
-    IoMod(const IoMod&);
-    IoMod& operator=(const IoMod&);
+    IOMod();
+    IOMod(const IOMod&);
+    IOMod& operator=(const IOMod&);
 };

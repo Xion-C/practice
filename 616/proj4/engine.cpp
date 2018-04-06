@@ -4,61 +4,59 @@
 #include <string>
 #include <random>
 #include <iomanip>
-#include "sprite.h"
-#include "multisprite.h"
-#include "twowayMultisprite.h"
 #include "gamedata.h"
 #include "engine.h"
 #include "frameGenerator.h"
+#include "sprite.h"
+#include "multisprite.h"
+#include "twowayMultisprite.h"
+#include "smartSprite.h"
+#include "player.h"
+#include "collisionStrategy.h"
+
 
 Engine::~Engine() {
-    // delete star;
-    // delete spinningStar;
-    for(auto sprite : sprites_vec) {
-        if(sprite != nullptr) {
-            delete sprite;
-        }
-        else {
-            throw std::string("null sprite pointer");
-        }
+    delete player;
+    for(Drawable* cloud : clouds) {
+        delete cloud;
+    }
+    for(CollisionStrategy* strategy : strategies) {
+        delete strategy;
     }
     std::cout << "Terminating program" << std::endl;
 }
 
 Engine::Engine() :
     rc( RenderContext::getInstance() ),
-    io( IoMod::getInstance() ),
+    io( IOMod::getInstance() ),
     clock( Clock::getInstance() ),
     renderer( rc->getRenderer() ),
     back_layer1("layer1", Gamedata::getInstance().getXmlInt("layer1/factor") ),
     back_layer2("layer2", Gamedata::getInstance().getXmlInt("layer2/factor") ),
     back_layer3("layer3", Gamedata::getInstance().getXmlInt("layer3/factor") ),
     viewport( Viewport::getInstance() ),
-    // star(new Sprite("YellowStar")),
-    // spinningStar(new MultiSprite("SpinningStar")),
-    sprites_vec(),
-    currentSprite(0),
+    player(new Player("XCheng")),
+    clouds(),
+    strategies(),
+    currentStrategy(0),
+    collision(false),
     makeVideo( false )
 {
-    for(int i = 0;
-        i < Gamedata::getInstance().getXmlInt("Cloud/number");
-        i++) {
-        sprites_vec.emplace_back(new Sprite("Cloud"));
-    }
-    for(int i = 0;
-        i < Gamedata::getInstance().getXmlInt("Sword/number");
-        i++) {
-        sprites_vec.emplace_back(new MultiSprite("Sword"));
-    }
-
-    for(int i = 0;
-        i < Gamedata::getInstance().getXmlInt("XCheng/number");
-        i++) {
-        sprites_vec.emplace_back(new TwoWayMultiSprite("XCheng"));
+    int n = Gamedata::getInstance().getXmlInt("Cloud/number");
+    //clouds.reserve(n);
+    Vector2f pos = player->getPosition();
+    int w = player->getScaledWidth();
+    int h = player->getScaledHeight();
+    for(int i = 0; i < n; i++) {
+        clouds.push_back(new SmartSprite("Cloud", pos, w, h));
+        player->attach(clouds[i]);
     }
 
-    // Viewport::getInstance().setObjectToTrack(sprites_vec[0]);
-    Viewport::getInstance().setObjectToTrack(sprites_vec[sprites_vec.size() - 1]);
+    strategies.push_back(new RectangularCollisionStrategy);
+    strategies.push_back(new PerPixelCollisionStrategy);
+    strategies.push_back(new MidPointCollisionStrategy);
+
+    Viewport::getInstance().setObjectToTrack(player->getPlayer());
     std::cout << "Loading complete" << std::endl;
 }
 
@@ -67,43 +65,50 @@ void Engine::draw() const {
     back_layer2.draw();
     back_layer1.draw();
 
-    // star->draw();
-    // spinningStar->draw();
-
-    for(auto sprite : sprites_vec) {
-        sprite->draw();
+    for(auto cloud : clouds) {
+        cloud->draw();
     }
+    if ( collision ) {
+        IOMod::getInstance().writeText("Oops: Collision", 500, 90);
+    }
+
+    player->draw();
 
     viewport.draw();
     SDL_RenderPresent(renderer);
 }
 
-void Engine::update(Uint32 ticks) {
-    // star->update(ticks);
-    // spinningStar->update(ticks);
-    for(auto sprite : sprites_vec) {
-        sprite->update(ticks);
+void Engine::checkForCollisions() {
+    auto it = clouds.begin();
+    while ( it != clouds.end() ) {
+        if ( strategies[currentStrategy]->execute(*player, **it) ) {
+            SmartSprite* doa = *it;
+            player->detach(doa);
+            delete doa;
+            it = clouds.erase(it);
+            collision = true;
+        }
+        else ++it;
     }
+}
+
+void Engine::update(Uint32 ticks) {
+    collision = false;
+    checkForCollisions();
+
+    player->update(ticks);
+
+    for(auto cloud : clouds) {
+        cloud->update(ticks);
+    }
+
     back_layer1.update();
     back_layer2.update();
     back_layer3.update();
+
     viewport.update(); // always update viewport last
 }
 
-void Engine::switchSprite(){
-    ++currentSprite;
-    if(currentSprite >= sprites_vec.size()) {
-        currentSprite = 0;
-    }
-    Viewport::getInstance().setObjectToTrack(sprites_vec[currentSprite]);
-    // currentSprite = currentSprite % 3;
-    // if ( currentSprite ) {
-    //     Viewport::getInstance().setObjectToTrack(spinningStar);
-    // }
-    // else {
-    //     Viewport::getInstance().setObjectToTrack(star);
-    // }
-}
 
 void Engine::play() {
     SDL_Event event;
@@ -126,8 +131,8 @@ void Engine::play() {
                     if ( clock.isPaused() ) clock.unpause();
                     else clock.pause();
                 }
-                if ( keystate[SDL_SCANCODE_T] ) {
-                    switchSprite();
+                if ( keystate[SDL_SCANCODE_M] ) {
+                    currentStrategy = (1 + currentStrategy) % strategies.size();
                 }
                 if (keystate[SDL_SCANCODE_F4] && !makeVideo) {
                     std::cout << "Initiating frame capture" << std::endl;
@@ -145,6 +150,20 @@ void Engine::play() {
         ticks = clock.getElapsedTicks();
         if ( ticks > 0 ) {
             clock.incrFrame();
+
+            // movement control
+            if (keystate[SDL_SCANCODE_A]) {
+                static_cast<Player*>(player)->left();
+            }
+            if (keystate[SDL_SCANCODE_D]) {
+                static_cast<Player*>(player)->right();
+            }
+            if (keystate[SDL_SCANCODE_W]) {
+                static_cast<Player*>(player)->up();
+            }
+            if (keystate[SDL_SCANCODE_S]) {
+                static_cast<Player*>(player)->down();
+            }
             draw();
             update(ticks);
             if ( makeVideo ) {

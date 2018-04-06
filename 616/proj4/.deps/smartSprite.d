@@ -1,4 +1,4 @@
-renderContext.o: renderContext.cpp renderContext.h \
+smartSprite.o: smartSprite.cpp smartSprite.h sprite.h drawable.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_main.h \
  /usr/include/SDL2/SDL_stdinc.h /usr/include/SDL2/SDL_config.h \
  /usr/include/SDL2/SDL_platform.h /usr/include/SDL2/begin_code.h \
@@ -20,10 +20,14 @@ renderContext.o: renderContext.cpp renderContext.h \
  /usr/include/SDL2/SDL_log.h /usr/include/SDL2/SDL_messagebox.h \
  /usr/include/SDL2/SDL_power.h /usr/include/SDL2/SDL_render.h \
  /usr/include/SDL2/SDL_system.h /usr/include/SDL2/SDL_timer.h \
- /usr/include/SDL2/SDL_version.h imageFactory.h image.h gamedata.h \
- vector2f.h parseXML.h spriteSheet.h
+ /usr/include/SDL2/SDL_version.h vector2f.h image.h gamedata.h parseXML.h \
+ renderContext.h imageFactory.h spriteSheet.h
 
-renderContext.h:
+smartSprite.h:
+
+sprite.h:
+
+drawable.h:
 
 /usr/include/SDL2/SDL.h:
 
@@ -111,14 +115,16 @@ renderContext.h:
 
 /usr/include/SDL2/SDL_version.h:
 
-imageFactory.h:
+vector2f.h:
 
 image.h:
 
 gamedata.h:
 
-vector2f.h:
-
 parseXML.h:
+
+renderContext.h:
+
+imageFactory.h:
 
 spriteSheet.h:

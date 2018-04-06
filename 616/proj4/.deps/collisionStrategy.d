@@ -1,4 +1,4 @@
-multisprite.o: multisprite.cpp multisprite.h drawable.h \
+collisionStrategy.o: collisionStrategy.cpp ioMod.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_main.h \
  /usr/include/SDL2/SDL_stdinc.h /usr/include/SDL2/SDL_config.h \
  /usr/include/SDL2/SDL_platform.h /usr/include/SDL2/begin_code.h \
@@ -20,12 +20,12 @@ multisprite.o: multisprite.cpp multisprite.h drawable.h \
  /usr/include/SDL2/SDL_log.h /usr/include/SDL2/SDL_messagebox.h \
  /usr/include/SDL2/SDL_power.h /usr/include/SDL2/SDL_render.h \
  /usr/include/SDL2/SDL_system.h /usr/include/SDL2/SDL_timer.h \
- /usr/include/SDL2/SDL_version.h vector2f.h image.h gamedata.h parseXML.h \
- renderContext.h imageFactory.h spriteSheet.h
+ /usr/include/SDL2/SDL_version.h /usr/include/SDL2/SDL_ttf.h \
+ /usr/include/SDL2/SDL.h collisionStrategy.h drawable.h vector2f.h \
+ image.h viewport.h gamedata.h parseXML.h renderContext.h imageFactory.h \
+ spriteSheet.h
 
-multisprite.h:
-
-drawable.h:
+ioMod.h:
 
 /usr/include/SDL2/SDL.h:
 
@@ -113,9 +113,19 @@ drawable.h:
 
 /usr/include/SDL2/SDL_version.h:
 
+/usr/include/SDL2/SDL_ttf.h:
+
+/usr/include/SDL2/SDL.h:
+
+collisionStrategy.h:
+
+drawable.h:
+
 vector2f.h:
 
 image.h:
+
+viewport.h:
 
 gamedata.h:
 

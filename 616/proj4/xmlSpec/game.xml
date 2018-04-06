@@ -54,6 +54,7 @@
     <startLoc x="227" y="240"/>
     <speedX>300</speedX>
     <speedY>300</speedY>
+    <safeDistance>75</safeDistance>
     <transparency>false</transparency>
 </Cloud>
 
@@ -70,12 +71,11 @@
 
 <XCheng>
     <file>assets/XCheng.png</file>
-    <number>1</number>
     <startLoc x="50" y="350"/>
     <frames>4</frames>
     <frameInterval>200</frameInterval>
     <speedX>200</speedX>
-    <speedY>0</speedY>
+    <speedY>100</speedY>
     <transparency>false</transparency>
 </XCheng>
 
