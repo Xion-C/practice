@@ -28,7 +28,7 @@ private:
     // Drawable* spinningStar;
     std::vector<Drawable*> sprites_vec;
 
-    int currentSprite;
+    unsigned int currentSprite;
 
     bool makeVideo;
 
