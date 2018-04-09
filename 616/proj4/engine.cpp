@@ -101,16 +101,10 @@ void Engine::checkForCollisions() {
     auto it = swords.begin();
     while ( it != swords.end() ) {
         if ( strategies[currentStrategy]->execute(*player, **it) ) {
-            std::cout << "check1" << std::endl;
             SmartMultiSprite* doa = *it;
             player->detach(dynamic_cast<Drawable*>(doa));
-            std::cout << "check2" << std::endl;
             delete doa;
-            std::cout << "check3" << std::endl;
-
             it = swords.erase(it);
-            std::cout << "check4" << std::endl;
-
         }
         else it++;
 

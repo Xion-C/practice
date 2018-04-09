@@ -77,12 +77,12 @@
 <Sword>
     <file>assets/Sword.png</file>
     <number>8</number>
-    <startLoc x="1000" y="450"/>
+    <startLoc x="1500" y="450"/>
     <frames>8</frames>
     <frameInterval>100</frameInterval>
     <speedX>-350</speedX>
     <speedY>50</speedY>
-    <safeDistance>120</safeDistance>
+    <safeDistance>60</safeDistance>
     <speedScale>3</speedScale>
     <speedScaleTicks>200</speedScaleTicks>
     <transparency>false</transparency>
