@@ -39,6 +39,7 @@ Player::Player( const std::string& name) :
     acceleration((getVelocityY() * getVelocityY()) / (2 * jump_height)),
     observers()
 {
+    setVelocity(Vector2f(0, 0));
 }
 
 Player::Player(const Player& s) :
@@ -118,6 +119,10 @@ void Player::draw() const {
                           std::to_string(int(getVelocityX()))+ \
                           ", " + std::to_string(int(getVelocityY()));
     HUD::getInstance().addLine(vel_str, -2);
+    std::string pos_str = "Player Position: " + \
+                          std::to_string(int(getX()))+ \
+                          ", " + std::to_string(int(getY()));
+    HUD::getInstance().addLine(pos_str, -3);
     std::string motion_str;
     if(isJump()) {
         motion_str = "Jump";
@@ -131,7 +136,7 @@ void Player::draw() const {
     else {
         motion_str = "Idle";
     }
-    HUD::getInstance().addLine("Motion: " + motion_str, -3);
+    HUD::getInstance().addLine("Motion: " + motion_str, -4);
 }
 
 void Player::stop() {

@@ -26,7 +26,7 @@
     <posX>10</posX>
     <posY>10</posY>
     <width>450</width>
-    <numOfLines>10</numOfLines>
+    <numOfLines>11</numOfLines>
     <interval>30</interval>
     <line1>Press a/d to move</line1>
     <line2>Press w to jump</line2>
@@ -95,7 +95,7 @@
     <transparency>false</transparency>
     <frameInterval>200</frameInterval>
     <speedX>200</speedX>
-    <speedY>1200</speedY>
+    <speedY>1000</speedY>
     <idle>
         <file>assets/XCheng.Idle.png</file>
         <transparency>false</transparency>

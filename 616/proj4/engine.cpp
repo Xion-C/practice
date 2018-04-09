@@ -91,7 +91,7 @@ void Engine::draw() const {
     strategies[currentStrategy]->draw();
     std::stringstream strm;
     strm << "Swords Remaining: " << swords.size();
-    HUD::getInstance().addLine(strm.str(), -4);
+    HUD::getInstance().addLine(strm.str(), -5);
     if(hud_on) hud.draw();
 
     SDL_RenderPresent(renderer);
