@@ -78,23 +78,31 @@
     <frames>8</frames>
     <frameInterval>50</frameInterval>
     <speedX>400</speedX>
-    <speedY>200</speedY>
+    <speedY>0</speedY>
     <transparency>false</transparency>
 </Sword>
 
 <XCheng>
     <file>assets/XCheng.png</file>
-    <startLoc x="50" y="350"/>
+    <startLoc x="50" y="400"/>
     <frames>4</frames>
     <transparency>false</transparency>
     <frameInterval>200</frameInterval>
     <speedX>200</speedX>
-    <speedY>100</speedY>
+    <speedY>1200</speedY>
     <idle>
         <file>assets/XCheng.Idle.png</file>
-        <frames>1</frames>
         <transparency>false</transparency>
     </idle>
+    <jump>
+        <file>assets/XCheng.Jump.png</file>
+        <height>300</height>
+        <transparency>false</transparency>
+    </jump>
+    <crouch>
+        <file>assets/XCheng.Crouch.png</file>
+        <transparency>false</transparency>
+    </crouch>
 </XCheng>
 
 </GameData>

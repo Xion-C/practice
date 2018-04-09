@@ -25,7 +25,14 @@ HUD::HUD() :
 }
 
 void HUD::addLine(const std::string& msg, int line) {
+    if(line < 0) {
+        line += numOfLines;
+    }
     otherLines.insert(std::pair<int, std::string>(line, msg));
+}
+
+void HUD::update() {
+    otherLines.clear();
 }
 
 void HUD::draw() const {
@@ -65,5 +72,4 @@ void HUD::draw() const {
             std::cout << "Don't have enough in HUD" << std::endl;
         iomod.writeText(line.second, posX + 10, posY + line.first * interval, alpha);
     }
-
 }

@@ -72,10 +72,10 @@ void Engine::draw() const {
 
     player->draw();
 
+    viewport.draw();
     strategies[currentStrategy]->draw();
     if(hud_on) hud.draw();
 
-    viewport.draw();
     SDL_RenderPresent(renderer);
 }
 
@@ -109,6 +109,7 @@ void Engine::update(Uint32 ticks) {
     sky.update();
 
     viewport.update(); // always update viewport last
+    hud.update();
 }
 
 
@@ -157,26 +158,20 @@ void Engine::play() {
             clock.incrFrame();
 
             // movement control
-            // bool stop = true;
             if (keystate[SDL_SCANCODE_A]) {
                 static_cast<Player*>(player)->left();
-                // stop = false;
             }
             if (keystate[SDL_SCANCODE_D]) {
                 static_cast<Player*>(player)->right();
-                // stop = false;
             }
             if (keystate[SDL_SCANCODE_W]) {
-                static_cast<Player*>(player)->up();
-                // stop = false;
+                // static_cast<Player*>(player)->up();
+                static_cast<Player*>(player)->jump();
             }
             if (keystate[SDL_SCANCODE_S]) {
-                static_cast<Player*>(player)->down();
-                // stop = false;
+                // static_cast<Player*>(player)->down();
+                static_cast<Player*>(player)->crouch();
             }
-            // if(stop) {
-            //     static_cast<Player*>(player)->stop();
-            // }
             draw();
             update(ticks);
             if ( makeVideo ) {

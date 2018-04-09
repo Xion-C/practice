@@ -7,8 +7,7 @@
 #include "hud.h"
 
 void RectangularCollisionStrategy::draw() const {
-    HUD::getInstance().addLine("Collision Strategy: Rectangular",
-                               Gamedata::getInstance().getXmlInt("HUD/numOfLines")-1);
+    HUD::getInstance().addLine("Collision Strategy: Rectangular", -1);
 }
 
 bool RectangularCollisionStrategy::execute(
@@ -37,8 +36,7 @@ distance(float x1, float y1, float x2, float y2) const {
 }
 
 void MidPointCollisionStrategy::draw() const {
-    HUD::getInstance().addLine("Collision Strategy: Distance",
-                               Gamedata::getInstance().getXmlInt("HUD/numOfLines")-1);
+    HUD::getInstance().addLine("Collision Strategy: Distance", -1);
 }
 
 bool MidPointCollisionStrategy::execute(
@@ -59,8 +57,7 @@ bool MidPointCollisionStrategy::execute(
 
 
 void PerPixelCollisionStrategy::draw() const {
-    HUD::getInstance().addLine("Collision Strategy: Per-pixel",
-                               Gamedata::getInstance().getXmlInt("HUD/numOfLines")-1);
+    HUD::getInstance().addLine("Collision Strategy: Per-pixel", -1);
 }
 
 bool PerPixelCollisionStrategy::

@@ -32,15 +32,23 @@ public:
         return images[currentFrame]->getSurface();
     }
 
+    bool isJump() const {
+        return (motion_state & 4);
+    }
+
     void setMotion(int s) {
         motion_state = s;
     }
+
 
     void right();
     void left();
     void up();
     void down();
+    void jump();
+    void crouch();
     void stop();
+
 
     void attach( SmartSprite* o ) {
         observers.push_back(o);
@@ -49,7 +57,9 @@ public:
 
 private:
     std::vector<Image *> images;
-    std::vector<Image *> idle_frames;
+    Image* idle_frame;
+    Image* jump_frame;
+    Image* crouch_frame;
     // 0b0000 (down, up, walk, oirentation)
     Uint8 motion_state;
 
@@ -61,6 +71,9 @@ private:
     int worldHeight;
 
     Vector2f initialVelocity;
+    float initialY;
+    float jump_height;
+    float acceleration;
 
     void advanceFrame(Uint32 ticks);
 

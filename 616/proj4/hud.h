@@ -9,6 +9,7 @@ class HUD {
 public:
     static HUD& getInstance();
     void addLine(const std::string&, int);
+    void update();
     void draw() const;
 private:
     SDL_Renderer* renderer;
