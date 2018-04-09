@@ -56,7 +56,7 @@ void HUD::draw() const {
                     {0, 100, 150, alpha});
     iomod.writeText("FPS: " + \
                     std::to_string(Clock::getInstance().getFps()),
-                    posX + 210, posY,
+                    posX + 250, posY,
                     {30, 200, 150, alpha});
     for(int i = 0; i < numOfLines; i++) {
         if( Gamedata::getInstance().checkTag("HUD/line" + std::to_string(i)) ) {

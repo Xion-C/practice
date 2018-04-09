@@ -10,18 +10,23 @@
 #include "sprite.h"
 #include "multisprite.h"
 #include "smartSprite.h"
+#include "smartMultiSprite.h"
 #include "player.h"
 #include "collisionStrategy.h"
 
 
 Engine::~Engine() {
     delete player;
-    for(Drawable* cloud : clouds) {
+    for(auto cloud : clouds) {
         delete cloud;
     }
+    // for(auto sword : swords) {
+    //     delete sword;
+    // }
     for(CollisionStrategy* strategy : strategies) {
         delete strategy;
     }
+    // delete player;
     std::cout << "Terminating program" << std::endl;
 }
 
@@ -36,6 +41,7 @@ Engine::Engine() :
     viewport( Viewport::getInstance() ),
     player( new Player("XCheng") ),
     clouds(),
+    swords(),
     strategies(),
     currentStrategy( 0 ),
     collision( false ),
@@ -43,14 +49,20 @@ Engine::Engine() :
     hud_on( true ),
     hud( HUD::getInstance() )
 {
-    int n = Gamedata::getInstance().getXmlInt("Cloud/number");
-    //clouds.reserve(n);
     Vector2f pos = player->getPosition();
     int w = player->getScaledWidth();
     int h = player->getScaledHeight();
+
+    int n = Gamedata::getInstance().getXmlInt("Cloud/number");
     for(int i = 0; i < n; i++) {
         clouds.push_back(new SmartSprite("Cloud", pos, w, h));
         player->attach(clouds[i]);
+    }
+    n = Gamedata::getInstance().getXmlInt("Sword/number");
+    for(int i = 0; i < n; i++) {
+        swords.push_back(new SmartMultiSprite("Sword", pos, w, h));
+        // swords[i]->setVelocityY(0);
+        player->attach(swords[i]);
     }
 
     strategies.push_back(new RectangularCollisionStrategy);
@@ -69,27 +81,38 @@ void Engine::draw() const {
     for(auto cloud : clouds) {
         cloud->draw();
     }
+    for(auto sword : swords) {
+        sword->draw();
+    }
 
     player->draw();
 
     viewport.draw();
     strategies[currentStrategy]->draw();
+    std::stringstream strm;
+    strm << "Swords Remaining: " << swords.size();
+    HUD::getInstance().addLine(strm.str(), -4);
     if(hud_on) hud.draw();
 
     SDL_RenderPresent(renderer);
 }
 
 void Engine::checkForCollisions() {
-    auto it = clouds.begin();
-    while ( it != clouds.end() ) {
+    auto it = swords.begin();
+    while ( it != swords.end() ) {
         if ( strategies[currentStrategy]->execute(*player, **it) ) {
-            SmartSprite* doa = *it;
-            // // int player_signX = player->getVelocityX() > 0 ? 1 : -1;
-            // // int cloud_singX = doa->getVelocityX() >0 ? 1 : -1;
-            // doa->setVelocity(-2 * (doa->getVelocity()));
-            IOMod::getInstance().writeText("collide!", doa->getX(), doa->getY());
+            std::cout << "check1" << std::endl;
+            SmartMultiSprite* doa = *it;
+            player->detach(dynamic_cast<Drawable*>(doa));
+            std::cout << "check2" << std::endl;
+            delete doa;
+            std::cout << "check3" << std::endl;
+
+            it = swords.erase(it);
+            std::cout << "check4" << std::endl;
+
         }
-        it++;
+        else it++;
 
     }
 }
@@ -103,6 +126,10 @@ void Engine::update(Uint32 ticks) {
     for(auto cloud : clouds) {
         cloud->update(ticks);
     }
+    for(auto sword : swords) {
+        sword->update(ticks);
+    }
+
 
     ground.update();
     mountain.update();

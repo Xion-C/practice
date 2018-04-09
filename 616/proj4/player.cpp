@@ -1,6 +1,7 @@
 #include "gamedata.h"
 #include "player.h"
 #include "smartSprite.h"
+#include "smartMultiSprite.h"
 #include "imageFactory.h"
 #include "hud.h"
 
@@ -117,7 +118,20 @@ void Player::draw() const {
                           std::to_string(int(getVelocityX()))+ \
                           ", " + std::to_string(int(getVelocityY()));
     HUD::getInstance().addLine(vel_str, -2);
-    HUD::getInstance().addLine("state:"+std::to_string(int(motion_state)), -3);
+    std::string motion_str;
+    if(isJump()) {
+        motion_str = "Jump";
+    }
+    else if(motion_state & 8) {
+        motion_str = "Crouch";
+    }
+    else if(motion_state & 2) {
+        motion_str = "Walk";
+    }
+    else {
+        motion_str = "Idle";
+    }
+    HUD::getInstance().addLine("Motion: " + motion_str, -3);
 }
 
 void Player::stop() {
@@ -203,16 +217,22 @@ void Player::update(Uint32 ticks) {
     stop();
 
     //update attached smart sprites
-    std::list<SmartSprite*>::iterator iter = observers.begin();
+    std::list<Drawable*>::iterator iter = observers.begin();
     while ( iter != observers.end() ) {
-        (*iter)->setPlayerPos( getPosition() );
+        if(dynamic_cast<SmartSprite*>(*iter)) {
+            dynamic_cast<SmartSprite*>(*iter)->setPlayerPos( getPosition() );
+        }
+        if(dynamic_cast<SmartMultiSprite*>(*iter)) {
+            dynamic_cast<SmartMultiSprite*>(*iter)->setPlayerPos( getPosition() );
+        }
+        // (*iter)->setPlayerPos( getPosition() );
         ++iter;
     }
 
 }
 
-void Player::detach( SmartSprite* o ) {
-    std::list<SmartSprite*>::iterator iter = observers.begin();
+void Player::detach( Drawable* o ) {
+    std::list<Drawable*>::iterator iter = observers.begin();
     while ( iter != observers.end() ) {
         if ( *iter == o ) {
             iter = observers.erase(iter);

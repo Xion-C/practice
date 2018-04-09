@@ -9,6 +9,7 @@
 
 class CollisionStrategy;
 class SmartSprite;
+class SmartMultiSprite;
 class Player;
 
 class Engine {
@@ -33,6 +34,7 @@ private:
 
     Player* player;
     std::vector<SmartSprite*> clouds;
+    std::vector<SmartMultiSprite*> swords;
 
     std::vector<CollisionStrategy*> strategies;
     int currentStrategy;

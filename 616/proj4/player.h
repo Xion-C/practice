@@ -40,7 +40,6 @@ public:
         motion_state = s;
     }
 
-
     void right();
     void left();
     void up();
@@ -49,11 +48,11 @@ public:
     void crouch();
     void stop();
 
-
-    void attach( SmartSprite* o ) {
+    void attach( Drawable* o ) {
         observers.push_back(o);
     }
-    void detach( SmartSprite* o );
+    void detach( Drawable* o );
+
 
 private:
     std::vector<Image *> images;
@@ -79,7 +78,7 @@ private:
 
     Player& operator=(const Player&);
 
-    std::list<SmartSprite*> observers;
+    std::list<Drawable*> observers;
 
 };
 

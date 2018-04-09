@@ -25,11 +25,14 @@
     <alpha>150</alpha>
     <posX>10</posX>
     <posY>10</posY>
-    <width>350</width>
-    <numOfLines>6</numOfLines>
+    <width>450</width>
+    <numOfLines>10</numOfLines>
     <interval>30</interval>
-    <line1>Press W/A/S/D to move</line1>
-    <line2>Press www</line2>
+    <line1>Press a/d to move</line1>
+    <line2>Press w to jump</line2>
+    <line3>Press s to crouch</line3>
+    <line4>Press m to change collision strategy</line4>
+    <line5>Press F1 to toggle HUD</line5>
 </HUD>
 
 <Ground>
@@ -63,8 +66,8 @@
     <file>assets/Cloud.png</file>
     <number>8</number>
     <startLoc x="227" y="240"/>
-    <speedX>300</speedX>
-    <speedY>300</speedY>
+    <speedX>200</speedX>
+    <speedY>200</speedY>
     <safeDistance>120</safeDistance>
     <speedScale>3</speedScale>
     <speedScaleTicks>200</speedScaleTicks>
@@ -73,12 +76,15 @@
 
 <Sword>
     <file>assets/Sword.png</file>
-    <number>3</number>
-    <startLoc x="50" y="140"/>
+    <number>8</number>
+    <startLoc x="1000" y="450"/>
     <frames>8</frames>
-    <frameInterval>50</frameInterval>
-    <speedX>400</speedX>
-    <speedY>0</speedY>
+    <frameInterval>100</frameInterval>
+    <speedX>-350</speedX>
+    <speedY>50</speedY>
+    <safeDistance>120</safeDistance>
+    <speedScale>3</speedScale>
+    <speedScaleTicks>200</speedScaleTicks>
     <transparency>false</transparency>
 </Sword>
 
