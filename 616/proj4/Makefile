@@ -15,26 +15,31 @@ CXXFLAGS = `sdl2-config --cflags` -g -W -Wall -std=c++11 -Weffc++ -Wextra -pedan
 
 LDFLAGS = `sdl2-config --libs` -lm -lSDL2_image -lexpat -lSDL2_ttf
 
-OBJS = $(shell find . -regex ".*\.cpp" -printf "%P " | sed 's/.cpp/.o/g')
+# OBJS = $(shell find . -regex ".*\.cpp" -printf "%P " | sed 's/.cpp/.o/g')
+SRCPTH = $(shell find . -regex ".*\.cpp" | tr '\n' ' ')
+SRCFLS = $(notdir $(SRCPTH))
+OBJDIR  = build
+$(shell mkdir -p $(OBJDIR) >/dev/null)
+OBJFLS = $(patsubst %.cpp, $(OBJDIR)/%.o, $(SRCFLS))
 
 EXEC = run
 
 $(DEPDIR)/%.d: ;
 .PRECIOUS: $(DEPDIR)/%.d
 
-%.o: %.cpp
-%.o: %.cpp $(DEPDIR)/%.d
-	@echo "Creating Object $@"
+$(OBJDIR)/%.o: %.cpp
+$(OBJDIR)/%.o: %.cpp $(DEPDIR)/%.d
+	@echo "Creating Object $(notdir $@)"
 	@$(CXX) $(DEPFLAGS) $(CXXFLAGS) -c $< -o $@
 	@mv -f $(DEPDIR)/$*.Td $(DEPDIR)/$*.d && touch $@
 
-$(EXEC): $(OBJS)
+$(EXEC): $(OBJFLS)
 	@echo "Creating Executable $@"
-	@$(CXX) $(CXXFLAGS) -o $@ $(OBJS) $(LDFLAGS)
+	@$(CXX) $(CXXFLAGS) -o $@ $(OBJFLS) $(LDFLAGS)
 
 clean:
 	@echo "Deleting Objects"
-	@rm -rf $(OBJS)
+	@rm -rf $(OBJDIR)
 	@echo "Deleting Executable"
 	@rm -rf $(EXEC)
 	@echo "Deleting Dependecy List"

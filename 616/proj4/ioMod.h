@@ -13,6 +13,7 @@ public:
     SDL_Texture* readTexture(const std::string& filename);
     SDL_Surface* readSurface(const std::string& filename);
     void writeText(const std::string&, int, int) const;
+    void writeText(const std::string&, int, int, Uint8) const;
     void writeText(const std::string&, int, int, SDL_Color) const;
     SDL_Renderer* getRenderer() const {
         return renderer;

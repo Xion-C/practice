@@ -15,7 +15,7 @@ public:
         playerPos = p;
     }
 
-    void speedUp(const Vector2f& v, Uint32 ticks);
+    void scaleVelocity(float scale, Uint32 ticks);
 
 private:
     enum MODE {NORMAL, EVADE};
@@ -25,6 +25,7 @@ private:
     MODE currentMode;
     float safeDistance;
     Uint32 duration;
+    float vScale;
 
     void goLeft();
     void goRight();

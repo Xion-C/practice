@@ -4,9 +4,11 @@
 #include "collisionStrategy.h"
 #include "viewport.h"
 #include "renderContext.h"
+#include "hud.h"
 
 void RectangularCollisionStrategy::draw() const {
-    IOMod::getInstance().writeText("Strategy: Rectangular", 500, 30);
+    HUD::getInstance().addLine("Collision Strategy: Rectangular",
+                               Gamedata::getInstance().getXmlInt("HUD/numOfLines")-1);
 }
 
 bool RectangularCollisionStrategy::execute(
@@ -35,7 +37,8 @@ distance(float x1, float y1, float x2, float y2) const {
 }
 
 void MidPointCollisionStrategy::draw() const {
-    IOMod::getInstance().writeText("Strategy: Distance", 500, 30);
+    HUD::getInstance().addLine("Collision Strategy: Distance",
+                               Gamedata::getInstance().getXmlInt("HUD/numOfLines")-1);
 }
 
 bool MidPointCollisionStrategy::execute(
@@ -56,7 +59,8 @@ bool MidPointCollisionStrategy::execute(
 
 
 void PerPixelCollisionStrategy::draw() const {
-    IOMod::getInstance().writeText("Strategy: Per-Pixel ", 500, 30);
+    HUD::getInstance().addLine("Collision Strategy: Per-pixel",
+                               Gamedata::getInstance().getXmlInt("HUD/numOfLines")-1);
 }
 
 bool PerPixelCollisionStrategy::

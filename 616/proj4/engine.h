@@ -26,10 +26,10 @@ private:
     Clock& clock;
 
     SDL_Renderer * const renderer;
-    World back_layer1;
-    World back_layer2;
-    World back_layer3;
-    Viewport& viewport;
+    World ground;
+    World mountain;
+    World sky;
+    Viewport& viewport; //note: &
 
     Player* player;
     std::vector<SmartSprite*> clouds;
@@ -39,8 +39,9 @@ private:
     bool collision;
     bool makeVideo;
 
-    HUD hud;
     bool hud_on;
+    HUD& hud; //note: &
+
 
 
     void draw() const;

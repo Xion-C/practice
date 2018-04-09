@@ -33,7 +33,8 @@ SmartSprite::SmartSprite(const std::string& name, const Vector2f& pos,
     playerHeight(h),
     currentMode(NORMAL),
     safeDistance(Gamedata::getInstance().getXmlFloat(name+"/safeDistance")),
-    duration(0)
+    duration(0),
+    vScale(1)
 {
 }
 
@@ -45,12 +46,14 @@ SmartSprite::SmartSprite(const SmartSprite& s) :
     playerHeight(s.playerHeight),
     currentMode(s.currentMode),
     safeDistance(s.safeDistance),
-    duration(0)
+    duration(s.duration),
+    vScale(s.vScale)
 {
 }
 
-void SmartSprite::speedUp(const Vector2f& v, Uint32 ticks) {
-    setVelocity(v);
+void SmartSprite::scaleVelocity(float scale, Uint32 ticks) {
+    vScale = scale;
+    setVelocity( getVelocity() * vScale );
     duration = ticks;
 }
 
@@ -63,15 +66,32 @@ void SmartSprite::update(Uint32 ticks) {
     float distanceToEnemy = ::distance( x, y, ex, ey );
 
     if  ( currentMode == NORMAL ) {
-        if(distanceToEnemy < safeDistance) currentMode = EVADE;
+        if(distanceToEnemy < safeDistance) {
+            currentMode = EVADE;
+            if(fabs(vScale - 1) <= 0.0001 ) {
+                scaleVelocity(
+                    Gamedata::getInstance().getXmlFloat(getName()+"/speedScale"),
+                    Gamedata::getInstance().getXmlInt(getName()+"/speedScaleTicks"));
+            }
+        }
     }
     else if  ( currentMode == EVADE ) {
-        if(distanceToEnemy > safeDistance) currentMode=NORMAL;
+        if(distanceToEnemy > safeDistance) currentMode = NORMAL;
         else {
             if ( x < ex ) goLeft();
             if ( x > ex ) goRight();
             if ( y < ey ) goUp();
             if ( y > ey ) goDown();
+        }
+    }
+    if(duration > 0) {
+        if(duration <= ticks) {
+            duration = 0;
+            setVelocity(getVelocity() * (1 / vScale));
+            vScale = 1;
+        }
+        else {
+            duration -= ticks;
         }
     }
 }

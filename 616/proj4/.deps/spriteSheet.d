@@ -1,3 +1,3 @@
-spriteSheet.o: spriteSheet.cpp spriteSheet.h
+build/spriteSheet.o: spriteSheet.cpp spriteSheet.h
 
 spriteSheet.h:

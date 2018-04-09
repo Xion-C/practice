@@ -1,4 +1,4 @@
-player.o: player.cpp gamedata.h vector2f.h parseXML.h player.h \
+build/player.o: player.cpp gamedata.h vector2f.h parseXML.h player.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_main.h \
  /usr/include/SDL2/SDL_stdinc.h /usr/include/SDL2/SDL_config.h \
  /usr/include/SDL2/SDL_platform.h /usr/include/SDL2/begin_code.h \

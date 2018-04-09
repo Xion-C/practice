@@ -1,3 +1,3 @@
-parseXML.o: parseXML.cpp parseXML.h
+build/parseXML.o: parseXML.cpp parseXML.h
 
 parseXML.h:

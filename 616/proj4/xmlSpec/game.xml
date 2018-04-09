@@ -22,33 +22,33 @@
 </world>
 
 <HUD>
+    <alpha>150</alpha>
     <posX>10</posX>
     <posY>10</posY>
-    <width>300</width>
-    <height>150</height>
-    <info>
-        Press W/A/S/D to move
-        Press
-    </info>
+    <width>350</width>
+    <numOfLines>6</numOfLines>
+    <interval>30</interval>
+    <line1>Press W/A/S/D to move</line1>
+    <line2>Press www</line2>
 </HUD>
 
-<layer1>
+<Ground>
     <file>assets/Ground.png</file>
     <factor>1</factor>
     <transparency>false</transparency>
-</layer1>
+</Ground>
 
-<layer2>
+<Mountain>
     <file>assets/Mountain.png</file>
     <factor>2</factor>
     <transparency>false</transparency>
-</layer2>
+</Mountain>
 
-<layer3>
+<Sky>
     <file>assets/Sky.png</file>
     <factor>4</factor>
     <transparency>false</transparency>
-</layer3>
+</Sky>
 
 <font name="font">
     <file>fonts/arial.ttf</file>
@@ -56,7 +56,7 @@
     <red>255</red>
     <green>0</green>
     <blue>0</blue>
-    <alpha>0</alpha>
+    <alpha>255</alpha>
 </font>
 
 <Cloud>
@@ -66,6 +66,8 @@
     <speedX>300</speedX>
     <speedY>300</speedY>
     <safeDistance>120</safeDistance>
+    <speedScale>3</speedScale>
+    <speedScaleTicks>200</speedScaleTicks>
     <transparency>false</transparency>
 </Cloud>
 

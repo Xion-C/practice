@@ -49,32 +49,27 @@ SDL_Surface* IOMod::readSurface(const std::string& filename) {
 }
 
 void IOMod::writeText(const std::string& msg, int x, int y) const {
-    // SDL_Surface* surface =
-    //   TTF_RenderText_Solid(font, msg.c_str(), textColor);
-    //
-    // SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-    //
-    // int textWidth = surface->w;
-    // int textHeight = surface->h;
-    // SDL_FreeSurface(surface);
-    // SDL_Rect dst = {x, y, textWidth, textHeight};
-    //
-    // SDL_RenderCopy(renderer, texture, NULL, &dst);
-    // SDL_DestroyTexture(texture);
     writeText(msg, x, y, textColor);
 }
 
+void IOMod::writeText(const std::string& msg, int x, int y, Uint8 alpha) const {
+    writeText(msg, x, y, {textColor.r, textColor.g, textColor.b, alpha});
+}
+
 void IOMod::writeText(const std::string& msg, int x, int y, SDL_Color fontColor) const {
+    // SDL_Surface* surface =
+    //     TTF_RenderText_Solid(font, msg.c_str(), fontColor);
+
+    // SDL_Surface* surface =
+    //     TTF_RenderText_Blended(font, msg.c_str(), fontColor);
     SDL_Surface* surface =
-        TTF_RenderText_Solid(font, msg.c_str(), fontColor);
-
+        TTF_RenderUTF8_Blended(font, msg.c_str(), fontColor);
     SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-
+    SDL_SetTextureAlphaMod(texture, fontColor.a); //set the alpha mod
     int textWidth = surface->w;
     int textHeight = surface->h;
     SDL_FreeSurface(surface);
     SDL_Rect dst = {x, y, textWidth, textHeight};
-
     SDL_RenderCopy(renderer, texture, NULL, &dst);
     SDL_DestroyTexture(texture);
 }

@@ -9,7 +9,6 @@
 #include "frameGenerator.h"
 #include "sprite.h"
 #include "multisprite.h"
-#include "twowayMultisprite.h"
 #include "smartSprite.h"
 #include "player.h"
 #include "collisionStrategy.h"
@@ -31,18 +30,18 @@ Engine::Engine() :
     io( IOMod::getInstance() ),
     clock( Clock::getInstance() ),
     renderer( rc->getRenderer() ),
-    back_layer1("layer1", Gamedata::getInstance().getXmlInt("layer1/factor") ),
-    back_layer2("layer2", Gamedata::getInstance().getXmlInt("layer2/factor") ),
-    back_layer3("layer3", Gamedata::getInstance().getXmlInt("layer3/factor") ),
+    ground("Ground", Gamedata::getInstance().getXmlInt("Ground/factor") ),
+    mountain("Mountain", Gamedata::getInstance().getXmlInt("Mountain/factor") ),
+    sky("Sky", Gamedata::getInstance().getXmlInt("Sky/factor") ),
     viewport( Viewport::getInstance() ),
-    player(new Player("XCheng")),
+    player( new Player("XCheng") ),
     clouds(),
     strategies(),
-    currentStrategy(0),
-    collision(false),
+    currentStrategy( 0 ),
+    collision( false ),
     makeVideo( false ),
-    hud(renderer),
-    hud_on(true)
+    hud_on( true ),
+    hud( HUD::getInstance() )
 {
     int n = Gamedata::getInstance().getXmlInt("Cloud/number");
     //clouds.reserve(n);
@@ -63,20 +62,18 @@ Engine::Engine() :
 }
 
 void Engine::draw() const {
-    back_layer3.draw();
-    back_layer2.draw();
-    back_layer1.draw();
+    sky.draw();
+    mountain.draw();
+    ground.draw();
 
     for(auto cloud : clouds) {
         cloud->draw();
     }
-    // if ( collision ) {
-    //     IOMod::getInstance().writeText("Oops: Collision", 500, 90);
-    // }
 
     player->draw();
 
-    if(hud_on) hud.display();
+    strategies[currentStrategy]->draw();
+    if(hud_on) hud.draw();
 
     viewport.draw();
     SDL_RenderPresent(renderer);
@@ -85,21 +82,12 @@ void Engine::draw() const {
 void Engine::checkForCollisions() {
     auto it = clouds.begin();
     while ( it != clouds.end() ) {
-        // if ( strategies[currentStrategy]->execute(*player, **it) ) {
-        //     SmartSprite* doa = *it;
-        //     player->detach(doa);
-        //     delete doa;
-        //     it = clouds.erase(it);
-        //     collision = true;
-        // }
-        // else ++it;
-
-        // ai
         if ( strategies[currentStrategy]->execute(*player, **it) ) {
-            // SmartSprite* doa = *it;
+            SmartSprite* doa = *it;
             // // int player_signX = player->getVelocityX() > 0 ? 1 : -1;
             // // int cloud_singX = doa->getVelocityX() >0 ? 1 : -1;
             // doa->setVelocity(-2 * (doa->getVelocity()));
+            IOMod::getInstance().writeText("collide!", doa->getX(), doa->getY());
         }
         it++;
 
@@ -116,9 +104,9 @@ void Engine::update(Uint32 ticks) {
         cloud->update(ticks);
     }
 
-    back_layer1.update();
-    back_layer2.update();
-    back_layer3.update();
+    ground.update();
+    mountain.update();
+    sky.update();
 
     viewport.update(); // always update viewport last
 }

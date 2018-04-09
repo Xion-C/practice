@@ -1,4 +1,4 @@
-engine.o: engine.cpp gamedata.h vector2f.h parseXML.h engine.h \
+build/engine.o: engine.cpp gamedata.h vector2f.h parseXML.h engine.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_main.h \
  /usr/include/SDL2/SDL_stdinc.h /usr/include/SDL2/SDL_config.h \
  /usr/include/SDL2/SDL_platform.h /usr/include/SDL2/begin_code.h \
@@ -23,8 +23,8 @@ engine.o: engine.cpp gamedata.h vector2f.h parseXML.h engine.h \
  /usr/include/SDL2/SDL_version.h ioMod.h /usr/include/SDL2/SDL_ttf.h \
  /usr/include/SDL2/SDL.h renderContext.h imageFactory.h image.h \
  spriteSheet.h clock.h world.h viewport.h drawable.h hud.h \
- frameGenerator.h sprite.h multisprite.h twowayMultisprite.h \
- smartSprite.h player.h collisionStrategy.h
+ frameGenerator.h sprite.h multisprite.h smartSprite.h player.h \
+ collisionStrategy.h
 
 gamedata.h:
 
@@ -149,8 +149,6 @@ frameGenerator.h:
 sprite.h:
 
 multisprite.h:
-
-twowayMultisprite.h:
 
 smartSprite.h:
 

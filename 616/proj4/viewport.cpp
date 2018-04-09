@@ -27,15 +27,11 @@ void Viewport::setObjectToTrack(const Drawable *obj) {
 }
 
 void Viewport::draw() const {
-    IOMod::getInstance().writeText("Tracking: "+objectToTrack->getName(),
-                                   30, 30);
-    IOMod::getInstance().writeText("FPS: " + \
-                                   std::to_string(Clock::getInstance().getFps()),
-                                   30, 60,
-                                   {30, 255, 150, 0});
+    // IOMod::getInstance().writeText("Tracking: "+objectToTrack->getName(),
+    //                                30, 30);
     IOMod::getInstance().writeText("Xin Cheng",
                                    30, viewHeight - 30,
-                                   {0, 0, 100, 0});
+                                   {0, 0, 100, 255});
 }
 
 void Viewport::update() {

@@ -1,4 +1,4 @@
-collisionStrategy.o: collisionStrategy.cpp ioMod.h \
+build/collisionStrategy.o: collisionStrategy.cpp ioMod.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_main.h \
  /usr/include/SDL2/SDL_stdinc.h /usr/include/SDL2/SDL_config.h \
  /usr/include/SDL2/SDL_platform.h /usr/include/SDL2/begin_code.h \
@@ -23,7 +23,7 @@ collisionStrategy.o: collisionStrategy.cpp ioMod.h \
  /usr/include/SDL2/SDL_version.h /usr/include/SDL2/SDL_ttf.h \
  /usr/include/SDL2/SDL.h collisionStrategy.h drawable.h vector2f.h \
  image.h viewport.h gamedata.h parseXML.h renderContext.h imageFactory.h \
- spriteSheet.h
+ spriteSheet.h hud.h
 
 ioMod.h:
 
@@ -136,3 +136,5 @@ renderContext.h:
 imageFactory.h:
 
 spriteSheet.h:
+
+hud.h:

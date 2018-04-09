@@ -1,4 +1,4 @@
-frameGenerator.o: frameGenerator.cpp frameGenerator.h \
+build/frameGenerator.o: frameGenerator.cpp frameGenerator.h \
  /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_main.h \
  /usr/include/SDL2/SDL_stdinc.h /usr/include/SDL2/SDL_config.h \
  /usr/include/SDL2/SDL_platform.h /usr/include/SDL2/begin_code.h \

@@ -89,12 +89,13 @@ void Player::draw() const {
 }
 
 void Player::stop() {
-    if(getVelocityX() > 0) {
-        motion_state = 0; // 0b0000
-    }
-    else if(getVelocityX() < 0) {
-        motion_state = 1; // 0b0001
-    }
+    // if(getVelocityX() >= 0) {
+    //     motion_state = 0; // 0b0000
+    // }
+    // else {
+    //     motion_state = 1; // 0b0001
+    // }
+    motion_state &= 1;
     setVelocity( Vector2f(0, 0) );
     //currentFrame = 0;
 }
