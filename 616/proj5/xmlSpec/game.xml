@@ -1,0 +1,114 @@
+<?xml version = "1.0"?>
+<GameData>
+<!-- screenTitle is also used to identify you and your animation.
+     So make sure to include your name as part of the screenTitle -->
+<title>Xin Cheng's 2D Game</title>
+<maxStringSize>50</maxStringSize>
+
+<frameCapOn>true</frameCapOn>
+<period>17</period>
+
+<maxFrames>600</maxFrames>
+<username>xcheng2</username>
+
+<view>
+    <width>1067</width>
+    <height>600</height>
+</view>
+
+<world>
+    <width>2000</width>
+    <height>600</height>
+</world>
+
+<HUD>
+    <alpha>150</alpha>
+    <posX>10</posX>
+    <posY>10</posY>
+    <width>450</width>
+    <numOfLines>11</numOfLines>
+    <interval>30</interval>
+    <line1>Press a/d to move</line1>
+    <line2>Press w to jump</line2>
+    <line3>Press s to crouch</line3>
+    <line4>Press m to change collision strategy</line4>
+    <line5>Press F1 to toggle HUD</line5>
+</HUD>
+
+<Ground>
+    <file>assets/Ground.png</file>
+    <factor>1</factor>
+    <transparency>false</transparency>
+</Ground>
+
+<Mountain>
+    <file>assets/Mountain.png</file>
+    <factor>2</factor>
+    <transparency>false</transparency>
+</Mountain>
+
+<Sky>
+    <file>assets/Sky.png</file>
+    <factor>4</factor>
+    <transparency>false</transparency>
+</Sky>
+
+<font name="font">
+    <file>fonts/arial.ttf</file>
+    <size>24</size>
+    <red>255</red>
+    <green>0</green>
+    <blue>0</blue>
+    <alpha>255</alpha>
+</font>
+
+<Cloud>
+    <file>assets/Cloud.png</file>
+    <number>8</number>
+    <startLoc x="227" y="240"/>
+    <speedX>200</speedX>
+    <speedY>200</speedY>
+    <safeDistance>120</safeDistance>
+    <speedScale>3</speedScale>
+    <speedScaleTicks>200</speedScaleTicks>
+    <transparency>false</transparency>
+</Cloud>
+
+<Sword>
+    <file>assets/Sword.png</file>
+    <number>8</number>
+    <startLoc x="1500" y="450"/>
+    <frames>8</frames>
+    <frameInterval>100</frameInterval>
+    <speedX>-350</speedX>
+    <speedY>50</speedY>
+    <safeDistance>60</safeDistance>
+    <speedScale>3</speedScale>
+    <speedScaleTicks>200</speedScaleTicks>
+    <transparency>false</transparency>
+</Sword>
+
+<XCheng>
+    <file>assets/XCheng.png</file>
+    <startLoc x="50" y="400"/>
+    <frames>4</frames>
+    <transparency>false</transparency>
+    <frameInterval>200</frameInterval>
+    <speedX>200</speedX>
+    <speedY>1000</speedY>
+    <idle>
+        <file>assets/XCheng.Idle.png</file>
+        <transparency>false</transparency>
+    </idle>
+    <jump>
+        <file>assets/XCheng.Jump.png</file>
+        <height>300</height>
+        <transparency>false</transparency>
+    </jump>
+    <crouch>
+        <file>assets/XCheng.Crouch.png</file>
+        <transparency>false</transparency>
+    </crouch>
+</XCheng>
+
+</GameData>
