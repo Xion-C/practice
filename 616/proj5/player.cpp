@@ -4,6 +4,8 @@
 #include "smartMultiSprite.h"
 #include "imageFactory.h"
 #include "hud.h"
+#include "infoHUD.h"
+#include "explodingSprite.h"
 
 #include <iostream>
 
@@ -26,7 +28,7 @@ Player::Player( const std::string& name) :
     idle_frame(ImageFactory::getInstance().getImage(name+"/idle")),
     jump_frame(ImageFactory::getInstance().getImage(name+"/jump")),
     crouch_frame(ImageFactory::getInstance().getImage(name+"/crouch")),
-    motion_state(0),
+    motionState(0),
     currentFrame(0),
     numberOfFrames( Gamedata::getInstance().getXmlInt(name+"/frames") ),
     frameInterval( Gamedata::getInstance().getXmlInt(name+"/frameInterval")),
@@ -34,10 +36,11 @@ Player::Player( const std::string& name) :
     worldWidth(Gamedata::getInstance().getXmlInt("world/width")),
     worldHeight(Gamedata::getInstance().getXmlInt("world/height")),
     initialVelocity(getVelocity()),
-    initialY(getY()),
+    initialPos(getPosition()),
     jump_height(Gamedata::getInstance().getXmlInt(name+"/jump/height")),
     acceleration((getVelocityY() * getVelocityY()) / (2 * jump_height)),
-    observers()
+    observers(),
+    explosion(nullptr)
 {
     setVelocity(Vector2f(0, 0));
 }
@@ -48,7 +51,7 @@ Player::Player(const Player& s) :
     idle_frame(s.idle_frame),
     jump_frame(s.jump_frame),
     crouch_frame(s.crouch_frame),
-    motion_state(s.motion_state),
+    motionState(s.motionState),
     currentFrame(s.currentFrame),
     numberOfFrames( s.numberOfFrames ),
     frameInterval( s.frameInterval ),
@@ -56,10 +59,11 @@ Player::Player(const Player& s) :
     worldWidth( s.worldWidth ),
     worldHeight( s.worldHeight ),
     initialVelocity( s.initialVelocity ),
-    initialY( s.initialY ),
+    initialPos( s.initialPos ),
     jump_height( s.jump_height ),
     acceleration( s.acceleration),
-    observers( s.observers )
+    observers( s.observers ),
+    explosion( s.explosion )
 {
 }
 
@@ -69,7 +73,7 @@ Player& Player::operator=(const Player& s) {
     idle_frame = s.idle_frame;
     jump_frame = s.jump_frame;
     crouch_frame = s.crouch_frame;
-    motion_state = s.motion_state;
+    motionState = s.motionState;
     currentFrame = (s.currentFrame);
     numberOfFrames = ( s.numberOfFrames );
     frameInterval = ( s.frameInterval );
@@ -77,38 +81,44 @@ Player& Player::operator=(const Player& s) {
     worldWidth = ( s.worldWidth );
     worldHeight = ( s.worldHeight );
     initialVelocity = ( s.initialVelocity );
-    initialY = s.initialY;
+    initialPos = s.initialPos;
     jump_height = s.jump_height;
     acceleration = s.acceleration;
+    explosion = s.explosion;
     return *this;
 }
 
 void Player::draw() const {
+    if ( explosion ) {
+        explosion->draw();
+        return;
+    }
+
     // images[currentFrame]->draw(getX(), getY(), getScale());
     // if(getVelocityX() >= 0) {
-    if((motion_state & 1) == 0) { //0b00000001
-        if(motion_state < 2) {
+    if((motionState & 1) == 0) { //0b00000001, right
+        if(motionState < 2) {
             idle_frame->draw(getX(), getY(), getScale());
         }
         else if(isJump()) {
             jump_frame->draw(getX(), getY(), getScale());
         }
-        else if(motion_state & 8) {
+        else if(motionState & 8) {
             crouch_frame->draw(getX(), getY(), getScale());
         }
         else {
             images[currentFrame]->draw(getX(), getY(), getScale());
         }
     }
-    else {
+    else { //left
         SDL_RendererFlip flip = SDL_FLIP_HORIZONTAL;
-        if(motion_state < 2) {
+        if(motionState < 2) {
             idle_frame->draw(getX(), getY(), getScale(), flip);
         }
         else if(isJump()) {
             jump_frame->draw(getX(), getY(), getScale(), flip);
         }
-        else if(motion_state & 8) {
+        else if(motionState & 8) {
             crouch_frame->draw(getX(), getY(), getScale(), flip);
         }
         else {
@@ -119,18 +129,20 @@ void Player::draw() const {
                           std::to_string(int(getVelocityX()))+ \
                           ", " + std::to_string(int(getVelocityY()));
     HUD::getInstance().addLine(vel_str, -2);
+    InfoHUD::getInstance().addLine(vel_str);
     std::string pos_str = "Player Position: " + \
                           std::to_string(int(getX()))+ \
                           ", " + std::to_string(int(getY()));
     HUD::getInstance().addLine(pos_str, -3);
+    InfoHUD::getInstance().addLine(pos_str);
     std::string motion_str;
     if(isJump()) {
         motion_str = "Jump";
     }
-    else if(motion_state & 8) {
+    else if(motionState & 8) {
         motion_str = "Crouch";
     }
-    else if(motion_state & 2) {
+    else if(motionState & 2) {
         motion_str = "Walk";
     }
     else {
@@ -140,7 +152,7 @@ void Player::draw() const {
 }
 
 void Player::stop() {
-    motion_state &= 5; //0b00000101
+    motionState &= 5; //0b00000101
     if(!isJump()) {
         setVelocity( Vector2f(0, 0) );
     }
@@ -151,34 +163,34 @@ void Player::stop() {
 }
 
 void Player::right() {
-    if(!(motion_state & 8)) {
+    if(!(motionState & 8)) {
         if ( getX() < worldWidth-getScaledWidth()) {
             setVelocityX(initialVelocity[0]);
         }
-        motion_state |= 2; //walk
+        motionState |= 2; //walk
     }
-    motion_state &= ~1;  //0b11111110
+    motionState &= ~1;  //0b11111110
 }
 void Player::left() {
-    if(!(motion_state & 8)) {
+    if(!(motionState & 8)) {
         if ( getX() > 0 ) {
             setVelocityX(-initialVelocity[0]);
         }
-        motion_state |= 2; //walk
+        motionState |= 2; //walk
     }
-    motion_state |= 1; //0b00000001
+    motionState |= 1; //0b00000001
 }
 void Player::up() {
     if ( getY() > 0) {
         setVelocityY( -initialVelocity[1] );
     }
-    motion_state |= 4; //0b0100
+    motionState |= 4; //0b0100
 }
 void Player::down() {
     if ( getY() < worldHeight-getScaledHeight()) {
         setVelocityY( initialVelocity[1] );
     }
-    motion_state |= 8; //0b1000;
+    motionState |= 8; //0b1000;
 }
 
 void Player::jump() {
@@ -186,36 +198,60 @@ void Player::jump() {
         if ( getY() > 0) {
             setVelocityY( -initialVelocity[1] );
         }
-        motion_state |= 4; //0b0100
+        motionState |= 4; //0b0100
     }
 }
 
 void Player::crouch() {
     if(!isJump()) {
-        motion_state |= 8; //Crouch
-        motion_state &= ~2; //stop walk
+        motionState |= 8; //Crouch
+        motionState &= ~2; //stop walk
         setVelocityX(0);
     }
 }
 
+void Player::explode() {
+    if ( !explosion ) {
+        Sprite sprite(getName(),
+                      getPosition(), 0.2f * initialVelocity,
+                      images[currentFrame]);
+        explosion = new ExplodingSprite(sprite);
+    }
+}
+
+void Player::resetPlayer() {
+    setPosition(initialPos);
+    setVelocity(initialVelocity);
+}
+
 void Player::update(Uint32 ticks) {
+    if ( explosion ) {
+        explosion->update(ticks);
+        if ( explosion->chunkCount() == 0 ) {
+            delete explosion;
+            explosion = NULL;
+            resetPlayer();
+        }
+        return;
+    }
+
     advanceFrame(ticks);
     float t = static_cast<float>(ticks) * 0.001;
     Vector2f incr = getVelocity() * t;
     setPosition(getPosition() + incr);
 
     if(isJump()) {
-        if(getY()>=initialY) {
-            setY(initialY);
+        if(getY()>=initialPos[1]) {
+            setY(initialPos[1]);
             setVelocityY(0);
-            motion_state &= ~4;
+            motionState &= ~4;
         }
         else {
             setVelocityY(getVelocityY() + acceleration * t);
         }
     }
 
-    if(!(motion_state & 2)) {
+    if(!(motionState & 2)) {
         currentFrame = 0;
     }
 

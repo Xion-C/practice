@@ -46,8 +46,23 @@ bool MidPointCollisionStrategy::execute(
     int width2 = sprite2.getScaledWidth();
     int height1 = sprite1.getScaledHeight();
     int height2 = sprite2.getScaledHeight();
-
     int COLLISION_DISTANCE = width1/2 + width2/2;
+    float x1 = sprite1.getX() + width1/2;
+    float y1 = sprite1.getY() + height1/2;
+    float x2 = sprite2.getX() + width2/2;
+    float y2 = sprite2.getY() + height2/2;
+    return distance(x1, y1, x2, y2) < COLLISION_DISTANCE;
+}
+
+bool MidPointCollisionStrategy::execute(
+    const Drawable& sprite1, const Drawable& sprite2,
+    int safeDistance) const {
+
+    int width1 = sprite1.getScaledWidth();
+    int width2 = sprite2.getScaledWidth();
+    int height1 = sprite1.getScaledHeight();
+    int height2 = sprite2.getScaledHeight();
+    int COLLISION_DISTANCE = safeDistance;
     float x1 = sprite1.getX() + width1/2;
     float y1 = sprite1.getY() + height1/2;
     float x2 = sprite2.getX() + width2/2;

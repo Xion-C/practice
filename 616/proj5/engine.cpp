@@ -47,7 +47,8 @@ Engine::Engine() :
     collision( false ),
     makeVideo( false ),
     hud_on( true ),
-    hud( HUD::getInstance() )
+    hud( HUD::getInstance() ),
+    infoHUD( InfoHUD::getInstance() )
 {
     Vector2f pos = player->getPosition();
     int w = player->getScaledWidth();
@@ -92,7 +93,10 @@ void Engine::draw() const {
     std::stringstream strm;
     strm << "Swords Remaining: " << swords.size();
     HUD::getInstance().addLine(strm.str(), -5);
-    if(hud_on) hud.draw();
+    if(hud_on) {
+        hud.draw();
+        infoHUD.draw();
+    }
 
     SDL_RenderPresent(renderer);
 }
@@ -101,10 +105,12 @@ void Engine::checkForCollisions() {
     auto it = swords.begin();
     while ( it != swords.end() ) {
         if ( strategies[currentStrategy]->execute(*player, **it) ) {
-            SmartMultiSprite* doa = *it;
-            player->detach(dynamic_cast<Drawable*>(doa));
-            delete doa;
-            it = swords.erase(it);
+            //SmartMultiSprite* doa = *it;
+            //player->detach(dynamic_cast<Drawable*>(doa));
+            //delete doa;
+            //it = swords.erase(it);
+            player->explode();
+            break;
         }
         else it++;
 
@@ -131,6 +137,7 @@ void Engine::update(Uint32 ticks) {
 
     viewport.update(); // always update viewport last
     hud.update();
+    infoHUD.update();
 }
 
 
@@ -193,6 +200,11 @@ void Engine::play() {
                 // static_cast<Player*>(player)->down();
                 static_cast<Player*>(player)->crouch();
             }
+            if (keystate[SDL_SCANCODE_E]) {
+                // static_cast<Player*>(player)->down();
+                static_cast<Player*>(player)->explode();
+            }
+
             draw();
             update(ticks);
             if ( makeVideo ) {

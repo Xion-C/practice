@@ -50,14 +50,6 @@ void HUD::draw() const {
     SDL_RenderDrawRect( renderer, &rect );
 
     // Instructions
-    iomod.writeText("Tracking: "+ \
-                    Viewport::getInstance().getObjectToTrack()->getName(),
-                    posX + 10, posY,
-                    {0, 100, 150, alpha});
-    iomod.writeText("FPS: " + \
-                    std::to_string(Clock::getInstance().getFps()),
-                    posX + 250, posY,
-                    {30, 200, 150, alpha});
     for(int i = 0; i < numOfLines; i++) {
         if( Gamedata::getInstance().checkTag("HUD/line" + std::to_string(i)) ) {
             iomod.writeText(

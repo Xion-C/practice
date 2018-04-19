@@ -6,6 +6,7 @@
 #include "world.h"
 #include "viewport.h"
 #include "hud.h"
+#include "infoHUD.h"
 
 class CollisionStrategy;
 class SmartSprite;
@@ -43,6 +44,7 @@ private:
 
     bool hud_on;
     HUD& hud; //note: &
+    InfoHUD& infoHUD; //note: &
 
 
 

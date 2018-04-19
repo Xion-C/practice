@@ -1,5 +1,5 @@
-build/engine.o: engine.cpp gamedata.h vector2f.h parseXML.h engine.h \
- /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_main.h \
+build/explodingSprite.o: explodingSprite.cpp explodingSprite.h chunk.h \
+ sprite.h drawable.h /usr/include/SDL2/SDL.h /usr/include/SDL2/SDL_main.h \
  /usr/include/SDL2/SDL_stdinc.h /usr/include/SDL2/SDL_config.h \
  /usr/include/SDL2/SDL_platform.h /usr/include/SDL2/begin_code.h \
  /usr/include/SDL2/close_code.h /usr/include/SDL2/SDL_assert.h \
@@ -20,19 +20,15 @@ build/engine.o: engine.cpp gamedata.h vector2f.h parseXML.h engine.h \
  /usr/include/SDL2/SDL_log.h /usr/include/SDL2/SDL_messagebox.h \
  /usr/include/SDL2/SDL_power.h /usr/include/SDL2/SDL_render.h \
  /usr/include/SDL2/SDL_system.h /usr/include/SDL2/SDL_timer.h \
- /usr/include/SDL2/SDL_version.h ioMod.h /usr/include/SDL2/SDL_ttf.h \
- /usr/include/SDL2/SDL.h renderContext.h imageFactory.h image.h \
- spriteSheet.h clock.h world.h viewport.h drawable.h hud.h infoHUD.h \
- frameGenerator.h sprite.h multisprite.h smartSprite.h smartMultiSprite.h \
- player.h collisionStrategy.h
+ /usr/include/SDL2/SDL_version.h vector2f.h image.h gamedata.h parseXML.h
 
-gamedata.h:
+explodingSprite.h:
 
-vector2f.h:
+chunk.h:
 
-parseXML.h:
+sprite.h:
 
-engine.h:
+drawable.h:
 
 /usr/include/SDL2/SDL.h:
 
@@ -120,42 +116,10 @@ engine.h:
 
 /usr/include/SDL2/SDL_version.h:
 
-ioMod.h:
-
-/usr/include/SDL2/SDL_ttf.h:
-
-/usr/include/SDL2/SDL.h:
-
-renderContext.h:
-
-imageFactory.h:
+vector2f.h:
 
 image.h:
 
-spriteSheet.h:
+gamedata.h:
 
-clock.h:
-
-world.h:
-
-viewport.h:
-
-drawable.h:
-
-hud.h:
-
-infoHUD.h:
-
-frameGenerator.h:
-
-sprite.h:
-
-multisprite.h:
-
-smartSprite.h:
-
-smartMultiSprite.h:
-
-player.h:
-
-collisionStrategy.h:
+parseXML.h:

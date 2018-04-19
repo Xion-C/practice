@@ -22,6 +22,7 @@ public:
     MidPointCollisionStrategy() {
     }
     virtual bool execute(const Drawable&, const Drawable&) const;
+    virtual bool execute(const Drawable&, const Drawable&, int) const;
     virtual void draw() const;
     float distance(float, float, float, float) const;
 };

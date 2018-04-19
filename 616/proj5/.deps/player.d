@@ -22,7 +22,8 @@ build/player.o: player.cpp gamedata.h vector2f.h parseXML.h player.h \
  /usr/include/SDL2/SDL_system.h /usr/include/SDL2/SDL_timer.h \
  /usr/include/SDL2/SDL_version.h drawable.h image.h smartSprite.h \
  sprite.h smartMultiSprite.h multisprite.h imageFactory.h spriteSheet.h \
- hud.h ioMod.h /usr/include/SDL2/SDL_ttf.h
+ hud.h ioMod.h /usr/include/SDL2/SDL_ttf.h infoHUD.h explodingSprite.h \
+ chunk.h
 
 gamedata.h:
 
@@ -139,3 +140,9 @@ hud.h:
 ioMod.h:
 
 /usr/include/SDL2/SDL_ttf.h:
+
+infoHUD.h:
+
+explodingSprite.h:
+
+chunk.h:

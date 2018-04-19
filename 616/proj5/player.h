@@ -10,6 +10,7 @@
 #include "vector2f.h"
 
 class SmartSprite;
+class ExplodingSprite;
 
 class Player : public Drawable {
 public:
@@ -28,16 +29,19 @@ public:
     int getScaledHeight()  const {
         return getScale()*images[currentFrame]->getHeight();
     }
+    // const Vector2f getCenterPosition() const {
+    //     return
+    // }
     virtual const SDL_Surface* getSurface() const {
         return images[currentFrame]->getSurface();
     }
 
     bool isJump() const {
-        return (motion_state & 4);
+        return (motionState & 4);
     }
 
     void setMotion(int s) {
-        motion_state = s;
+        motionState = s;
     }
 
     void right();
@@ -47,6 +51,9 @@ public:
     void jump();
     void crouch();
     void stop();
+
+    void explode();
+    void resetPlayer();
 
     void attach( Drawable* o ) {
         observers.push_back(o);
@@ -60,7 +67,7 @@ private:
     Image* jump_frame;
     Image* crouch_frame;
     // 0b0000 (down, up, walk, oirentation)
-    Uint8 motion_state;
+    Uint8 motionState;
 
     unsigned currentFrame;
     unsigned numberOfFrames;
@@ -70,16 +77,15 @@ private:
     int worldHeight;
 
     Vector2f initialVelocity;
-    float initialY;
+    Vector2f initialPos;
     float jump_height;
     float acceleration;
+    std::list<Drawable*> observers;
+    ExplodingSprite* explosion;
 
     void advanceFrame(Uint32 ticks);
 
     Player& operator=(const Player&);
-
-    std::list<Drawable*> observers;
-
 };
 
 #endif
