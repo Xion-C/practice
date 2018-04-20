@@ -8,6 +8,8 @@
 class MultiSprite : public Drawable {
 public:
     MultiSprite(const std::string&);
+    MultiSprite(const std::string&, int);
+    MultiSprite(const std::string&, const Vector2f&, const Vector2f& = Vector2f(0, 0));
     MultiSprite(const MultiSprite&);
 
     virtual void draw() const;
@@ -37,7 +39,7 @@ protected:
     int worldHeight;
 
     void advanceFrame(Uint32 ticks);
-    Vector2f makeVelocity(int, int) const;
+    Vector2f randomVec(int, int, int) const;
     MultiSprite& operator=(const MultiSprite&);
 };
 #endif

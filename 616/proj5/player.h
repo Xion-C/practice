@@ -8,34 +8,42 @@
 #include <cmath>
 #include "drawable.h"
 #include "vector2f.h"
+#include "bulletPool.h"
 
-class SmartSprite;
 class ExplodingSprite;
 
 class Player : public Drawable {
 public:
-    Player(const std::string&);
-    Player(const Player&);
+    Player(const std::string&, const std::string&);
+    // Player(const Player&);
+    ~Player();
+    Player(const Player&) = delete;
+    Player& operator=(const Player&) = delete;
 
     virtual void draw() const;
     virtual void update(Uint32 ticks);
 
     virtual const Image* getImage() const {
-        return images[currentFrame];
+        return walkFrames[currentFrame];
     }
     int getScaledWidth()  const {
-        return getScale()*images[currentFrame]->getWidth();
+        return getScale()*walkFrames[currentFrame]->getWidth();
     }
     int getScaledHeight()  const {
-        return getScale()*images[currentFrame]->getHeight();
+        return getScale()*walkFrames[currentFrame]->getHeight();
     }
     // const Vector2f getCenterPosition() const {
     //     return
     // }
-    virtual const SDL_Surface* getSurface() const {
-        return images[currentFrame]->getSurface();
+    BulletPool& getBullets() {
+        return bullets;
     }
-
+    virtual const SDL_Surface* getSurface() const {
+        return walkFrames[currentFrame]->getSurface();
+    }
+    bool isRight() const {
+        return ((motionState & 1) == 0);
+    }
     bool isJump() const {
         return (motionState & 4);
     }
@@ -53,7 +61,9 @@ public:
     void stop();
 
     void explode();
-    void resetPlayer();
+    void reset();
+
+    void shoot();
 
     void attach( Drawable* o ) {
         observers.push_back(o);
@@ -62,10 +72,10 @@ public:
 
 
 private:
-    std::vector<Image *> images;
-    Image* idle_frame;
-    Image* jump_frame;
-    Image* crouch_frame;
+    std::vector<Image *> walkFrames;
+    Image* idleFrame;
+    Image* jumpFrame;
+    Image* crouchFrame;
     // 0b0000 (down, up, walk, oirentation)
     Uint8 motionState;
 
@@ -78,14 +88,16 @@ private:
 
     Vector2f initialVelocity;
     Vector2f initialPos;
-    float jump_height;
+    float jumpHeight;
     float acceleration;
     std::list<Drawable*> observers;
     ExplodingSprite* explosion;
+    std::string bulletName;
+    BulletPool bullets;
 
     void advanceFrame(Uint32 ticks);
 
-    Player& operator=(const Player&);
+    // Player& operator=(const Player&);
 };
 
 #endif

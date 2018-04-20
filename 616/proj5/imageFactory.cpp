@@ -27,7 +27,7 @@ ImageFactory::~ImageFactory() {
     }
     std::map<std::string, Image*>::const_iterator fiter = images.begin();
     while (fiter != images.end()) {
-        std::cout << "deleting " << fiter->first << std::endl;
+        std::cout << " - Deleting " << fiter->first << std::endl;
         delete fiter->second;
         fiter++;
     }
@@ -51,7 +51,7 @@ ImageFactory::~ImageFactory() {
     }
 
     for ( auto& images : multiImages ) {
-        std::cout << "deleting " << images.first << std::endl;
+        std::cout << "Deleting " << images.first << std::endl;
         for (unsigned int i = 0; i < images.second.size(); ++i) {
             delete images.second[i];
         }
@@ -69,7 +69,7 @@ Image* ImageFactory::getImage(const std::string& name) {
             SDL_SetColorKey(surface, SDL_TRUE, keyColor);
         }
         surfaces[name] = surface;
-        Image * const image =new Image(surface);
+        Image * const image = new Image(surface);
         images[name] = image;
         return image;
     }

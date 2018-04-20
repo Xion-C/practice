@@ -27,7 +27,7 @@ void SmartMultiSprite::goDown()  {
 
 SmartMultiSprite::SmartMultiSprite(const std::string& name, const Vector2f& pos,
                                    int w, int h) :
-    MultiSprite(name),
+    MultiSprite(name, 50),
     playerPos(pos),
     playerWidth(w),
     playerHeight(h),

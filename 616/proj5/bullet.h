@@ -1,38 +1,45 @@
-#ifndef SMARTMULTISPRITE__H
-#define SMARTMULTISPRITE__H
+#ifndef BULLET__H
+#define BULLET__H
 #include <string>
 #include "multisprite.h"
 
+class ExplodingSprite;
+
 class Bullet : public MultiSprite {
 public:
-    Bullet(const std::string&, const Vector2f &pos, int w, int h);
-    Bullet(const Bullet &);
-    virtual ~Bullet() {
-    }
+    Bullet(const std::string&, const Vector2f&, const Vector2f&, float);
+    ~Bullet();
+    Bullet(const Bullet&) = delete;
+    Bullet& operator=(const Bullet&) = delete;
+
 
     virtual void update(Uint32 ticks);
+    virtual void draw() const;
+
     void setPlayerPos(const Vector2f& p) {
         playerPos = p;
     }
 
-    void scaleVelocity(float scale, Uint32 ticks);
+    void setTarget(const Vector2f& t);
+    void setVelocityToTarget(float v);
+
+    bool isArriveTarget() {
+        return arrive;
+    }
+
+    void reset();
+    void explode();
 
 private:
-    enum MODE {NORMAL, COLLIDE};
     Vector2f playerPos;
-    int playerWidth;
-    int playerHeight;
-    MODE currentMode;
-    float safeDistance;
-    Uint32 duration;
-    float vScale;
-
-    void goLeft();
-    void goRight();
-    void goUp();
-    void goDown();
+    Vector2f target;
+    float velocity;
+    bool arrive;
+    ExplodingSprite* explosion;
 
     float distance(float x1, float y1, float x2, float y2);
+
+    //Bullet& operator=(const Bullet&);
 
 };
 #endif

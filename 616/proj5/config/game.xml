@@ -26,7 +26,7 @@
     <posX>10</posX>
     <posY>10</posY>
     <width>450</width>
-    <numOfLines>11</numOfLines>
+    <numOfLines>6</numOfLines>
     <interval>30</interval>
     <line0>Press a/d to move</line0>
     <line1>Press w to jump</line1>
@@ -40,7 +40,7 @@
     <posX>510</posX>
     <posY>10</posY>
     <width>450</width>
-    <numOfLines>11</numOfLines>
+    <numOfLines>6</numOfLines>
     <interval>30</interval>
 </InfoHUD>
 
@@ -74,14 +74,20 @@
 
 <Cloud>
     <file>assets/Cloud.png</file>
-    <number>8</number>
+    <number>3</number>
     <startLoc x="227" y="240"/>
+    <frames>1</frames>
+    <frameInterval>0</frameInterval>
     <speedX>200</speedX>
     <speedY>200</speedY>
     <safeDistance>120</safeDistance>
     <speedScale>3</speedScale>
     <speedScaleTicks>200</speedScaleTicks>
     <transparency>false</transparency>
+    <chunk>
+        <size>32</size>
+        <distance>50</distance>
+    </chunk>
 </Cloud>
 
 <Sword>
@@ -90,12 +96,17 @@
     <startLoc x="1500" y="450"/>
     <frames>8</frames>
     <frameInterval>100</frameInterval>
-    <speedX>-350</speedX>
-    <speedY>50</speedY>
+    <speedX>0</speedX>
+    <speedY>0</speedY>
+    <speed>600</speed>
     <safeDistance>60</safeDistance>
     <speedScale>3</speedScale>
     <speedScaleTicks>200</speedScaleTicks>
     <transparency>false</transparency>
+    <chunk>
+        <size>32</size>
+        <distance>50</distance>
+    </chunk>
 </Sword>
 
 <XCheng>
@@ -106,6 +117,7 @@
     <frameInterval>200</frameInterval>
     <speedX>200</speedX>
     <speedY>1000</speedY>
+    <attackRange>500</attackRange>
     <idle>
         <file>assets/XCheng.Idle.png</file>
         <transparency>false</transparency>

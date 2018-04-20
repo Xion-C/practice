@@ -1,7 +1,8 @@
 #include "gamedata.h"
 #include "player.h"
 #include "smartSprite.h"
-#include "smartMultiSprite.h"
+// #include "smartMultiSprite.h"
+#include "bullet.h"
 #include "imageFactory.h"
 #include "hud.h"
 #include "infoHUD.h"
@@ -17,17 +18,17 @@ void Player::advanceFrame(Uint32 ticks) {
     }
 }
 
-Player::Player( const std::string& name) :
+Player::Player( const std::string& name, const std::string& bullet) :
     Drawable(name,
              Vector2f(Gamedata::getInstance().getXmlInt(name+"/startLoc/x"),
                       Gamedata::getInstance().getXmlInt(name+"/startLoc/y")),
              Vector2f(Gamedata::getInstance().getXmlInt(name+"/speedX"),
                       Gamedata::getInstance().getXmlInt(name+"/speedY"))
              ),
-    images( ImageFactory::getInstance().getImages(name) ),
-    idle_frame(ImageFactory::getInstance().getImage(name+"/idle")),
-    jump_frame(ImageFactory::getInstance().getImage(name+"/jump")),
-    crouch_frame(ImageFactory::getInstance().getImage(name+"/crouch")),
+    walkFrames( ImageFactory::getInstance().getImages(name) ),
+    idleFrame(ImageFactory::getInstance().getImage(name+"/idle")),
+    jumpFrame(ImageFactory::getInstance().getImage(name+"/jump")),
+    crouchFrame(ImageFactory::getInstance().getImage(name+"/crouch")),
     motionState(0),
     currentFrame(0),
     numberOfFrames( Gamedata::getInstance().getXmlInt(name+"/frames") ),
@@ -37,118 +38,131 @@ Player::Player( const std::string& name) :
     worldHeight(Gamedata::getInstance().getXmlInt("world/height")),
     initialVelocity(getVelocity()),
     initialPos(getPosition()),
-    jump_height(Gamedata::getInstance().getXmlInt(name+"/jump/height")),
-    acceleration((getVelocityY() * getVelocityY()) / (2 * jump_height)),
+    jumpHeight(Gamedata::getInstance().getXmlInt(name+"/jump/height")),
+    acceleration((getVelocityY() * getVelocityY()) / (2 * jumpHeight)),
     observers(),
-    explosion(nullptr)
+    explosion(nullptr),
+    bulletName(bullet),
+    bullets(bulletName)
 {
     setVelocity(Vector2f(0, 0));
 }
 
-Player::Player(const Player& s) :
-    Drawable(s),
-    images(s.images),
-    idle_frame(s.idle_frame),
-    jump_frame(s.jump_frame),
-    crouch_frame(s.crouch_frame),
-    motionState(s.motionState),
-    currentFrame(s.currentFrame),
-    numberOfFrames( s.numberOfFrames ),
-    frameInterval( s.frameInterval ),
-    timeSinceLastFrame( s.timeSinceLastFrame ),
-    worldWidth( s.worldWidth ),
-    worldHeight( s.worldHeight ),
-    initialVelocity( s.initialVelocity ),
-    initialPos( s.initialPos ),
-    jump_height( s.jump_height ),
-    acceleration( s.acceleration),
-    observers( s.observers ),
-    explosion( s.explosion )
-{
+// Player::Player(const Player& s) :
+//     Drawable(s),
+//     walkFrames(s.walkFrames),
+//     idleFrame(s.idleFrame),
+//     jumpFrame(s.jumpFrame),
+//     crouchFrame(s.crouchFrame),
+//     motionState(s.motionState),
+//     currentFrame(s.currentFrame),
+//     numberOfFrames( s.numberOfFrames ),
+//     frameInterval( s.frameInterval ),
+//     timeSinceLastFrame( s.timeSinceLastFrame ),
+//     worldWidth( s.worldWidth ),
+//     worldHeight( s.worldHeight ),
+//     initialVelocity( s.initialVelocity ),
+//     initialPos( s.initialPos ),
+//     jumpHeight( s.jumpHeight ),
+//     acceleration( s.acceleration),
+//     observers( s.observers ),
+//     explosion( s.explosion ),
+//     bulletName( s.bulletName ),
+//     bullets( s.bullets )
+// {
+// }
+
+Player::~Player() {
+    if(explosion) delete explosion;
 }
 
-Player& Player::operator=(const Player& s) {
-    Drawable::operator=(s);
-    images = s.images;
-    idle_frame = s.idle_frame;
-    jump_frame = s.jump_frame;
-    crouch_frame = s.crouch_frame;
-    motionState = s.motionState;
-    currentFrame = (s.currentFrame);
-    numberOfFrames = ( s.numberOfFrames );
-    frameInterval = ( s.frameInterval );
-    timeSinceLastFrame = ( s.timeSinceLastFrame );
-    worldWidth = ( s.worldWidth );
-    worldHeight = ( s.worldHeight );
-    initialVelocity = ( s.initialVelocity );
-    initialPos = s.initialPos;
-    jump_height = s.jump_height;
-    acceleration = s.acceleration;
-    explosion = s.explosion;
-    return *this;
-}
+// Player& Player::operator=(const Player& s) {
+//     Drawable::operator=(s);
+//     walkFrames = s.walkFrames;
+//     idleFrame = s.idleFrame;
+//     jumpFrame = s.jumpFrame;
+//     crouchFrame = s.crouchFrame;
+//     motionState = s.motionState;
+//     currentFrame = (s.currentFrame);
+//     numberOfFrames = ( s.numberOfFrames );
+//     frameInterval = ( s.frameInterval );
+//     timeSinceLastFrame = ( s.timeSinceLastFrame );
+//     worldWidth = ( s.worldWidth );
+//     worldHeight = ( s.worldHeight );
+//     initialVelocity = ( s.initialVelocity );
+//     initialPos = s.initialPos;
+//     jumpHeight = s.jumpHeight;
+//     acceleration = s.acceleration;
+//     explosion = s.explosion;
+//     bulletName = s.bulletName;
+//     //bullets = s.bullets;
+//     return *this;
+// }
 
 void Player::draw() const {
+    bullets.draw();
+
     if ( explosion ) {
         explosion->draw();
         return;
     }
 
-    // images[currentFrame]->draw(getX(), getY(), getScale());
+    // walkFrames[currentFrame]->draw(getX(), getY(), getScale());
     // if(getVelocityX() >= 0) {
     if((motionState & 1) == 0) { //0b00000001, right
         if(motionState < 2) {
-            idle_frame->draw(getX(), getY(), getScale());
+            idleFrame->draw(getX(), getY(), getScale());
         }
         else if(isJump()) {
-            jump_frame->draw(getX(), getY(), getScale());
+            jumpFrame->draw(getX(), getY(), getScale());
         }
         else if(motionState & 8) {
-            crouch_frame->draw(getX(), getY(), getScale());
+            crouchFrame->draw(getX(), getY(), getScale());
         }
         else {
-            images[currentFrame]->draw(getX(), getY(), getScale());
+            walkFrames[currentFrame]->draw(getX(), getY(), getScale());
         }
     }
     else { //left
         SDL_RendererFlip flip = SDL_FLIP_HORIZONTAL;
         if(motionState < 2) {
-            idle_frame->draw(getX(), getY(), getScale(), flip);
+            idleFrame->draw(getX(), getY(), getScale(), flip);
         }
         else if(isJump()) {
-            jump_frame->draw(getX(), getY(), getScale(), flip);
+            jumpFrame->draw(getX(), getY(), getScale(), flip);
         }
         else if(motionState & 8) {
-            crouch_frame->draw(getX(), getY(), getScale(), flip);
+            crouchFrame->draw(getX(), getY(), getScale(), flip);
         }
         else {
-            images[currentFrame]->draw(getX(), getY(), getScale(), flip);
+            walkFrames[currentFrame]->draw(getX(), getY(), getScale(), flip);
         }
     }
     std::string vel_str = "Player Velocity: " + \
                           std::to_string(int(getVelocityX()))+ \
                           ", " + std::to_string(int(getVelocityY()));
-    HUD::getInstance().addLine(vel_str, -2);
+    //HUD::getInstance().addLine(vel_str, -2);
     InfoHUD::getInstance().addLine(vel_str);
     std::string pos_str = "Player Position: " + \
                           std::to_string(int(getX()))+ \
                           ", " + std::to_string(int(getY()));
-    HUD::getInstance().addLine(pos_str, -3);
+    //HUD::getInstance().addLine(pos_str, -3);
     InfoHUD::getInstance().addLine(pos_str);
-    std::string motion_str;
+    std::string motionStr;
     if(isJump()) {
-        motion_str = "Jump";
+        motionStr = "Jump";
     }
     else if(motionState & 8) {
-        motion_str = "Crouch";
+        motionStr = "Crouch";
     }
     else if(motionState & 2) {
-        motion_str = "Walk";
+        motionStr = "Walk";
     }
     else {
-        motion_str = "Idle";
+        motionStr = "Idle";
     }
-    HUD::getInstance().addLine("Motion: " + motion_str, -4);
+    //HUD::getInstance().addLine("Motion: " + motionStr, -4);
+    InfoHUD::getInstance().addLine("Motion: " + motionStr);
 }
 
 void Player::stop() {
@@ -214,27 +228,48 @@ void Player::explode() {
     if ( !explosion ) {
         Sprite sprite(getName(),
                       getPosition(), 0.2f * initialVelocity,
-                      images[currentFrame]);
+                      walkFrames[currentFrame]);
         explosion = new ExplodingSprite(sprite);
     }
 }
 
-void Player::resetPlayer() {
+void Player::reset() {
     setPosition(initialPos);
-    setVelocity(initialVelocity);
+    setVelocity(Vector2f(0, 0));
+}
+
+void Player::shoot() {
+    Vector2f target;
+    if(isRight()) {
+        target = Vector2f(
+            getX() +
+            Gamedata::getInstance().getXmlInt(getName()+"/attackRange"),
+            getY()
+            );
+    }
+    else {
+        target = Vector2f(
+            getX() -
+            Gamedata::getInstance().getXmlInt(getName()+"/attackRange"),
+            getY()
+            );
+    }
+    bullets.shoot(getPosition(), target,
+                  Gamedata::getInstance().getXmlInt(bulletName+"/speed"));
 }
 
 void Player::update(Uint32 ticks) {
+    bullets.update(ticks);
+
     if ( explosion ) {
         explosion->update(ticks);
         if ( explosion->chunkCount() == 0 ) {
             delete explosion;
             explosion = NULL;
-            resetPlayer();
+            reset();
         }
         return;
     }
-
     advanceFrame(ticks);
     float t = static_cast<float>(ticks) * 0.001;
     Vector2f incr = getVelocity() * t;
@@ -263,9 +298,15 @@ void Player::update(Uint32 ticks) {
         if(dynamic_cast<SmartSprite*>(*iter)) {
             dynamic_cast<SmartSprite*>(*iter)->setPlayerPos( getPosition() );
         }
-        if(dynamic_cast<SmartMultiSprite*>(*iter)) {
-            dynamic_cast<SmartMultiSprite*>(*iter)->setPlayerPos( getPosition() );
+
+        // if(dynamic_cast<SmartMultiSprite*>(*iter)) {
+        //     dynamic_cast<SmartMultiSprite*>(*iter)->setPlayerPos( getPosition() );
+        // }
+
+        if(dynamic_cast<Bullet*>(*iter)) {
+            dynamic_cast<Bullet*>(*iter)->setPlayerPos( getPosition() );
         }
+
         // (*iter)->setPlayerPos( getPosition() );
         ++iter;
     }

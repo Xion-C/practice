@@ -3,7 +3,7 @@
 #include "imageFactory.h"
 
 // These global constants should be eliminated; they
-// should be read from xmlSpec/game.xml
+// should be read from config/game.xml
 
 class RenderContext {
 public:

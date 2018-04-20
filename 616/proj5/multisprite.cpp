@@ -10,9 +10,9 @@ void MultiSprite::advanceFrame(Uint32 ticks) {
     }
 }
 
-Vector2f MultiSprite::makeVelocity(int vx, int vy) const {
-    float newvx = Gamedata::getInstance().getRandFloat(vx-50,vx+50);;
-    float newvy = Gamedata::getInstance().getRandFloat(vy-50,vy+50);;
+Vector2f MultiSprite::randomVec(int vx, int vy, int range) const {
+    float newvx = Gamedata::getInstance().getRandFloat(vx-range,vx+range);;
+    float newvy = Gamedata::getInstance().getRandFloat(vy-range,vy+range);;
     newvx *= [] (){ if(rand()%2) return 1; else return -1; } ();
     newvy *= [] (){ if(rand()%2) return 1; else return -1; } ();
 
@@ -23,8 +23,8 @@ MultiSprite::MultiSprite( const std::string& name) :
     Drawable(name,
              Vector2f(Gamedata::getInstance().getXmlInt(name+"/startLoc/x"),
                       Gamedata::getInstance().getXmlInt(name+"/startLoc/y")),
-             makeVelocity(Gamedata::getInstance().getXmlInt(name+"/speedX"),
-                          Gamedata::getInstance().getXmlInt(name+"/speedY"))
+             Vector2f(Gamedata::getInstance().getXmlInt(name+"/speedX"),
+                      Gamedata::getInstance().getXmlInt(name+"/speedY"))
              ),
     images( RenderContext::getInstance()->getImages(name) ),
 
@@ -35,8 +35,44 @@ MultiSprite::MultiSprite( const std::string& name) :
     worldWidth(Gamedata::getInstance().getXmlInt("world/width")),
     worldHeight(Gamedata::getInstance().getXmlInt("world/height"))
 {
-    std::cout << "speedX " << getVelocityX() << std::endl;
 }
+
+MultiSprite::MultiSprite( const std::string& name, int randRange ) :
+    Drawable(name,
+             randomVec(Gamedata::getInstance().getXmlInt(name+"/startLoc/x"),
+                       Gamedata::getInstance().getXmlInt(name+"/startLoc/y"),
+                       randRange),
+             randomVec(Gamedata::getInstance().getXmlInt(name+"/speedX"),
+                       Gamedata::getInstance().getXmlInt(name+"/speedY"),
+                       randRange)
+             ),
+    images( RenderContext::getInstance()->getImages(name) ),
+
+    currentFrame(0),
+    numberOfFrames( Gamedata::getInstance().getXmlInt(name+"/frames") ),
+    frameInterval( Gamedata::getInstance().getXmlInt(name+"/frameInterval")),
+    timeSinceLastFrame( 0 ),
+    worldWidth(Gamedata::getInstance().getXmlInt("world/width")),
+    worldHeight(Gamedata::getInstance().getXmlInt("world/height"))
+{
+    //std::cout << "speed: " << getVelocity() << std::endl;
+}
+
+MultiSprite::MultiSprite( const std::string& name,
+                          const Vector2f& pos,
+                          const Vector2f& vel) :
+    Drawable(name, pos, vel),
+    images( RenderContext::getInstance()->getImages(name) ),
+
+    currentFrame(0),
+    numberOfFrames( Gamedata::getInstance().getXmlInt(name+"/frames") ),
+    frameInterval( Gamedata::getInstance().getXmlInt(name+"/frameInterval")),
+    timeSinceLastFrame( 0 ),
+    worldWidth(Gamedata::getInstance().getXmlInt("world/width")),
+    worldHeight(Gamedata::getInstance().getXmlInt("world/height"))
+{
+}
+
 
 MultiSprite::MultiSprite(const MultiSprite& s) :
     Drawable(s),
@@ -82,14 +118,14 @@ void MultiSprite::update(Uint32 ticks) {
     if ( getY() < 0) {
         setVelocityY( fabs( getVelocityY() ) );
     }
-    if ( getY() > worldHeight-getScaledHeight()) {
+    if ( getY() > worldHeight - getScaledHeight()) {
         setVelocityY( -fabs( getVelocityY() ) );
     }
 
     if ( getX() < 0) {
         setVelocityX( fabs( getVelocityX() ) );
     }
-    if ( getX() > worldWidth-getScaledWidth()) {
+    if ( getX() > worldWidth - getScaledWidth()) {
         setVelocityX( -fabs( getVelocityX() ) );
     }
 

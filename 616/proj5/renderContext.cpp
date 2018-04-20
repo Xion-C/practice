@@ -14,6 +14,7 @@ RenderContext::RenderContext() :
 }
 
 RenderContext::~RenderContext() {
+    std::cout << "Deleting RenderContext" << '\n';
     //delete ImageFactory::getInstance();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow( window );

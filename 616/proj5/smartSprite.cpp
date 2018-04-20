@@ -5,7 +5,7 @@
 #include "gamedata.h"
 #include "renderContext.h"
 
-float distance(float x1, float y1, float x2, float y2) {
+float SmartSprite::distance(float x1, float y1, float x2, float y2) {
     float x = x1-x2;
     float y = y1-y2;
     return hypot(x, y);
@@ -63,7 +63,7 @@ void SmartSprite::update(Uint32 ticks) {
     float y= getY()+getImage()->getHeight()/2;
     float ex= playerPos[0]+playerWidth/2;
     float ey= playerPos[1]+playerHeight/2;
-    float distanceToEnemy = ::distance( x, y, ex, ey );
+    float distanceToEnemy = distance( x, y, ex, ey );
 
     if  ( currentMode == NORMAL ) {
         if(distanceToEnemy < safeDistance) {
