@@ -10,7 +10,7 @@ public:
     MultiSprite(const std::string&);
     MultiSprite(const std::string&, int);
     MultiSprite(const std::string&, const Vector2f&, const Vector2f& = Vector2f(0, 0));
-    MultiSprite(const MultiSprite&);
+    //MultiSprite(const MultiSprite&);
 
     virtual void draw() const;
     virtual void update(Uint32 ticks);
@@ -40,6 +40,6 @@ protected:
 
     void advanceFrame(Uint32 ticks);
     Vector2f randomVec(int, int, int) const;
-    MultiSprite& operator=(const MultiSprite&);
+    //MultiSprite& operator=(const MultiSprite&);
 };
 #endif

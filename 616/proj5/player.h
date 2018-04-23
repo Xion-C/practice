@@ -16,7 +16,7 @@ class Player : public Drawable {
 public:
     Player(const std::string&, const std::string&);
     // Player(const Player&);
-    ~Player();
+    virtual ~Player();
     Player(const Player&) = delete;
     Player& operator=(const Player&) = delete;
 
@@ -47,6 +47,21 @@ public:
     bool isJump() const {
         return (motionState & 4);
     }
+    bool isCrouch() const {
+        return (motionState & 8) && (!isJump());
+    }
+    bool isWalk() const {
+        return (motionState & 2) && (!isCrouch());
+    }
+    bool isIdle() const {
+        return (!isWalk());
+    }
+    bool isShoot() const {
+        return (motionState & 16);
+    }
+    bool isExplode() const {
+        return explosion;
+    }
 
     void setMotion(int s) {
         motionState = s;
@@ -60,10 +75,11 @@ public:
     void crouch();
     void stop();
 
+    void shoot();
+
     void explode();
     void reset();
 
-    void shoot();
 
     void attach( Drawable* o ) {
         observers.push_back(o);
@@ -76,13 +92,17 @@ private:
     Image* idleFrame;
     Image* jumpFrame;
     Image* crouchFrame;
-    // 0b0000 (down, up, walk, oirentation)
+    Image* shootFrame;
+    Image* jumpShootFrame;
+    // 0b0000 (shoot, crouch, jump, walk, oirentation)
     Uint8 motionState;
 
     unsigned currentFrame;
-    unsigned numberOfFrames;
+    unsigned numberOfWalkFrames;
     unsigned frameInterval;
+    unsigned shootInterval;
     float timeSinceLastFrame;
+    float currentShootTime;
     int worldWidth;
     int worldHeight;
 
@@ -96,6 +116,7 @@ private:
     BulletPool bullets;
 
     void advanceFrame(Uint32 ticks);
+    void advanceShoot(Uint32 ticks);
 
     // Player& operator=(const Player&);
 };

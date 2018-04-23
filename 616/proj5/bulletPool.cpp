@@ -43,7 +43,7 @@ void BulletPool::update(Uint32 ticks) {
     std::list<Bullet*>::iterator iter = bulletList.begin();
     while(iter != bulletList.end()) {
         (*iter)->update(ticks);
-        if((*iter)->isArriveTarget()) {
+        if((*iter)->isActivated() == false) {
             freeList.push_back(*iter);
             iter = bulletList.erase(iter);
         }

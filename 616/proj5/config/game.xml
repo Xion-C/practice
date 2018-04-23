@@ -12,13 +12,13 @@
 <username>xcheng2</username>
 
 <view>
-    <width>1080</width>
-    <height>600</height>
+    <width>1280</width>
+    <height>720</height>
 </view>
 
 <world>
     <width>2000</width>
-    <height>600</height>
+    <height>720</height>
 </world>
 
 <HUD>
@@ -30,17 +30,18 @@
     <interval>30</interval>
     <line0>Press a/d to move</line0>
     <line1>Press w to jump</line1>
-    <line2>Press s to crouch</line2>
-    <line3>Press m to change collision strategy</line3>
-    <line4>Press F1 to toggle HUD</line4>
+    <line2>Press s to crouch and block</line2>
+    <line3>Press space to shoot</line3>
+    <line4>Press m to change collision strategy</line4>
+    <line5>Press F1 to toggle HUD</line5>
 </HUD>
 
 <InfoHUD>
     <alpha>150</alpha>
-    <posX>510</posX>
+    <posX>710</posX>
     <posY>10</posY>
-    <width>450</width>
-    <numOfLines>6</numOfLines>
+    <width>350</width>
+    <numOfLines>8</numOfLines>
     <interval>30</interval>
 </InfoHUD>
 
@@ -75,12 +76,12 @@
 <Cloud>
     <file>assets/Cloud.png</file>
     <number>3</number>
-    <startLoc x="227" y="240"/>
+    <startLoc x="1000" y="500"/>
     <frames>1</frames>
     <frameInterval>0</frameInterval>
     <speedX>200</speedX>
     <speedY>200</speedY>
-    <safeDistance>120</safeDistance>
+    <safeDistance>100</safeDistance>
     <speedScale>3</speedScale>
     <speedScaleTicks>200</speedScaleTicks>
     <transparency>false</transparency>
@@ -110,27 +111,38 @@
 </Sword>
 
 <XCheng>
-    <file>assets/XCheng.png</file>
-    <startLoc x="50" y="400"/>
-    <frames>4</frames>
-    <transparency>false</transparency>
-    <frameInterval>200</frameInterval>
+    <startLoc x="50" y="500"/>
     <speedX>200</speedX>
-    <speedY>1000</speedY>
-    <attackRange>500</attackRange>
+    <speedY>1200</speedY>
+    <attackRange>800</attackRange>
+    <walk>
+        <file>assets/XCheng.Walk.png</file>
+        <transparency>false</transparency>
+        <frames>4</frames>
+        <frameInterval>200</frameInterval>
+    </walk>
     <idle>
         <file>assets/XCheng.Idle.png</file>
         <transparency>false</transparency>
     </idle>
     <jump>
         <file>assets/XCheng.Jump.png</file>
-        <height>300</height>
+        <height>400</height>
         <transparency>false</transparency>
     </jump>
     <crouch>
         <file>assets/XCheng.Crouch.png</file>
         <transparency>false</transparency>
     </crouch>
+    <shoot>
+        <file>assets/XCheng.Shoot.png</file>
+        <transparency>false</transparency>
+        <interval>300</interval>
+    </shoot>
+    <jumpShoot>
+        <file>assets/XCheng.JumpShoot.png</file>
+        <transparency>false</transparency>
+    </jumpShoot>
     <chunk>
         <size>32</size>
         <distance>50</distance>

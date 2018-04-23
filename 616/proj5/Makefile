@@ -13,7 +13,7 @@ DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.Td
 
 CXXFLAGS = `sdl2-config --cflags` -g -W -Wall -std=c++11 -Weffc++ -Wextra -pedantic -O0 -I `sdl2-config --prefix`/include/
 
-LDFLAGS = `sdl2-config --libs` -lm -lSDL2_image -lexpat -lSDL2_ttf
+LDFLAGS = `sdl2-config --libs` -lm -lexpat -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 
 # OBJS = $(shell find . -regex ".*\.cpp" -printf "%P " | sed 's/.cpp/.o/g')
 SRCPTH = $(shell find . -regex ".*\.cpp" | tr '\n' ' ')

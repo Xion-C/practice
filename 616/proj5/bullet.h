@@ -23,8 +23,12 @@ public:
     void setTarget(const Vector2f& t);
     void setVelocityToTarget(float v);
 
-    bool isArriveTarget() {
-        return arrive;
+    bool isActivated() {
+        return activated;
+    }
+
+    bool isExplode() const {
+        return explosion;
     }
 
     void reset();
@@ -34,7 +38,7 @@ private:
     Vector2f playerPos;
     Vector2f target;
     float velocity;
-    bool arrive;
+    bool activated;
     ExplodingSprite* explosion;
 
     float distance(float x1, float y1, float x2, float y2);

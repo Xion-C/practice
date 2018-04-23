@@ -20,7 +20,7 @@ Bullet::Bullet(const std::string& name,
     playerPos(pos),
     target(t),
     velocity(vel),
-    arrive(false),
+    activated(true),
     explosion(nullptr)
 {
     setTarget(t);
@@ -32,7 +32,7 @@ Bullet::Bullet(const std::string& name,
 //     playerPos(b.playerPos),
 //     target(b.target),
 //     velocity(b.velocity),
-//     arrive(b.arrive),
+//     activated(b.activated),
 //     explosion(b.explosion)
 // {
 // }
@@ -56,7 +56,7 @@ void Bullet::setTarget(const Vector2f& t) {
     if(target[1] < 0) {
         target[1] = 0;
     }
-    std::cout << "target: " << target << '\n';
+    // std::cout << "target: " << target << '\n';
 }
 
 void Bullet::setVelocityToTarget(float v) {
@@ -68,7 +68,7 @@ void Bullet::setVelocityToTarget(float v) {
 }
 
 void Bullet::reset() {
-    arrive = false;
+    activated = true;
 }
 
 void Bullet::explode() {
@@ -95,6 +95,7 @@ void Bullet::update(Uint32 ticks) {
         if ( explosion->chunkCount() == 0 ) {
             delete explosion;
             explosion = NULL;
+            activated = false;
             //reset();
         }
         return;
@@ -104,7 +105,7 @@ void Bullet::update(Uint32 ticks) {
     Vector2f pos = getPosition();
     if(distance(pos[0], pos[1], target[0], target[1]) <=
        distance(incr[0], incr[1], 0, 0)) {
-        arrive = true;
+        activated = false;
         return;
     }
 

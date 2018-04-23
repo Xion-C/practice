@@ -74,29 +74,29 @@ MultiSprite::MultiSprite( const std::string& name,
 }
 
 
-MultiSprite::MultiSprite(const MultiSprite& s) :
-    Drawable(s),
-    images(s.images),
-    currentFrame(s.currentFrame),
-    numberOfFrames( s.numberOfFrames ),
-    frameInterval( s.frameInterval ),
-    timeSinceLastFrame( s.timeSinceLastFrame ),
-    worldWidth( s.worldWidth ),
-    worldHeight( s.worldHeight )
-{
-}
+// MultiSprite::MultiSprite(const MultiSprite& s) :
+//     Drawable(s),
+//     images(s.images),
+//     currentFrame(s.currentFrame),
+//     numberOfFrames( s.numberOfFrames ),
+//     frameInterval( s.frameInterval ),
+//     timeSinceLastFrame( s.timeSinceLastFrame ),
+//     worldWidth( s.worldWidth ),
+//     worldHeight( s.worldHeight )
+// {
+// }
 
-MultiSprite& MultiSprite::operator=(const MultiSprite& s) {
-    Drawable::operator=(s);
-    images = (s.images);
-    currentFrame = (s.currentFrame);
-    numberOfFrames = ( s.numberOfFrames );
-    frameInterval = ( s.frameInterval );
-    timeSinceLastFrame = ( s.timeSinceLastFrame );
-    worldWidth = ( s.worldWidth );
-    worldHeight = ( s.worldHeight );
-    return *this;
-}
+// MultiSprite& MultiSprite::operator=(const MultiSprite& s) {
+//     Drawable::operator=(s);
+//     images = (s.images);
+//     currentFrame = (s.currentFrame);
+//     numberOfFrames = ( s.numberOfFrames );
+//     frameInterval = ( s.frameInterval );
+//     timeSinceLastFrame = ( s.timeSinceLastFrame );
+//     worldWidth = ( s.worldWidth );
+//     worldHeight = ( s.worldHeight );
+//     return *this;
+// }
 
 void MultiSprite::draw() const {
     // images[currentFrame]->draw(getX(), getY(), getScale());

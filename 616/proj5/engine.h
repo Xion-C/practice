@@ -10,8 +10,10 @@
 
 class CollisionStrategy;
 class SmartSprite;
+class SmartMultiSprite;
 class Bullet;
 class Player;
+class MultiSprite;
 
 class Engine {
 public:
@@ -34,10 +36,13 @@ private:
     Viewport& viewport; //note: &
 
     Player* player;
-    std::vector<SmartSprite*> clouds;
+    std::vector<SmartMultiSprite*> clouds;
     //std::vector<SmartMultiSprite*> swords;
     //std::vector<Bullet*> clouds;
     std::vector<Bullet*> swords;
+
+    std::vector<MultiSprite*> cloudsLayer1;
+    std::vector<MultiSprite*> cloudsLayer2;
 
     std::vector<CollisionStrategy*> strategies;
     int currentStrategy;

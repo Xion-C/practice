@@ -34,22 +34,28 @@ SmartMultiSprite::SmartMultiSprite(const std::string& name, const Vector2f& pos,
     currentMode(NORMAL),
     safeDistance(Gamedata::getInstance().getXmlFloat(name+"/safeDistance")),
     duration(0),
-    vScale(1)
+    vScale(1),
+    explosion()
 {
 }
 
 
-SmartMultiSprite::SmartMultiSprite(const SmartMultiSprite& s) :
-    MultiSprite(s),
-    playerPos(s.playerPos),
-    playerWidth(s.playerWidth),
-    playerHeight(s.playerHeight),
-    currentMode(s.currentMode),
-    safeDistance(s.safeDistance),
-    duration(s.duration),
-    vScale(s.vScale)
-{
+// SmartMultiSprite::SmartMultiSprite(const SmartMultiSprite& s) :
+//     MultiSprite(s),
+//     playerPos(s.playerPos),
+//     playerWidth(s.playerWidth),
+//     playerHeight(s.playerHeight),
+//     currentMode(s.currentMode),
+//     safeDistance(s.safeDistance),
+//     duration(s.duration),
+//     vScale(s.vScale)
+// {
+// }
+
+SmartMultiSprite::~SmartMultiSprite() {
+    if(explosion) delete explosion;
 }
+
 
 void SmartMultiSprite::scaleVelocity(float scale, Uint32 ticks) {
     vScale = scale;
@@ -57,7 +63,34 @@ void SmartMultiSprite::scaleVelocity(float scale, Uint32 ticks) {
     duration = ticks;
 }
 
+void SmartMultiSprite::explode() {
+    if ( !explosion ) {
+        Sprite sprite(getName(),
+                      getPosition(), getVelocity(),
+                      getImage());
+        explosion = new ExplodingSprite(sprite);
+    }
+}
+
+void SmartMultiSprite::draw() const {
+    if ( explosion ) {
+        explosion->draw();
+        return;
+    }
+    MultiSprite::draw();
+}
+
 void SmartMultiSprite::update(Uint32 ticks) {
+    if ( explosion ) {
+        explosion->update(ticks);
+        if ( explosion->chunkCount() == 0 ) {
+            delete explosion;
+            explosion = NULL;
+            setPosition(Vector2f(0,0));
+        }
+        return;
+    }
+
     MultiSprite::update(ticks);
     float x= getX()+getImage()->getWidth()/2;
     float y= getY()+getImage()->getHeight()/2;

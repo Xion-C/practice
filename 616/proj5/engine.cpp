@@ -9,8 +9,8 @@
 #include "frameGenerator.h"
 #include "sprite.h"
 #include "multisprite.h"
-#include "smartSprite.h"
-// #include "smartMultiSprite.h"
+// #include "smartSprite.h"
+#include "smartMultiSprite.h"
 #include "bullet.h"
 #include "player.h"
 #include "collisionStrategy.h"
@@ -27,7 +27,15 @@ Engine::~Engine() {
     for(CollisionStrategy* strategy : strategies) {
         delete strategy;
     }
-    // delete player;
+
+    for(MultiSprite* cloud : cloudsLayer1) {
+        delete cloud;
+    }
+
+    for(MultiSprite* cloud : cloudsLayer2) {
+        delete cloud;
+    }
+
     std::cout << "Terminating program" << std::endl;
 }
 
@@ -43,8 +51,10 @@ Engine::Engine() :
     player( new Player("XCheng", "Sword") ),
     clouds(),
     swords(),
+    cloudsLayer1(),
+    cloudsLayer2(),
     strategies(),
-    currentStrategy( 2 ),
+    currentStrategy( 1 ),
     collision( false ),
     makeVideo( false ),
     hud_on( true ),
@@ -57,15 +67,25 @@ Engine::Engine() :
 
     int n = Gamedata::getInstance().getXmlInt("Cloud/number");
     for(int i = 0; i < n; i++) {
-        clouds.push_back(new SmartSprite("Cloud", pos, w, h));
+        clouds.push_back(new SmartMultiSprite("Cloud", pos, w, h));
         player->attach(clouds[i]);
     }
-    // n = Gamedata::getInstance().getXmlInt("Sword/number");
-    // for(int i = 0; i < n; i++) {
-    //     swords.push_back(new Bullet("Sword", pos, w, h));
-    //     // swords[i]->setVelocityY(0);
-    //     player->attach(swords[i]);
-    // }
+
+    for(int i = 0; i < 4 * n; i++)
+    {
+        MultiSprite* cloud1 = new MultiSprite("Cloud", 50);
+        cloud1->setScale(0.3);
+        cloud1->setVelocity(0.3 * cloud1->getVelocity());
+        cloudsLayer1.push_back(cloud1);
+    }
+
+    for(int i = 0; i < 1 * n; i++)
+    {
+        MultiSprite* cloud2 = new MultiSprite("Cloud", 50);
+        cloud2->setScale(0.5);
+        cloud2->setVelocity(0.5 * cloud2->getVelocity());
+        cloudsLayer2.push_back(cloud2);
+    }
 
     strategies.push_back(new RectangularCollisionStrategy);
     strategies.push_back(new PerPixelCollisionStrategy);
@@ -77,7 +97,17 @@ Engine::Engine() :
 
 void Engine::draw() const {
     sky.draw();
+
+    for(auto cloud : cloudsLayer1) {
+        cloud->draw();
+    }
+
     mountain.draw();
+
+    for(auto cloud : cloudsLayer2) {
+        cloud->draw();
+    }
+
     ground.draw();
 
     for(auto cloud : clouds) {
@@ -91,9 +121,6 @@ void Engine::draw() const {
 
     viewport.draw();
     strategies[currentStrategy]->draw();
-    // std::stringstream strm;
-    // strm << "Swords Remaining: " << swords.size();
-    // InfoHUD::getInstance().addLine(strm.str());
     if(hud_on) {
         hud.draw();
         infoHUD.draw();
@@ -106,25 +133,32 @@ void Engine::checkForCollisions() {
     auto it = clouds.begin();
     while ( it != clouds.end() ) {
         if ( strategies[currentStrategy]->execute(*player, **it) ) {
-            player->explode();
-            break;
+            if(!(player->isCrouch()) && !((*it)->isExplode())) {
+                player->explode();
+                break;
+            }
+            else it++;
         }
         else it++;
     }
-    // auto it1 = clouds.begin();
-    // while ( it1 != clouds.end() ) {
-    //     auto it2 = player->getBullets().getBulletList().begin();
-    //     while ( it2 != player->getBullets().getBulletList().end() ) {
-    //         if ( strategies[currentStrategy]->execute(**it1, *it2) ) {
-    //             it2->explode();
-    //             player->getBullets().getFreeList().push_back(*it2);
-    //             player->getBullets().getBulletList().erase(it2);
-    //             break;
-    //         }
-    //         else it2++;
-    //     }
-    //     it1++;
-    // }
+    std::list<Bullet*>& bulletList = player->getBullets().getBulletList();
+
+    auto it1 = clouds.begin();
+    while ( it1 != clouds.end() ) {
+        auto it2 = bulletList.begin();
+        while ( it2 != bulletList.end() ) {
+            if ( strategies[currentStrategy]->execute(**it1, **it2) ) {
+                if(!((*it1)->isExplode()) && !((*it2)->isExplode())) {
+                    (*it2)->explode();
+                    (*it1)->explode();
+                    break;
+                }
+                else it2++;
+            }
+            else it2++;
+        }
+        it1++;
+    }
 }
 
 void Engine::update(Uint32 ticks) {
@@ -139,7 +173,12 @@ void Engine::update(Uint32 ticks) {
     // for(auto sword : swords) {
     //     sword->update(ticks);
     // }
-
+    for(auto cloud : cloudsLayer1) {
+        cloud->update(ticks);
+    }
+    for(auto cloud : cloudsLayer2) {
+        cloud->update(ticks);
+    }
 
     ground.update();
     mountain.update();
