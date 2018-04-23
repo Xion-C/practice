@@ -7,6 +7,7 @@
 #include "viewport.h"
 #include "hud.h"
 #include "infoHUD.h"
+#include "sound.h"
 
 class CollisionStrategy;
 class SmartSprite;
@@ -52,6 +53,7 @@ private:
     bool hud_on;
     HUD& hud; //note: &
     InfoHUD& infoHUD; //note: &
+    SDLSound& sound;
 
 
 

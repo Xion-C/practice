@@ -4,6 +4,11 @@
 #include "sound.h"
 using std::string;
 
+SDLSound& SDLSound::getInstance() {
+    static SDLSound instance;
+    return instance;
+}
+
 SDLSound::~SDLSound() {
     std::cout << "Cleaning up sounds ..." << std::endl;
     std::clock_t start = std::clock();
@@ -18,7 +23,7 @@ SDLSound::~SDLSound() {
 }
 
 SDLSound::SDLSound() :
-    volume(SDL_MIX_MAXVOLUME/10),
+    volume(SDL_MIX_MAXVOLUME/5),
     currentSound(-1),
     music(NULL),
     audioRate(22050),
@@ -32,21 +37,17 @@ SDLSound::SDLSound() :
                      audioBuffers)) {
         throw string("Unable to open audio!");
     }
-    music = Mix_LoadMUS("sound/100Years.mp3");
+    music = Mix_LoadMUS("sounds/background.mp3");
     // Need to install midi to play the following:
     // music = Mix_LoadMUS("sound/ballad2.mid");
-    if (!music) throw string("Couldn't load 100Years.mp3")+Mix_GetError();
+    if (!music) throw string("Couldn't load background.mp3")+Mix_GetError();
 
     startMusic();
 
-    sounds.push_back( Mix_LoadWAV("sound/Boom.wav") );
-    sounds.push_back( Mix_LoadWAV("sound/Gun.wav") );
-    sounds.push_back( Mix_LoadWAV("sound/Thump.wav") );
-    sounds.push_back( Mix_LoadWAV("sound/phaser.wav") );
-    sounds.push_back( Mix_LoadWAV("sound/Putt1.wav") );
-    sounds.push_back( Mix_LoadWAV("sound/explosion.wav") );
-    sounds.push_back( Mix_LoadWAV("sound/cannon.wav") );
-    sounds.push_back( Mix_LoadWAV("sound/Larc.wav") );
+    sounds.push_back( Mix_LoadWAV("sounds/crouch.wav") );
+    sounds.push_back( Mix_LoadWAV("sounds/shoot.wav") );
+    sounds.push_back( Mix_LoadWAV("sounds/die.wav") );
+    sounds.push_back( Mix_LoadWAV("sounds/explode.wav") );
     for (unsigned int i = 0; i < sounds.size(); ++i) channels.push_back(i);
     std::cout << "Music and Sound is loaded" << std::endl;
 }

@@ -1,3 +1,6 @@
+#ifndef SOUND__H
+#define SOUND__H
+
 #include <vector>
 #include <SDL.h>
 #include <SDL/SDL_mixer.h>
@@ -18,7 +21,7 @@
 
 class SDLSound {
 public:
-    SDLSound();
+    static SDLSound& getInstance();
     ~SDLSound();
 
     void startMusic();
@@ -35,6 +38,9 @@ private:
     int audioBuffers;
     std::vector<Mix_Chunk*> sounds;
     std::vector<int> channels;
+    SDLSound();
     SDLSound(const SDLSound&);
     SDLSound& operator=(const SDLSound&);
 };
+
+#endif

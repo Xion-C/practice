@@ -23,7 +23,7 @@ build/engine.o: engine.cpp gamedata.h vector2f.h parseXML.h engine.h \
  /usr/include/SDL2/SDL_version.h ioMod.h /usr/include/SDL2/SDL_ttf.h \
  /usr/include/SDL2/SDL.h renderContext.h imageFactory.h image.h \
  spriteSheet.h clock.h world.h viewport.h drawable.h hud.h infoHUD.h \
- frameGenerator.h sprite.h multisprite.h smartMultiSprite.h \
+ sound.h frameGenerator.h sprite.h multisprite.h smartMultiSprite.h \
  explodingSprite.h chunk.h bullet.h player.h bulletPool.h \
  collisionStrategy.h
 
@@ -146,6 +146,8 @@ drawable.h:
 hud.h:
 
 infoHUD.h:
+
+sound.h:
 
 frameGenerator.h:
 

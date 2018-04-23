@@ -59,7 +59,8 @@ Engine::Engine() :
     makeVideo( false ),
     hud_on( true ),
     hud( HUD::getInstance() ),
-    infoHUD( InfoHUD::getInstance() )
+    infoHUD( InfoHUD::getInstance() ),
+    sound(SDLSound::getInstance())
 {
     Vector2f pos = player->getPosition();
     int w = player->getScaledWidth();

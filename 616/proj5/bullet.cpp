@@ -5,6 +5,7 @@
 #include "gamedata.h"
 #include "renderContext.h"
 #include "explodingSprite.h"
+#include "sound.h"
 
 float Bullet::distance(float x1, float y1, float x2, float y2) {
     float x = x1-x2;
@@ -77,6 +78,7 @@ void Bullet::explode() {
                       getPosition(), getVelocity(),
                       images[currentFrame]);
         explosion = new ExplodingSprite(sprite);
+        SDLSound::getInstance()[3];
     }
 }
 

@@ -9,6 +9,7 @@
 #include "drawable.h"
 #include "vector2f.h"
 #include "bulletPool.h"
+#include "sound.h"
 
 class ExplodingSprite;
 
@@ -114,6 +115,7 @@ private:
     ExplodingSprite* explosion;
     std::string bulletName;
     BulletPool bullets;
+    SDLSound& sound;
 
     void advanceFrame(Uint32 ticks);
     void advanceShoot(Uint32 ticks);

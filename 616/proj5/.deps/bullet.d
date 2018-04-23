@@ -22,7 +22,7 @@ build/bullet.o: bullet.cpp bullet.h multisprite.h drawable.h \
  /usr/include/SDL2/SDL_system.h /usr/include/SDL2/SDL_timer.h \
  /usr/include/SDL2/SDL_version.h vector2f.h image.h gamedata.h parseXML.h \
  renderContext.h imageFactory.h spriteSheet.h explodingSprite.h chunk.h \
- sprite.h
+ sprite.h sound.h
 
 bullet.h:
 
@@ -135,3 +135,5 @@ explodingSprite.h:
 chunk.h:
 
 sprite.h:
+
+sound.h:

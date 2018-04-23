@@ -20,7 +20,7 @@ build/player.o: player.cpp gamedata.h vector2f.h parseXML.h player.h \
  /usr/include/SDL2/SDL_log.h /usr/include/SDL2/SDL_messagebox.h \
  /usr/include/SDL2/SDL_power.h /usr/include/SDL2/SDL_render.h \
  /usr/include/SDL2/SDL_system.h /usr/include/SDL2/SDL_timer.h \
- /usr/include/SDL2/SDL_version.h drawable.h image.h bulletPool.h \
+ /usr/include/SDL2/SDL_version.h drawable.h image.h bulletPool.h sound.h \
  smartSprite.h sprite.h smartMultiSprite.h multisprite.h \
  explodingSprite.h chunk.h bullet.h imageFactory.h spriteSheet.h hud.h \
  ioMod.h /usr/include/SDL2/SDL_ttf.h infoHUD.h
@@ -124,6 +124,8 @@ drawable.h:
 image.h:
 
 bulletPool.h:
+
+sound.h:
 
 smartSprite.h:
 

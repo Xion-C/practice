@@ -60,7 +60,8 @@ Player::Player( const std::string& name, const std::string& bullet) :
     observers(),
     explosion(nullptr),
     bulletName(bullet),
-    bullets(bulletName)
+    bullets(bulletName),
+    sound(SDLSound::getInstance())
 {
     setVelocity(Vector2f(0, 0));
 }
@@ -175,6 +176,10 @@ void Player::jump() {
 
 void Player::crouch() {
     if(!isJump()) {
+        if(!isCrouch()) {
+            sound[0];
+        }
+
         motionState |= 8; //Crouch
         motionState &= ~2; //stop walk
         setVelocityX(0);
@@ -183,6 +188,7 @@ void Player::crouch() {
 
 void Player::shoot() {
     if(isShoot()) return;  //while shooting, can not shoot agian
+    sound[1];
     if(!isCrouch()) {
         if(!isJump()) {
             motionState &= ~2; //stop walk
@@ -217,6 +223,7 @@ void Player::explode() {
                       getPosition(), 0.2f * initialVelocity,
                       idleFrame);
         explosion = new ExplodingSprite(sprite);
+        sound[2];
     }
 }
 

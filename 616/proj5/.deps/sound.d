@@ -1,4 +1,4 @@
-build/main.o: main.cpp engine.h /usr/include/SDL2/SDL.h \
+build/sound.o: sound.cpp sound.h /usr/include/SDL2/SDL.h \
  /usr/include/SDL2/SDL_main.h /usr/include/SDL2/SDL_stdinc.h \
  /usr/include/SDL2/SDL_config.h /usr/include/SDL2/SDL_platform.h \
  /usr/include/SDL2/begin_code.h /usr/include/SDL2/close_code.h \
@@ -19,12 +19,9 @@ build/main.o: main.cpp engine.h /usr/include/SDL2/SDL.h \
  /usr/include/SDL2/SDL_loadso.h /usr/include/SDL2/SDL_log.h \
  /usr/include/SDL2/SDL_messagebox.h /usr/include/SDL2/SDL_power.h \
  /usr/include/SDL2/SDL_render.h /usr/include/SDL2/SDL_system.h \
- /usr/include/SDL2/SDL_timer.h /usr/include/SDL2/SDL_version.h ioMod.h \
- /usr/include/SDL2/SDL_ttf.h /usr/include/SDL2/SDL.h renderContext.h \
- imageFactory.h image.h gamedata.h vector2f.h parseXML.h spriteSheet.h \
- clock.h world.h viewport.h drawable.h hud.h infoHUD.h sound.h
+ /usr/include/SDL2/SDL_timer.h /usr/include/SDL2/SDL_version.h
 
-engine.h:
+sound.h:
 
 /usr/include/SDL2/SDL.h:
 
@@ -111,37 +108,3 @@ engine.h:
 /usr/include/SDL2/SDL_timer.h:
 
 /usr/include/SDL2/SDL_version.h:
-
-ioMod.h:
-
-/usr/include/SDL2/SDL_ttf.h:
-
-/usr/include/SDL2/SDL.h:
-
-renderContext.h:
-
-imageFactory.h:
-
-image.h:
-
-gamedata.h:
-
-vector2f.h:
-
-parseXML.h:
-
-spriteSheet.h:
-
-clock.h:
-
-world.h:
-
-viewport.h:
-
-drawable.h:
-
-hud.h:
-
-infoHUD.h:
-
-sound.h:
