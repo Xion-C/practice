@@ -56,6 +56,18 @@ MultiSprite::MultiSprite( const std::string& name, int randRange ) :
     worldHeight(Gamedata::getInstance().getXmlInt("world/height"))
 {
     //std::cout << "speed: " << getVelocity() << std::endl;
+    if(getX() < 0) {
+        setX(0);
+    }
+    else if(getX() > worldWidth - getScaledWidth()) {
+        setX(worldWidth - getScaledWidth());
+    }
+    if(getY() < 0) {
+        setY(0);
+    }
+    else if(getY() > worldHeight - getScaledHeight() - 200) {
+        setY(worldHeight - getScaledHeight() - 200);
+    }
 }
 
 MultiSprite::MultiSprite( const std::string& name,

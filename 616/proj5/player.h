@@ -97,6 +97,7 @@ private:
     Image* jumpShootFrame;
     // 0b0000 (shoot, crouch, jump, walk, oirentation)
     Uint8 motionState;
+    Uint8 lastMotionState;
 
     unsigned currentFrame;
     unsigned numberOfWalkFrames;

@@ -36,7 +36,7 @@ Engine::~Engine() {
         delete cloud;
     }
 
-    std::cout << "Terminating program" << std::endl;
+    std::cout << "Game End" << std::endl;
 }
 
 Engine::Engine() :
@@ -97,6 +97,8 @@ Engine::Engine() :
 }
 
 void Engine::draw() const {
+    infoHUD.addLine("Remaining enemies: " + std::to_string(clouds.size()));
+
     sky.draw();
 
     for(auto cloud : cloudsLayer1) {
@@ -122,9 +124,21 @@ void Engine::draw() const {
 
     viewport.draw();
     strategies[currentStrategy]->draw();
+
     if(hud_on) {
         hud.draw();
         infoHUD.draw();
+    }
+
+    if ( clouds.size() == 0 ) {
+        SDL_Rect rect = {400, 300, 480, 120};
+        SDL_SetRenderDrawColor( renderer, 255, 255, 255, 200 );
+        SDL_RenderFillRect( renderer, &rect );
+        io.writeText("YOU WIN !", 570, 320,
+                     {0, 128, 128, 255});
+        io.writeText("Press R to Restart the game", 480, 380,
+                     {0, 128, 128, 255});
+        clock.pause();
     }
 
     SDL_RenderPresent(renderer);
@@ -145,20 +159,28 @@ void Engine::checkForCollisions() {
     std::list<Bullet*>& bulletList = player->getBullets().getBulletList();
 
     auto it1 = clouds.begin();
+    bool destroyed = false;
     while ( it1 != clouds.end() ) {
+        //std::cout << "- it1: " << static_cast<void*>(*it1) << '\n';
+        destroyed = false;
         auto it2 = bulletList.begin();
         while ( it2 != bulletList.end() ) {
+            //std::cout << "it2: " << static_cast<void*>(*it2) << '\n';
             if ( strategies[currentStrategy]->execute(**it1, **it2) ) {
                 if(!((*it1)->isExplode()) && !((*it2)->isExplode())) {
                     (*it2)->explode();
                     (*it1)->explode();
+                    player->detach(*it1);
+                    delete (*it1);
+                    it1 = clouds.erase(it1);
+                    destroyed = true;
                     break;
                 }
                 else it2++;
             }
             else it2++;
         }
-        it1++;
+        if(!destroyed) it1++;
     }
 }
 
@@ -191,7 +213,7 @@ void Engine::update(Uint32 ticks) {
 }
 
 
-void Engine::play() {
+bool Engine::play() {
     SDL_Event event;
     const Uint8* keystate;
     bool done = false;
@@ -211,6 +233,10 @@ void Engine::play() {
                 if ( keystate[SDL_SCANCODE_P] ) {
                     if ( clock.isPaused() ) clock.unpause();
                     else clock.pause();
+                }
+                if ( keystate[SDL_SCANCODE_R] ) {
+                    clock.unpause();
+                    return true;
                 }
                 if ( keystate[SDL_SCANCODE_M] ) {
                     currentStrategy = (1 + currentStrategy) % strategies.size();
@@ -265,4 +291,5 @@ void Engine::play() {
             }
         }
     }
+    return false;
 }

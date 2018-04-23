@@ -42,6 +42,7 @@ Player::Player( const std::string& name, const std::string& bullet) :
     shootFrame(ImageFactory::getInstance().getImage(name+"/shoot")),
     jumpShootFrame(ImageFactory::getInstance().getImage(name+"/jumpShoot")),
     motionState(0),
+    lastMotionState(0),
     currentFrame(0),
     numberOfWalkFrames(
         Gamedata::getInstance().getXmlInt(name+"/walk/frames")),
@@ -176,7 +177,7 @@ void Player::jump() {
 
 void Player::crouch() {
     if(!isJump()) {
-        if(!isCrouch()) {
+        if(!(lastMotionState & 8)) { //last motion is not crouch
             sound[0];
         }
 
@@ -354,7 +355,7 @@ void Player::update(Uint32 ticks) {
             setVelocityY(getVelocityY() + acceleration * t);
         }
     }
-
+    lastMotionState = motionState;
     stop();
 
     //update attached smart sprites

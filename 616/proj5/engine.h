@@ -20,7 +20,7 @@ class Engine {
 public:
     Engine ();
     ~Engine ();
-    void play();
+    bool play();
     // void switchSprite();
     Engine(const Engine&) = delete;
     Engine& operator=(const Engine&) = delete;

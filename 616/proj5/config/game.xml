@@ -26,7 +26,7 @@
     <posX>10</posX>
     <posY>10</posY>
     <width>450</width>
-    <numOfLines>6</numOfLines>
+    <numOfLines>9</numOfLines>
     <interval>30</interval>
     <line0>Press a/d to move</line0>
     <line1>Press w to jump</line1>
@@ -34,14 +34,16 @@
     <line3>Press space to shoot</line3>
     <line4>Press m to change collision strategy</line4>
     <line5>Press F1 to toggle HUD</line5>
+    <line6>Press p to pause</line6>
+    <line7>Press r to restart</line7>
 </HUD>
 
 <InfoHUD>
     <alpha>150</alpha>
-    <posX>710</posX>
+    <posX>910</posX>
     <posY>10</posY>
     <width>350</width>
-    <numOfLines>8</numOfLines>
+    <numOfLines>9</numOfLines>
     <interval>30</interval>
 </InfoHUD>
 

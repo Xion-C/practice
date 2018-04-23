@@ -4,15 +4,36 @@ Course: CPSC 6160
 
 Clemson Email Address: xcheng2@clemson.edu
 
-Project no: 4
+Project no: 5
 
-Project due date: 8 AM, Friday, April 6th, 2018.
+Project due date: 8 AM, Friday, April 20th, 2018.
 
 Project description: Adding a Player Object
 
 The easiest part of this project: edit game.xml
 
+What I have done:
+    - Draw new motions: shoot, jump shoot; Redraw old motions: jump, crouching
+    - Use painter algorithm to create the illusion of depth
+    - Two HUDs, one shows how to player, the other one show game information
+      including object pool contents. Both HUDs toggled with F1
+    - Press space, player will shoot a sword, and swords are in object pool
+      (class BulletPool)
+    - Player, swords, clouds are all able to explode. Cloud is enemy, when a
+      cloud collide with player, player will explode. But if the player is
+      crouching, it will block the cloud and will not exploding. When a sword
+      collide with a cloud, both of them will exploding. All explosions are
+      using chunks.
+    - The player will re-appear to the start position after explosion. Clouds
+      will disappear and be erased after explosion
+    - Add background music and motion sound
+    - Press r to restart when all the clouds are destroyed
+
+Images:
+    All the images are drawn by myself
+Sounds:
+    Music and sounds are all comes from a very old Chinese RPG "JianXiaQingYuan"
+
 Problems that I had in completing this project:
-    - New motions added: idle, jump, and crouch
-    - In the final project, I'm planing to add some enemies. The enemies will attack the player. The player could hide or defense(like, press s to crouch will reduce the damage). The player could also fight the enemies. When cleaning out all the enemies, the player win; if the player's HP reduced to 0, game over.
-    - All the art resources including the background and sprites are drawn by myself
+    - No big problems, just a lot things to do and making everything work well
+      is very time consuming
