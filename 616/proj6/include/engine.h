@@ -38,6 +38,7 @@ private:
 
     Player* player;
     std::vector<SmartMultiSprite*> clouds;
+    std::vector<SmartMultiSprite*> explodedClouds;
     //std::vector<SmartMultiSprite*> swords;
     //std::vector<Bullet*> clouds;
     std::vector<Bullet*> swords;
@@ -49,8 +50,9 @@ private:
     int currentStrategy;
     bool collision;
     bool makeVideo;
+    bool godmodeOn;
 
-    bool hud_on;
+    bool hudOn;
     HUD& hud; //note: &
     InfoHUD& infoHUD; //note: &
     SDLSound& sound;
@@ -59,7 +61,8 @@ private:
 
     void draw() const;
     void update(Uint32);
-
-    void printScales() const;
+    void checkEnd() const;
+    //void printScales() const;
     void checkForCollisions();
+    void checkForExplosions();
 };

@@ -24,6 +24,9 @@ Engine::~Engine() {
     // for(auto sword : swords) {
     //     delete sword;
     // }
+    for(auto cloud : explodedClouds) {
+        delete cloud;
+    }
     for(CollisionStrategy* strategy : strategies) {
         delete strategy;
     }
@@ -50,6 +53,7 @@ Engine::Engine() :
     viewport( Viewport::getInstance() ),
     player( new Player("XCheng", "Sword") ),
     clouds(),
+    explodedClouds(),
     swords(),
     cloudsLayer1(),
     cloudsLayer2(),
@@ -57,7 +61,8 @@ Engine::Engine() :
     currentStrategy( 1 ),
     collision( false ),
     makeVideo( false ),
-    hud_on( true ),
+    godmodeOn( false ),
+    hudOn( true ),
     hud( HUD::getInstance() ),
     infoHUD( InfoHUD::getInstance() ),
     sound(SDLSound::getInstance())
@@ -75,16 +80,18 @@ Engine::Engine() :
     for(int i = 0; i < 4 * n; i++)
     {
         MultiSprite* cloud1 = new MultiSprite("Cloud", 50);
-        cloud1->setScale(0.3);
-        cloud1->setVelocity(0.3 * cloud1->getVelocity());
+        float scale = Gamedata::getInstance().getRandFloat(0.2, 0.4);
+        cloud1->setScale(scale);
+        cloud1->setVelocity(scale * cloud1->getVelocity());
         cloudsLayer1.push_back(cloud1);
     }
 
     for(int i = 0; i < 1 * n; i++)
     {
         MultiSprite* cloud2 = new MultiSprite("Cloud", 50);
-        cloud2->setScale(0.5);
-        cloud2->setVelocity(0.5 * cloud2->getVelocity());
+        float scale = Gamedata::getInstance().getRandFloat(0.4, 0.6);
+        cloud2->setScale(scale);
+        cloud2->setVelocity(scale * cloud2->getVelocity());
         cloudsLayer2.push_back(cloud2);
     }
 
@@ -96,8 +103,33 @@ Engine::Engine() :
     std::cout << "Loading complete" << std::endl;
 }
 
+void Engine::checkEnd() const {
+    if ( clouds.size() == 0 && explodedClouds.size() == 0) {
+        SDL_Rect rect = {400, 300, 480, 120};
+        SDL_SetRenderDrawColor( renderer, 255, 255, 255, 200 );
+        SDL_RenderFillRect( renderer, &rect );
+        io.writeText("YOU WIN !", 570, 320,
+                     {0, 128, 128, 255});
+        io.writeText("Press R to Restart the game", 480, 380,
+                     {0, 128, 128, 255});
+        clock.pause();
+    }
+    else if (collision && !player->isExplode()) {
+        SDL_Rect rect = {400, 300, 480, 120};
+        SDL_SetRenderDrawColor( renderer, 255, 255, 255, 200 );
+        SDL_RenderFillRect( renderer, &rect );
+        io.writeText("YOU LOSE !", 570, 320,
+                     {0, 128, 128, 255});
+        io.writeText("Press R to Restart the game", 480, 380,
+                     {0, 128, 128, 255});
+        clock.pause();
+    }
+}
+
 void Engine::draw() const {
     infoHUD.addLine("Remaining enemies: " + std::to_string(clouds.size()));
+    infoHUD.addLine("God mode: " +
+                    (godmodeOn ? std::string("On") : std::string("Off")));
 
     sky.draw();
 
@@ -113,33 +145,26 @@ void Engine::draw() const {
 
     ground.draw();
 
+    if(!(collision && !player->isExplode())) {
+        player->draw();
+    }
+
     for(auto cloud : clouds) {
         cloud->draw();
     }
-    // for(auto sword : swords) {
-    //     sword->draw();
-    // }
-
-    player->draw();
+    for(auto cloud : explodedClouds) {
+        cloud->draw();
+    }
 
     viewport.draw();
     strategies[currentStrategy]->draw();
 
-    if(hud_on) {
+    if(hudOn) {
         hud.draw();
         infoHUD.draw();
     }
 
-    if ( clouds.size() == 0 ) {
-        SDL_Rect rect = {400, 300, 480, 120};
-        SDL_SetRenderDrawColor( renderer, 255, 255, 255, 200 );
-        SDL_RenderFillRect( renderer, &rect );
-        io.writeText("YOU WIN !", 570, 320,
-                     {0, 128, 128, 255});
-        io.writeText("Press R to Restart the game", 480, 380,
-                     {0, 128, 128, 255});
-        clock.pause();
-    }
+    checkEnd();
 
     SDL_RenderPresent(renderer);
 }
@@ -148,8 +173,10 @@ void Engine::checkForCollisions() {
     auto it = clouds.begin();
     while ( it != clouds.end() ) {
         if ( strategies[currentStrategy]->execute(*player, **it) ) {
+            if(godmodeOn) break;
             if(!(player->isCrouch()) && !((*it)->isExplode())) {
                 player->explode();
+                collision = true;
                 break;
             }
             else it++;
@@ -159,10 +186,10 @@ void Engine::checkForCollisions() {
     std::list<Bullet*>& bulletList = player->getBullets().getBulletList();
 
     auto it1 = clouds.begin();
-    bool destroyed = false;
+    bool cloudDestroyed = false;
     while ( it1 != clouds.end() ) {
         //std::cout << "- it1: " << static_cast<void*>(*it1) << '\n';
-        destroyed = false;
+        cloudDestroyed = false;
         auto it2 = bulletList.begin();
         while ( it2 != bulletList.end() ) {
             //std::cout << "it2: " << static_cast<void*>(*it2) << '\n';
@@ -170,22 +197,36 @@ void Engine::checkForCollisions() {
                 if(!((*it1)->isExplode()) && !((*it2)->isExplode())) {
                     (*it2)->explode();
                     (*it1)->explode();
+
                     player->detach(*it1);
-                    delete (*it1);
+                    //delete (*it1);
+                    explodedClouds.push_back(*it1);
                     it1 = clouds.erase(it1);
-                    destroyed = true;
+
+                    cloudDestroyed = true;
                     break;
                 }
-                else it2++;
+                //else it2++;
             }
-            else it2++;
+            //else it2++;
+            it2++;
         }
-        if(!destroyed) it1++;
+        if(!cloudDestroyed) it1++;
+    }
+}
+
+void Engine::checkForExplosions() {
+    auto iter = explodedClouds.begin();
+    while(iter != explodedClouds.end()) {
+        if(!(*iter)->isExplode()) {
+            delete (*iter);
+            iter = explodedClouds.erase(iter);
+        }
+        else iter++;
     }
 }
 
 void Engine::update(Uint32 ticks) {
-    collision = false;
     checkForCollisions();
 
     player->update(ticks);
@@ -193,9 +234,11 @@ void Engine::update(Uint32 ticks) {
     for(auto cloud : clouds) {
         cloud->update(ticks);
     }
-    // for(auto sword : swords) {
-    //     sword->update(ticks);
-    // }
+    for(auto cloud : explodedClouds) {
+        cloud->update(ticks);
+    }
+    checkForExplosions();
+
     for(auto cloud : cloudsLayer1) {
         cloud->update(ticks);
     }
@@ -241,6 +284,9 @@ bool Engine::play() {
                 if ( keystate[SDL_SCANCODE_M] ) {
                     currentStrategy = (1 + currentStrategy) % strategies.size();
                 }
+                if (keystate[SDL_SCANCODE_G]) {
+                    godmodeOn = !godmodeOn;
+                }
                 if (keystate[SDL_SCANCODE_F4] && !makeVideo) {
                     std::cout << "Initiating frame capture" << std::endl;
                     makeVideo = true;
@@ -250,7 +296,7 @@ bool Engine::play() {
                     makeVideo = false;
                 }
                 if (keystate[SDL_SCANCODE_F1]) {
-                    hud_on = !hud_on;
+                    hudOn = !hudOn;
                 }
                 if (keystate[SDL_SCANCODE_SPACE]) {
                     player->shoot();

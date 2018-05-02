@@ -26,7 +26,7 @@
     <posX>10</posX>
     <posY>10</posY>
     <width>450</width>
-    <numOfLines>9</numOfLines>
+    <numOfLines>10</numOfLines>
     <interval>30</interval>
     <line0>Press a/d to move</line0>
     <line1>Press w to jump</line1>
@@ -36,6 +36,7 @@
     <line5>Press F1 to toggle HUD</line5>
     <line6>Press p to pause</line6>
     <line7>Press r to restart</line7>
+    <line8>Press g to enter God mode</line8>
 </HUD>
 
 <InfoHUD>
@@ -43,7 +44,7 @@
     <posX>910</posX>
     <posY>10</posY>
     <width>350</width>
-    <numOfLines>9</numOfLines>
+    <numOfLines>10</numOfLines>
     <interval>30</interval>
 </InfoHUD>
 

@@ -4,15 +4,23 @@ Course: CPSC 6160
 
 Clemson Email Address: xcheng2@clemson.edu
 
-Project no: 5
+Project no: 6
 
-Project due date: 8 AM, Friday, April 20th, 2018.
+Project due date: 8 AM, Wednesday, May 2nd, 2018.
 
 Project description: Adding a Player Object
 
-The easiest part of this project: edit game.xml
+The easiest part of this project: adding a menu
 
-What I have done:
+What I have done in this project:
+    - Restart, music and sound effects are already implemented in last project, they are modified a little to work better.
+    - Put *.cpp into ./src directory, put *.h into ./include directory, and modify Makefile. And game.xml is in ./config directory now.
+    - God mode is added, press "g" to enter.
+    -
+
+
+
+
     - Draw new motions: shoot, jump shoot; Redraw old motions: jump, crouching
     - Use painter algorithm to create the illusion of depth
     - Two HUDs, one shows how to player, the other one show game information
@@ -29,11 +37,16 @@ What I have done:
     - Add background music and motion sound
     - Press r to restart when all the clouds are destroyed
 
-Images:
-    All the images are drawn by myself
-Sounds:
-    Music and sounds are all comes from a very old Chinese RPG "JianXiaQingYuan"
+My inclusion of pizzazz:
+    - Painter's algorithm
+    -
+
 
 Problems that I had in completing this project:
     - No big problems, just a lot things to do and making everything work well
       is very time consuming
+
+Images:
+    All the images in assets directory are drawn by myself
+Sounds:
+    Music and sounds are all comes from a very old Chinese RPG "JianXiaQingYuan"
