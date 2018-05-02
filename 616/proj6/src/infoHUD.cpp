@@ -22,6 +22,7 @@ InfoHUD::InfoHUD() :
     iomod(IOMod::getInstance()),
     lines()
 {
+    std::cout << "InfoHUD is loaded" << '\n';
 }
 
 void InfoHUD::addLine(const std::string& msg) {

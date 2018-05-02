@@ -2,12 +2,13 @@
 #include <SDL.h>
 #include "ioMod.h"
 #include "renderContext.h"
-#include "clock.h"
+// #include "clock.h"
 #include "world.h"
 #include "viewport.h"
 #include "hud.h"
 #include "infoHUD.h"
 #include "sound.h"
+#include "menuEngine.h"
 
 class CollisionStrategy;
 class SmartSprite;
@@ -57,7 +58,7 @@ private:
     InfoHUD& infoHUD; //note: &
     SDLSound& sound;
 
-
+    // MenuEngine menuEngine;
 
     void draw() const;
     void update(Uint32);

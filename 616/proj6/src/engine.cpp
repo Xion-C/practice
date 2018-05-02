@@ -66,7 +66,9 @@ Engine::Engine() :
     hud( HUD::getInstance() ),
     infoHUD( InfoHUD::getInstance() ),
     sound(SDLSound::getInstance())
+    //,menuEngine()
 {
+    //clock.startClock();
     Vector2f pos = player->getPosition();
     int w = player->getScaledWidth();
     int h = player->getScaledHeight();
@@ -109,7 +111,7 @@ void Engine::checkEnd() const {
         SDL_SetRenderDrawColor( renderer, 255, 255, 255, 200 );
         SDL_RenderFillRect( renderer, &rect );
         io.writeText("YOU WIN !", 570, 320,
-                     {0, 128, 128, 255});
+                     {0, 0, 255, 255});
         io.writeText("Press R to Restart the game", 480, 380,
                      {0, 128, 128, 255});
         clock.pause();
@@ -119,7 +121,7 @@ void Engine::checkEnd() const {
         SDL_SetRenderDrawColor( renderer, 255, 255, 255, 200 );
         SDL_RenderFillRect( renderer, &rect );
         io.writeText("YOU LOSE !", 570, 320,
-                     {0, 128, 128, 255});
+                     {0, 255, 0, 255});
         io.writeText("Press R to Restart the game", 480, 380,
                      {0, 128, 128, 255});
         clock.pause();
@@ -286,6 +288,7 @@ bool Engine::play() {
                 }
                 if (keystate[SDL_SCANCODE_G]) {
                     godmodeOn = !godmodeOn;
+                    player->crouch();
                 }
                 if (keystate[SDL_SCANCODE_F4] && !makeVideo) {
                     std::cout << "Initiating frame capture" << std::endl;

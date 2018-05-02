@@ -13,38 +13,16 @@ Project description: Adding a Player Object
 The easiest part of this project: adding a menu
 
 What I have done in this project:
+    - The aim of this game is to controll the player to elimate all the dark red clouds, or be killed by the clouds.
     - Restart, music and sound effects are already implemented in last project, they are modified a little to work better.
     - Put *.cpp into ./src directory, put *.h into ./include directory, and modify Makefile. And game.xml is in ./config directory now.
     - God mode is added, press "g" to enter.
-    -
-
-
-
-
-    - Draw new motions: shoot, jump shoot; Redraw old motions: jump, crouching
-    - Use painter algorithm to create the illusion of depth
-    - Two HUDs, one shows how to player, the other one show game information
-      including object pool contents. Both HUDs toggled with F1
-    - Press space, player will shoot a sword, and swords are in object pool
-      (class BulletPool)
-    - Player, swords, clouds are all able to explode. Cloud is enemy, when a
-      cloud collide with player, player will explode. But if the player is
-      crouching, it will block the cloud and will not exploding. When a sword
-      collide with a cloud, both of them will exploding. All explosions are
-      using chunks.
-    - The player will re-appear to the start position after explosion. Clouds
-      will disappear and be erased after explosion
-    - Add background music and motion sound
-    - Press r to restart when all the clouds are destroyed
 
 My inclusion of pizzazz:
     - Painter's algorithm
-    -
-
 
 Problems that I had in completing this project:
-    - No big problems, just a lot things to do and making everything work well
-      is very time consuming
+    - No big problems, just a lot things to do and making everything work well is very time consuming
 
 Images:
     All the images in assets directory are drawn by myself

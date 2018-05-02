@@ -22,6 +22,7 @@ HUD::HUD() :
     iomod(IOMod::getInstance()),
     otherLines()
 {
+    std::cout << "HUD is loaded" << '\n';
 }
 
 void HUD::addLine(const std::string& msg, int line) {
