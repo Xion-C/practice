@@ -29,13 +29,14 @@ $(DEPDIR)/%.d: ;
 
 $(OBJDIR)/%.o: %.cpp
 $(OBJDIR)/%.o: %.cpp $(DEPDIR)/%.d
+# $(OBJDIR)/%.o: $(SRCFLS) $(DEPDIR)/%.d
 	@echo "Creating Object $(notdir $@)"
 	@$(CXX) $(DEPFLAGS) $(CXXFLAGS) -c $< -o $@
 	@mv -f $(DEPDIR)/$*.Td $(DEPDIR)/$*.d && touch $@
 
 $(EXEC): $(OBJFLS)
 	@echo "Creating Executable $@"
-	@$(CXX) $(CXXFLAGS) -o $@ $(OBJFLS) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o $@ $(OBJFLS) $(LDFLAGS)
 
 clean:
 	@echo "Deleting Objects"
