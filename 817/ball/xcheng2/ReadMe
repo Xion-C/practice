@@ -1,0 +1,28 @@
+Username: xcheng2
+Name: Xin Cheng
+Email: xcheng2@g.clemson.edu
+Date: 09/10/2018
+Assignment: 1 - Bouncing Ball
+
+Instructions:
+
+  - Running command: ./ball parameters
+  - Parameters include:
+    - Time Step h
+    - Display Interval (integer)
+    - Ball Mass
+    - Original Velocity of the Ball (vector)
+    - Gravity (vector)
+    - Wind Velocity (vector)
+    - Coefficient of Air Resistance
+    - Coefficient of Restitution
+    - Coefficient of Friction
+    - Ball Size
+    - Box Size
+
+  - Press b to start the ball
+  - Press 1 to enable/disable original velocity
+  - Press 2 to enable/disable air resistance
+  - Press 3 to enable/disable wind
+  - Press 4 to enable/disable a lower gravity
+  - Press p to print the velocity and position of the ball
