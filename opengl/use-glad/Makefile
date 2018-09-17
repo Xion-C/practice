@@ -5,7 +5,7 @@ CXXFLAGS = -g -W -Wall -std=c++11 -Weffc++ -Wextra -pedantic -O0 -lglfw -lGL -lG
 
 LIBDIR = -L/usr/lib -L/usr/X11R6/lib
 
-LIBS = -lpthread -lglfw -lGLU -lGL -lX11 -lXrandr -lXi -ldl -lm
+LDFLAGS = -lpthread -lglfw -lGLU -lGL -lX11 -lXrandr -lXi -ldl -lm
 
 # include flags
 INC = \
@@ -30,7 +30,7 @@ EXEC = run
 
 $(EXEC): $(OBJS)
 	@echo $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $(INC) $(OBJS) $(LIBDIR) $(LIBS) $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) -o $@ $(INC) $(OBJS) $(LIBDIR) $(LDFLAGS)
 
 clean:
 	rm -rf $(OBJS)
