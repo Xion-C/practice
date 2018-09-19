@@ -5,6 +5,8 @@
 #include "Model.h"
 #include "View.h"
 
+#include "ParameterLoader.h"
+
 #include <cstdlib>
 #include <iostream>
 
@@ -138,6 +140,10 @@ int main(int argc, char* argv[]){
     return 1;
   }
   paramfilename = argv[1];
+
+std::cout << "parms" << '\n';
+  ParameterLoader params(paramfilename);
+  std::cout << "parms end" << '\n';
 
   // start up the glut utilities
   glutInit(&argc, argv);

@@ -33,5 +33,13 @@ private:
 int main()
 {
     Pokemon* chansey = new Pokemon(400, 376);
+    int i = 100000;
+    while(i)
+    {
+        int j = 1;
+        j++;
+        i--;
+        std::cout << "j: " << j << '\n';
+    }
     return 0;
 }

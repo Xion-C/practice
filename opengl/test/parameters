@@ -1,2 +1,18 @@
-  5,    0.1,    0.05,     3,     0.05,      1
-Speed,  Mass,   Drag,  Buoyancy,  h,   DispInterval
+//Simulation
+TimeStep-h                      0.05
+DisplayInterval                 1
+
+//Object
+Mass                            3.0
+InitialVelocity                 1.0 10.0 3.0
+
+//Environment
+Gravity                         0.0 -9.8 0.0
+WindVelocity                    30.0, 0.0, 10.0
+CoefficientOfAirResistance      0.1
+
+//Circumstance
+BallSize                        2.0
+BoxSize                         20.0
+CoefficientOfRestitution        0.8
+CoefficientOfFriction           0.1
