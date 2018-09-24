@@ -3,7 +3,7 @@
 3.0,                //Mass
 ( 1.0, 10.0, 3.0 ),  //OriginalVelocity
 ( 0.0,-9.8, 0.0 ),  //Gravity
-( 30.0, 0.0, 10.0 ), //WindVelocity
+( 0.0, 0.0, 0.0 ), //WindVelocity
 0.1,                //CoefficientOfAirResistance
 0.8,                //CoefficientOfRestitution
 0.1,                //CoefficientOfFriction

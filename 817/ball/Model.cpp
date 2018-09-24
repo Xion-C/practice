@@ -148,7 +148,6 @@ void Model::timeStep(){
     float timeStepRemain = h;
     float timeStep;
 
-    int collide = 0;
     bool collideDetected = false;
 
     while(timeStepRemain > 0)
@@ -158,25 +157,9 @@ void Model::timeStep(){
         // force
         a = gravity + d / mass * (windVel - ballVel);
 
-        if(resting)
-        {
-            Vector3d perpVel = (ballVel * normals[restingSurface]) * normals[restingSurface];
-            Vector3d paraVel = ballVel - perpVel;
-            Vector3d perpA = ((a * normals[restingSurface]) * normals[restingSurface]);
-            Vector3d paraA = a - perpA;
-            Vector3d a = paraA;
-
-            newBallVel = paraVel + paraA * timeStep;
-            newBallVel = (1 - cf) * newBallVel;
-            newBallPos = ballPos + newBallVel * timeStep;
-
-        }
-        else
-        {
-            // new State
-            newBallVel = ballVel + a * timeStep;
-            newBallPos = ballPos + newBallVel * timeStep;
-        }
+        // new State
+        newBallVel = ballVel + a * timeStep;
+        newBallPos = ballPos + newBallVel * timeStep;
 
         int collideIndex = -1;
         Vector3d collidePos;
@@ -186,16 +169,48 @@ void Model::timeStep(){
         float f;         // fraction
 
         //determine collision
-        float dn0 = 0, dn1 = 0;
+        float dn0 = 0, dn1 = 0, ddn = 0;
         for(int i = 0; i < 6; i++)
         {
             dn0 = (float)((ballPos - points[i] - ballsize / 2 * normals[i]) * normals[i]);
             dn1 = (float)((newBallPos - points[i] - ballsize / 2 * normals[i]) * normals[i]);
-            f = dn0/(dn0 - dn1);
+
+            //check if resting
+            if(fabs(dn0) < PRECISION)
+            {
+                float ballVelPerpNorm = (ballVel * normals[i]);
+                float aPerpNorm = (a * normals[i]);
+                if(fabs(ballVelPerpNorm) < PRECISION && aPerpNorm < PRECISION)
+                {
+                    ballVel = ballVel - (ballVelPerpNorm * normals[i]);
+                    a = (a - aPerpNorm * normals[i]);
+                    //check if stop moving
+                    if(ballVel.norm() < PRECISION && a.norm() < PRECISION)
+                    {
+                        moving = false;
+                        std::cout << "stop moving" << '\n';
+                        break;
+                    }
+                    newBallVel = (1 - cf) * (ballVel + a * timeStep);
+                    //newBallPos could have a better exprssion
+                    newBallPos = ballPos + newBallVel * timeStep;
+
+                    resting = true;
+                    std::cout << "*******resting*******" << '\n';
+
+                    continue;
+                }
+            }
+
+            //detect collision
+            ddn = dn0 - dn1;
+            f = dn0/(ddn);
             if(f > 0 && f < 1)
             {
                 collidePos = ballPos + newBallVel * timeStep * f;
                 //std::cout << "collide: " << collidePos << '\n';
+
+                //check if the ball is inside the box
                 bool inside = true;
                 if(normals[i][0] == 0.0)
                     inside &= (collidePos[0] >= -boxsize/2 && collidePos[0] <= boxsize/2);
@@ -207,64 +222,40 @@ void Model::timeStep(){
                 {
                     collideDetected = true;
                     collideIndex = i;
+                    std::cout << "*******collision-----------" << '\n';
                     break;
                 }
             }
         }
 
-        if(collideDetected && collide <= MAXCOLLIDES)
+        if(collideDetected)
         {
-            collide++;
-
             timeStep = f * timeStep;
             collideVel = ballVel + a * timeStep;
+            //collideVel = ballVel + f * (newBallVel - ballVel);
+
+            //not accurate
             collidePos = ballPos + collideVel * timeStep;
+
             //perpendicular and parallel component of collide velocity
-            Vector3d perpVel = (collideVel * normals[collideIndex]) * normals[collideIndex];
-            Vector3d paraVel = collideVel - perpVel;
-            perpVel = -cr * perpVel;
-            paraVel = (1 - cf) * paraVel;
-            //std::cout << "dn0: " << dn0 << " perpvel: " << perpVel << '\n';
-            //std::cout << "col vel: "<<collideVel<<" a: "<< a << '\n';
-            if(!resting && fabs(dn0) < PRECISION && perpVel.norm() < PRECISION)
-            {
-                Vector3d perpA = ((a * normals[collideIndex]) * normals[collideIndex]);
-                Vector3d paraA = a - perpA;
-                if(perpA * normals[collideIndex] < PRECISION)
-                {
-                    //std::cout << "perpA * normals[collideIndex] " <<perpA * normals[collideIndex] << '\n';
-                    perpVel = 0;
-                    a = paraA;
-                    resting = true;
-                    restingSurface = collideIndex;
-                    std::cout << "*** resting ***" << '\n';
-                }
-            }
+            Vector3d collideVelPerp = (collideVel * normals[collideIndex]) * normals[collideIndex];
+            Vector3d collideVelPara = collideVel - collideVelPerp;
+            collideVelPerp = -cr * collideVelPerp;
+            collideVelPara = (1 - cf) * collideVelPara;
 
-            newBallVel = perpVel + paraVel;
+            newBallVel = collideVelPerp + collideVelPara;
 
-            newBallPos = collidePos + newBallVel * timeStep;
-        }
-        else if(collide > MAXCOLLIDES)
-        {
-            if(collideVel.norm() < PRECISION)
-            {
-                moving = false;
-                break;
-            }
-            else
-            {
-                break;
-            }
+            //newBallPos = collidePos + newBallVel * timeStep;
+            newBallPos = collidePos;
+
+            std::cout << "old vel: " << ballVel << ", old pos: " << ballPos << '\n';
+            std::cout << "new vel: " << newBallVel << ", new pos: " << newBallPos << '\n';
         }
 
         timeStepRemain = timeStepRemain - timeStep;
         ballVel = newBallVel;
         ballPos = newBallPos;
-
     }
-
-    //std::cout << " ------ vel: " << ballVel << " pos: " << ballPos << '\n';
 }
 
 // start the ball
