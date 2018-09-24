@@ -259,9 +259,12 @@ void Model::timeStep(){
 
                 if(i == 0)
                 {
+                    std::cout << "/// check 0 resting" << '\n';
                     std::cout << "ballVelPerpNorm: " << ballVelPerpNorm << '\n';
                     std::cout << "aPerpNorm: " << aPerpNorm << '\n';
                     std::cout << "a: " << a << '\n';
+                    std::cout << "\\\\\\ check 0 resting" << '\n';
+
                 }
 
                 if(fabs(ballVelPerpNorm) < PRECISION && aPerpNorm < PRECISION)
@@ -281,7 +284,7 @@ void Model::timeStep(){
 
                     resting = true;
                     // supportFaces.push_back(i);
-                    std::cout << "*******resting: " << i << '\n';
+                    std::cout << "*** resting: " << i << '\n';
 
                     continue;
                 }
@@ -317,7 +320,8 @@ void Model::timeStep(){
                     }
 
                     collideIndex = i;
-                    std::cout << "----------collision-----------" << '\n';
+                    std::cout << "--- collision: " << collideIndex << '\n';
+                    std::cout << "--- " << timeStepRemain << '\n';
                     //break;
                 }
             }
