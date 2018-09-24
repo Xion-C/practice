@@ -1,13 +1,14 @@
 /*
     By Xin Cheng
-*/
+ */
 #ifndef __PARAMTERLOADER_H__
 #define __PARAMTERLOADER_H__
 
 #include "Vector.h"
 
-struct ParameterLoader
+class ParameterLoader
 {
+public:
     float timeStep;
     int displayInterval;
 
@@ -22,10 +23,17 @@ struct ParameterLoader
     float restitution;
     float friction;
 
-    ParameterLoader() {}
+    ParameterLoader() {
+    }
     ParameterLoader(const char* path);
 
     bool LoadParameters(const char* path);
+    const bool IsSuccess() const {
+        return success;
+    }
+
+private:
+    bool success;
 
 };
 

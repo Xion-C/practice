@@ -4,11 +4,11 @@ DisplayInterval                 1
 
 //Object
 Mass                            3.0
-InitialVelocity                 1.0 10.0 3.0
+InitialVelocity                 1.0 11.0 1.0
 
 //Environment
 Gravity                         0.0 -9.8 0.0
-WindVelocity                    30.0, 0.0, 10.0
+WindVelocity                    40.0, 0.0, 10.0
 CoefficientOfAirResistance      0.1
 
 //Circumstance

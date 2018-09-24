@@ -1,10 +1,11 @@
 /*
- Adapted form Dr. Donald H. House
-*/
+   Adapted from Dr. Donald H. House
+
+   usage: test paramfiled
+ */
 
 #include "Model.h"
 #include "View.h"
-
 #include "ParameterLoader.h"
 
 #include <cstdlib>
@@ -23,15 +24,17 @@ using namespace std;
 // Model
 //===========================================================================
 
-// Create the bubble model for simulating the bubble state
-Model BubbleModel;
+// Create the model for simulating process
+Model ballModel;
+
+ParameterLoader params;
 
 //===========================================================================
 // View
 //===========================================================================
 
-// Create the teapot viewer with pointer to bubble model
-View TeapotView(&BubbleModel);
+// Create the teapot viewer with pointer to the model
+View bouncingBall(&ballModel);
 
 //===========================================================================
 // Controller
@@ -45,40 +48,55 @@ char *paramfilename;
 // Send model and view commands based on key presses
 //
 void handleKey(unsigned char key, int x, int y){
-  const int ESC = 27;
+    const int ESC = 27;
 
-  switch(key){
-    case 'b':            // start a bubble blowing
-      BubbleModel.loadParameters(paramfilename);   // reload parameters in case they have changed
-      BubbleModel.initSimulation();
-      BubbleModel.startBubble();
-      break;
+    switch(key) {
+    case 'b':            // begin
+        ballModel.loadParameters(params); // reload parameters in case they have changed
+        ballModel.initSimulation();
+        ballModel.startBall();
+        break;
 
     case 'k':           // toggle key light on and off
-      TeapotView.toggleKeyLight();
-      break;
+        bouncingBall.toggleKeyLight();
+        break;
 
     case 'f':           // toggle fill light on and off
-      TeapotView.toggleFillLight();
-      break;
+        bouncingBall.toggleFillLight();
+        break;
 
     case 'r':           // toggle rim light on and off
-      TeapotView.toggleRimLight();
-      break;
+        bouncingBall.toggleRimLight();
+        break;
 
-    case 'i':			// I -- reinitialize view
+    case 'i':           // I -- reinitialize view
     case 'I':
-      TeapotView.setInitialView();
-      break;
-
-    case 'q':			// Q or Esc -- exit program
+        bouncingBall.setInitialView();
+        break;
+    case 'p':
+        ballModel.print();
+        break;
+    case '1':
+        ballModel.toggleHaveVel();
+        break;
+    case '2':
+        ballModel.toggleHaveAir();
+        break;
+    case '3':
+        ballModel.toggleHaveWind();
+        break;
+    case '4':
+        ballModel.toggleHaveLight();
+        break;
+    case 'q':           // Q or Esc -- exit program
     case 'Q':
     case ESC:
-      exit(0);
-  }
+        exit(0);
 
-  // always refresh the display after a key press
-  glutPostRedisplay();
+    }
+
+    // always refresh the display after a key press
+    glutPostRedisplay();
 }
 
 //
@@ -86,46 +104,49 @@ void handleKey(unsigned char key, int x, int y){
 // but pass along the state of the shift key also
 //
 void handleButtons(int button, int state, int x, int y) {
-  bool shiftkey = (glutGetModifiers() == GLUT_ACTIVE_SHIFT);
+    bool shiftkey = (glutGetModifiers() == GLUT_ACTIVE_SHIFT);
 
-  TeapotView.handleButtons(button, state, x, y, shiftkey);
-  glutPostRedisplay();
+    bouncingBall.handleButtons(button, state, x, y, shiftkey);
+    glutPostRedisplay();
 }
 
 //
 // let the View handle mouse motion events
 //
 void handleMotion(int x, int y) {
-  TeapotView.handleMotion(x, y);
-  glutPostRedisplay();
+    bouncingBall.handleMotion(x, y);
+    glutPostRedisplay();
 }
 
 //
 // let the View handle display events
 //
 void doDisplay(){
-  TeapotView.updateDisplay();
+    bouncingBall.updateDisplay();
 }
 
 //
 // let the View handle reshape events
 //
 void doReshape(int width, int height){
-  TeapotView.reshapeWindow(width, height);
+    bouncingBall.reshapeWindow(width, height);
 }
 
 //
 // let the Model handle simulation timestep events
 //
 void doSimulation(){
-  static int count = 0;
+    static int count = 0;
 
-  BubbleModel.timeStep();
+    ballModel.timeStep();
 
-  if(count == 0)         // only update the display after every displayinterval time steps
-    glutPostRedisplay();
+    if(count == 0)       // only update the display after every displayinterval time steps
+    {
+        glutPostRedisplay();
+        //ballModel.print();
+    }
 
-  count = (count + 1) % BubbleModel.displayInterval();
+    count = (count + 1) % ballModel.displayInterval();
 }
 
 //
@@ -134,43 +155,43 @@ void doSimulation(){
 //
 int main(int argc, char* argv[]){
 
-  // make sure we have exactly one parameter
-  if(argc != 2){
-    cerr << "usage: canoncial paramfilename" << endl;
-    return 1;
-  }
-  paramfilename = argv[1];
+    // make sure we have exactly one parameter
+    if(argc != 2) {
+        cerr << "usage: canoncial paramfilename" << endl;
+        return 1;
+    }
+    paramfilename = argv[1];
 
-std::cout << "parms" << '\n';
-  ParameterLoader params(paramfilename);
-  std::cout << "parms end" << '\n';
+    // start up the glut utilities
+    glutInit(&argc, argv);
 
-  // start up the glut utilities
-  glutInit(&argc, argv);
+    // create the graphics window, giving width, height, and title text
+    // and establish double buffering, RGBA color
+    // Depth buffering must be available for drawing the shaded model
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
+    glutInitWindowSize(bouncingBall.getWidth(), bouncingBall.getHeight());
+    glutCreateWindow("Canonical 3D Animation Example");
 
-  // create the graphics window, giving width, height, and title text
-  // and establish double buffering, RGBA color
-  // Depth buffering must be available for drawing the shaded model
-  glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-  glutInitWindowSize(TeapotView.getWidth(), TeapotView.getHeight());
-  glutCreateWindow("Canonical 3D Animation Example");
+    // register callback to handle events
+    glutDisplayFunc(doDisplay);
+    glutReshapeFunc(doReshape);
+    glutKeyboardFunc(handleKey);
+    glutMouseFunc(handleButtons);
+    glutMotionFunc(handleMotion);
 
-  // register callback to handle events
-  glutDisplayFunc(doDisplay);
-  glutReshapeFunc(doReshape);
-  glutKeyboardFunc(handleKey);
-  glutMouseFunc(handleButtons);
-  glutMotionFunc(handleMotion);
+    // idle function is run whenever there are no other events to process
+    glutIdleFunc(doSimulation);
 
-  // idle function is run whenever there are no other events to process
-  glutIdleFunc(doSimulation);
+    // set up the camera viewpoint, materials, and lights
+    bouncingBall.setInitialView();
 
-  // set up the camera viewpoint, materials, and lights
-  TeapotView.setInitialView();
+    // load parameters and initialize the model
+    params.LoadParameters(paramfilename);
+    //ballModel.loadParameters(paramfilename);
+    ballModel.loadParameters(params);
+    ballModel.initSimulation();
+    bouncingBall.updateParams();
 
-  // load parameters and initialize the bubble model
-  BubbleModel.loadParameters(paramfilename);
-  BubbleModel.initSimulation();
 
-  glutMainLoop();
+    glutMainLoop();
 }

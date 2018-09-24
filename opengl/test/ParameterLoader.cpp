@@ -4,22 +4,22 @@
 #include "ParameterLoader.h"
 
 ParameterLoader::ParameterLoader(const char* path) {
-    LoadParameters(path);
+    success = LoadParameters(path);
 }
 
 bool ParameterLoader::LoadParameters(const char* path)
 {
     FILE * file = fopen(path, "r");
-    if(file == NULL){
-      fprintf(stderr, "Unable to open parameter file: %s\n", path);
-      return false;
+    if(file == NULL) {
+        fprintf(stderr, "Unable to open parameter file: %s\n", path);
+        return false;
     }
-    printf("Loading parameters from: %s", path);
+    printf("Loading parameters from: %s\n", path);
 
     int number = 0;
     while (1) {
         char text[128]; //save current reading text
-        if (fscanf(file, "%s", text) == EOF)  break;
+        if (fscanf(file, "%s", text) == EOF) break;
         if (strcmp(text, "TimeStep-h") == 0) {
             fscanf(file, "%f\n", &timeStep);
             number++;
@@ -71,5 +71,6 @@ bool ParameterLoader::LoadParameters(const char* path)
 
     printf("Parameters Number: %d\n", number);
 
+    success = true;
     return true;
 }
