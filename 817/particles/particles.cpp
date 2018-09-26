@@ -1,12 +1,13 @@
 /*
    Adapted from Dr. Donald H. House
 
-   usage: test paramfiled
+   usage: run parameters
  */
 
 #include "Model.h"
 #include "View.h"
 #include "ParameterLoader.h"
+#include "ParticleGenerator.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -25,7 +26,8 @@ using namespace std;
 //===========================================================================
 
 // Create the model for simulating process
-Model ballModel;
+Model boxModel;
+ParticleGenerator particleGen(&boxModel);
 
 ParameterLoader params;
 
@@ -34,7 +36,7 @@ ParameterLoader params;
 //===========================================================================
 
 // Create the teapot viewer with pointer to the model
-View bouncingBall(&ballModel);
+View bouncingBall(&boxModel, &particleGen);
 
 //===========================================================================
 // Controller
@@ -42,6 +44,8 @@ View bouncingBall(&ballModel);
 
 // global needed to share parameter filename among callbacks
 char *paramfilename;
+
+
 
 bool pause;
 //
@@ -53,10 +57,11 @@ void handleKey(unsigned char key, int x, int y){
 
     switch(key) {
     case 'b':            // begin
+        // reload parameters in case they have changed
         params.LoadParameters(paramfilename);
-        ballModel.loadParameters(params); // reload parameters in case they have changed
-        ballModel.initSimulation();
-        ballModel.startBall();
+        boxModel.loadParameters(params);
+
+        boxModel.initSimulation();
         break;
 
     case ' ':
@@ -80,20 +85,14 @@ void handleKey(unsigned char key, int x, int y){
     case 'I':
         bouncingBall.setInitialView();
         break;
-    case 'p':
-        ballModel.print();
-        break;
     case '1':
-        ballModel.toggleHaveVel();
+        boxModel.toggleHaveAir();
         break;
     case '2':
-        ballModel.toggleHaveAir();
+        boxModel.toggleHaveWind();
         break;
     case '3':
-        ballModel.toggleHaveWind();
-        break;
-    case '4':
-        ballModel.toggleHaveLight();
+        boxModel.toggleHaveLowGravity();
         break;
     case 'q':           // Q or Esc -- exit program
     case 'Q':
@@ -146,16 +145,17 @@ void doSimulation(){
     static int count = 0;
 
     if(!pause) {
-        ballModel.timeStep();
+        //boxModel.timeStep();
+        particleGen.TimeStep();
     }
 
     if(count == 0)       // only update the display after every displayinterval time steps
     {
         glutPostRedisplay();
-        //ballModel.print();
+        //boxModel.print();
     }
 
-    count = (count + 1) % ballModel.displayInterval();
+    count = (count + 1) % boxModel.displayInterval();
 }
 
 //
@@ -196,11 +196,14 @@ int main(int argc, char* argv[]){
 
     // load parameters and initialize the model
     params.LoadParameters(paramfilename);
-    //ballModel.loadParameters(paramfilename);
-    ballModel.loadParameters(params);
-    ballModel.initSimulation();
-    bouncingBall.updateParams();
+    //boxModel.loadParameters(paramfilename);
+    boxModel.loadParameters(params);
+    boxModel.initSimulation();
 
+    particleGen.LoadParameters(params);
+    particleGen.GenerateRectPaticles();
+
+    bouncingBall.updateParams();
 
     glutMainLoop();
 }

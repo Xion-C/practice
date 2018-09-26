@@ -12,9 +12,8 @@
 #include <cstdlib>
 #include <cstdio>
 #include <cmath>
-#include <vector>
 
-#define PRECISION 0.05
+#define PRECISION 0.01
 #define MAXCOLLIDES 5
 
 using namespace std;
@@ -29,84 +28,6 @@ Model::Model(){
     haveAir = true;
     haveWind = true;
     haveLight = true;
-}
-
-// get simulation parameters from parameter file
-bool Model::loadParameters(const char *paramfilename){
-    FILE *paramfile;
-
-    paramfile = fopen(paramfilename, "r");
-    if(paramfile == NULL) {
-        fprintf(stderr, "Unable to open parameter file: %s\n", paramfilename);
-        return false;
-    }
-
-    // int nparams = fscanf(paramfile, "%f, %f, %f, %f, %f, %d", &speed, &mass, &drag, &buoyancy, &h, &dispinterval);
-    char temp[64];
-    float vel[3];
-
-    int nparams = fscanf(paramfile, "%f,", &h);
-    fscanf(paramfile, "%s\n", temp);
-
-    nparams += fscanf(paramfile, "%d,", &dispinterval);
-    fscanf(paramfile, "%s\n", temp);
-
-    nparams += fscanf(paramfile, "%f,", &mass);
-    fscanf(paramfile, "%s\n", temp);
-
-    nparams += fscanf(paramfile, "( %lf, %lf, %lf ),",
-                      &(initVel[0]), &(initVel[1]), &(initVel[2]));
-    fscanf(paramfile, "%s\n", temp);
-
-    nparams += fscanf(paramfile, "( %lf, %lf, %lf ),",
-                      &(gravity[0]), &(gravity[1]), &(gravity[2]));
-    fscanf(paramfile, "%s\n", temp);
-
-    nparams += fscanf(paramfile, "( %lf, %lf, %lf ),",
-                      &(windVel[0]), &(windVel[1]), &(windVel[2]));
-    fscanf(paramfile, "%s\n", temp);
-
-    nparams += fscanf(paramfile, "%f,", &d);
-    fscanf(paramfile, "%s\n", temp);
-
-    nparams += fscanf(paramfile, "%f,", &cr);
-    fscanf(paramfile, "%s\n", temp);
-
-    nparams += fscanf(paramfile, "%f,", &cf);
-    fscanf(paramfile, "%s\n", temp);
-
-    nparams += fscanf(paramfile, "%f,", &ballsize);
-    fscanf(paramfile, "%s\n", temp);
-
-    nparams += fscanf(paramfile, "%f,", &boxsize);
-    fscanf(paramfile, "%s\n", temp);
-
-    if(!nparams || nparams != 17) {
-        fprintf(stderr,
-                "Parameter file %s invalid format.\n",
-                paramfilename);
-        fclose(paramfile);
-        return false;
-    }
-
-    // set box
-    normals[0] = Vector3d(1.0, 0.0, 0.0);
-    normals[1] = Vector3d(0.0, 1.0, 0.0);
-    normals[2] = Vector3d(0.0, 0.0, 1.0);
-    normals[3] = Vector3d(-1.0, 0.0, 0.0);
-    normals[4] = Vector3d(0.0, -1.0, 0.0);
-    normals[5] = Vector3d(0.0, 0.0, -1.0);
-    points[0] = Vector3d(-boxsize/2, 0.0, 0.0);
-    points[1] = Vector3d(0.0, -boxsize/2, 0.0);
-    points[2] = Vector3d(0.0, 0.0, -boxsize/2);
-    points[3] = Vector3d(boxsize/2, 0.0, 0.0);
-    points[4] = Vector3d(0.0, boxsize/2, 0.0);
-    points[5] = Vector3d(0.0, 0.0, boxsize/2);
-
-    printParameters();
-
-    fclose(paramfile);
-    return true;
 }
 
 bool Model::loadParameters(const ParameterLoader& params)
@@ -172,6 +93,8 @@ void Model::initSimulation(){
     if(!haveAir) d = 0;
     if(!haveWind) windVel = 0;
     if(!haveLight) gravity = gravity * 0.2;
+
+    supportFaces.clear();
 }
 
 // this does one time step in the simulation
@@ -185,23 +108,31 @@ void Model::timeStep(){
 
     bool collideDetected = false;
 
-    // std::vector<int> supportFaces;
+    int timeCount = 0;
 
     while(timeStepRemain > 0)
     {
+        timeCount++;
         timeStep = timeStepRemain;
 
         // force
         a = gravity + d / mass * (windVel - ballVel);
-        // for(int s : supportFaces)
-        // {
-        //     a = a - (a * normals[s]) * normals[s];
-        // }
-        //supportFaces.clear();
+        for(int s : supportFaces)
+        {
+            a = a - (a * normals[s]) * normals[s];
+        }
+        // supportFaces.clear();
 
         // new State
         newBallVel = ballVel + a * timeStep;
         newBallPos = ballPos + newBallVel * timeStep;
+
+        if(timeStep < h)
+        {
+            std::cout << "- timestep: " << timeStep << '\n';
+            std::cout << "- new vel: " << newBallVel << '\n';
+            std::cout << "- new pos: " << newBallPos << '\n';
+        }
 
         int collideIndex = -1;
         Vector3d collidePos;
@@ -212,39 +143,6 @@ void Model::timeStep(){
 
         //determine collision
         float dn0 = 0, dn1 = 0, ddn = 0;
-        // for(int i = 0; i < 6; i++)
-        // {
-        //     dn0 = (float)((ballPos - points[i] - ballsize / 2 * normals[i]) * normals[i]);
-        //     //check if resting
-        //     if(fabs(dn0) < PRECISION)
-        //     {
-        //         float ballVelPerpNorm = (ballVel * normals[i]);
-        //         float aPerpNorm = (a * normals[i]);
-        //         if(i == 0)
-        //         {
-        //             std::cout << "ballVelPerpNorm: " << ballVelPerpNorm << '\n';
-        //             std::cout << "aPerpNorm: " << aPerpNorm << '\n';
-        //         }
-        //         if(fabs(ballVelPerpNorm) < PRECISION && aPerpNorm < PRECISION)
-        //         {
-        //             ballVel = ballVel - (ballVelPerpNorm * normals[i]);
-        //             a = (a - aPerpNorm * normals[i]);
-        //             //check if stop moving
-        //             if(ballVel.norm() < PRECISION && a.norm() < PRECISION)
-        //             {
-        //                 moving = false;
-        //                 std::cout << "stop moving" << '\n';
-        //                 break;
-        //             }
-        //             newBallVel = (1 - cf) * (ballVel + a * timeStep);
-        //             //newBallPos could have a better exprssion
-        //             newBallPos = ballPos + newBallVel * timeStep;
-        //
-        //             resting = true;
-        //             std::cout << "*******resting: " << i << '\n';
-        //         }
-        //     }
-        // }
 
         for(int i = 0; i < 6; i++)
         {
@@ -259,18 +157,18 @@ void Model::timeStep(){
 
                 if(i == 0)
                 {
-                    std::cout << "/// check 0 resting" << '\n';
-                    std::cout << "ballVelPerpNorm: " << ballVelPerpNorm << '\n';
-                    std::cout << "aPerpNorm: " << aPerpNorm << '\n';
-                    std::cout << "a: " << a << '\n';
-                    std::cout << "\\\\\\ check 0 resting" << '\n';
-
+                    std::cout << "/// check 0 resting \\\\\\" << '\n';
+                    std::cout << "  ballVelPerpNorm: " << ballVelPerpNorm << '\n';
+                    std::cout << "  aPerpNorm: " << aPerpNorm << '\n';
+                    std::cout << "  a: " << a << '\n';
+                    std::cout << "\\\\\\ check 0 resting ///" << '\n';
                 }
 
                 if(fabs(ballVelPerpNorm) < PRECISION && aPerpNorm < PRECISION)
                 {
                     ballVel = ballVel - (ballVelPerpNorm * normals[i]);
                     a = (a - aPerpNorm * normals[i]);
+
                     //check if stop moving
                     if(ballVel.norm() < PRECISION && a.norm() < PRECISION)
                     {
@@ -278,12 +176,21 @@ void Model::timeStep(){
                         std::cout << "stop moving" << '\n';
                         break;
                     }
-                    newBallVel = (1 - cf) * (ballVel + a * timeStep);
+
+                    newBallVel = (1 - cf * (timeStep)) * (ballVel + a * timeStep);
+                    //newBallVel = (ballVel + a * timeStep);
                     //newBallPos could have a better exprssion
                     newBallPos = ballPos + newBallVel * timeStep;
 
                     resting = true;
-                    // supportFaces.push_back(i);
+
+                    bool hasFace = false;
+                    for(int s : supportFaces)
+                    {
+                        if(s == i) hasFace = true;
+                    }
+                    if(!hasFace)
+                        supportFaces.push_back(i);
                     std::cout << "*** resting: " << i << '\n';
 
                     continue;
@@ -306,22 +213,32 @@ void Model::timeStep(){
                     inside &= (checkCollidePos[1] >= -boxsize/2 && checkCollidePos[1] <= boxsize/2);
                 if(normals[i][2] == 0.0)
                     inside &= (checkCollidePos[2] >= -boxsize/2 && checkCollidePos[2] <= boxsize/2);
+
                 if(inside)
                 {
                     collideDetected = true;
                     collidePos = checkCollidePos;
                     f = checkf;
+                    collideIndex = i;
 
+
+                    std::cout << "--- [inside] collision: " << collideIndex << '\n';
+                    std::cout << "--- [inside] collidePos: " << collidePos << '\n';
+                    std::cout << "--- [inside] -- ballPos: " << ballPos << '\n';
+                    std::cout << "--- [inside] -- newBallVel: " << newBallVel << '\n';
+                    std::cout << "--- [inside] -- dPos: " << newBallVel * timeStep * checkf << '\n';
+
+                    std::cout << "--- [inside] -- supportFaces: " << supportFaces.size() << '\n';
+
+
+                    std::cout << "--- [inside] timeStepRemain: " << timeStepRemain << '\n';
                     if(fabs(f) < PRECISION)
                     {
-                        std::cout << i  << " collide" << " - f is too small" << '\n';
-                        std::cout << "f: " << f << "  dn0: " << dn0 << "  dn1: "<< dn1 << '\n';
+                        std::cout << "--- [inside] f is too small" << '\n';
+                        std::cout << "--- [inside] f: " << f << "  dn0: " << dn0 << "  dn1: "<< dn1 << '\n';
                         f = 0;
                     }
 
-                    collideIndex = i;
-                    std::cout << "--- collision: " << collideIndex << '\n';
-                    std::cout << "--- " << timeStepRemain << '\n';
                     //break;
                 }
             }
@@ -329,34 +246,43 @@ void Model::timeStep(){
 
         if(collideDetected)
         {
+            std::cout << "/=== collide detected ===\\" << '\n';
+            std::cout << "  surface: " << collideIndex << '\n';
+            std::cout << "  f: " << f << '\n';
             timeStep = f * timeStep;
             collideVel = ballVel + a * timeStep;
             //collideVel = ballVel + f * (newBallVel - ballVel);
 
             //not accurate
-            collidePos = ballPos + collideVel * timeStep;
+            //collidePos = ballPos + collideVel * timeStep;
+            collidePos = collidePos + 0.5 * PRECISION * normals[collideIndex];
 
             //perpendicular and parallel component of collide velocity
             Vector3d collideVelPerp = (collideVel * normals[collideIndex]) * normals[collideIndex];
             Vector3d collideVelPara = collideVel - collideVelPerp;
             collideVelPerp = -cr * collideVelPerp;
-            collideVelPara = (1 - cf) * collideVelPara;
+            collideVelPara = (1 - cf * (timeStep / h)) * collideVelPara;
 
             newBallVel = collideVelPerp + collideVelPara;
 
             //newBallPos = collidePos + newBallVel * timeStep;
             newBallPos = collidePos;
 
-            std::cout << "old vel: " << ballVel << ", old pos: " << ballPos << '\n';
-            std::cout << "new vel: " << newBallVel << ", new pos: " << newBallPos << '\n';
+            std::cout << "  old vel: " << ballVel << ", old pos: " << ballPos << '\n';
+            std::cout << "  new vel: " << newBallVel << ", new pos: " << newBallPos << '\n';
             collideDetected = false;
+            std::cout << "\\=== collide end ===/" << '\n';
         }
 
         timeStepRemain = timeStepRemain - timeStep;
         ballVel = newBallVel;
         ballPos = newBallPos;
 
+        std::cout << "[TimeStepRemain] " << timeStepRemain << '\n';
+
     }
+    std::cout << "========================================= --> " << timeCount << '\n';
+
 }
 
 // start the ball

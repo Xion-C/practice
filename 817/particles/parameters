@@ -1,0 +1,36 @@
+//Simulation
+TimeStep-h                      0.05
+DisplayInterval                 1
+
+//Object
+
+//Environment
+Gravity                         0.0 -9.8 0.0
+WindVelocity                    0.0, 0.0, 0.0
+CoefficientOfAirResistance      0.1
+
+//Circumstance
+BoxSize                         20.0
+CoefficientOfRestitution        0.6
+CoefficientOfFriction           0.1
+
+
+//ParticleGeneratorInitialStates
+GenerateSpeed                   1000
+InitialPosition                 0.0 5.0 -5.0
+InitialVelocity                 2.0 3.0 5.0
+Mass                            2.0
+Lifespan                        10
+Height                          3
+Width                           6
+VelocityStd                     2.0
+
+
+//SphericalObstacles
+BallSize                        2.0
+BallPosition                    1.0 -2.0 1.0
+
+//TriangularObstacles
+vertex0                         5.0 5.0 1.0
+vertex1                         5.0 1.0 5.0
+vertex2                         1.0 1.0 5.0

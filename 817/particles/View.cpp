@@ -21,7 +21,7 @@
 
 // Screen width and height, proportions match 1080P
 #define WIDTH 960
-#define HEIGHT 540
+#define HEIGHT 640
 
 // Distance of near and far clipping planes, and
 // camera vertical field-of-view in degrees
@@ -45,7 +45,7 @@
 #define DIM_WHITE 0.4, 0.4, 0.4, 1
 
 // Screen background color
-#define GREY_BACKGROUND 0.62, 0.62, 0.62, 1
+#define GREY_BACKGROUND 0.62, 0.62, 0.82, 1
 
 // Material colors
 #define BASE_COLOR  0.6, 0.6, 0.9       // diffuse color
@@ -53,8 +53,9 @@
 
 using namespace std;
 
-View::View(Model *model) :
+View::View(Model *model, ParticleGenerator *particleGen) :
     camera(NULL), themodel(model),
+    particles(particleGen),
     width(WIDTH), height(HEIGHT),
     near(NEAR), far(FAR), fov(FOV),
     boxsize(model->boxSize()),
@@ -180,12 +181,10 @@ void View::toggleRimLight(){
 
 // draw the cube and ball
 void View::drawModel(){
-    // position of end of spout. Note: these magic numbers were determined experimentally
-    Vector3d ballOrigin(0, 0, 0);
 
     //glEnable(GL_CULL_FACE);
 
-    // Draw the box
+    // Draw the box wire
     glDisable(GL_LIGHTING);
     glColor3f(0, 1, 0);
     glutWireCube(boxsize);
@@ -193,46 +192,65 @@ void View::drawModel(){
 
     const float wallThick = 0.01;
     const float tranlate = (0.5 + 0.5 * wallThick) * boxsize;
+    float diffuseColor1[4] = { 0.6, 0.2, 0.2, 1 };
+    float diffuseColor2[4] = { 0.2, 0.6, 0.2, 1 };
+    float diffuseColor3[4] = { 0.2, 0.2, 0.6, 1 };
+    float diffuseColor4[4] = { 0.8, 0.8, 0.8, 1 };
 
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor1);
     glPushMatrix();
     glTranslatef(-tranlate, 0, 0);
     glScalef(wallThick, 1, 1);
-    glColor3f(0.2, 0.2, 0.6);
     glutSolidCube(boxsize);
     glPopMatrix();
 
-    glPushMatrix();
-    glTranslatef(0, -tranlate, 0);
-    glScalef(1, wallThick, 1);
-    glutSolidCube(boxsize);
-    glPopMatrix();
-
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor2);
     glPushMatrix();
     glTranslatef(0, 0, -tranlate);
     glScalef(1, 1, wallThick);
     glutSolidCube(boxsize);
     glPopMatrix();
 
-    // at its starting position, the bubble is in the teapot spout
-    glTranslatef(ballOrigin.x, ballOrigin.y, ballOrigin.z);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor3);
+    glPushMatrix();
+    glTranslatef(tranlate, 0, 0);
+    glScalef(wallThick, 1, 1);
+    glutSolidCube(boxsize);
+    glPopMatrix();
 
-    // use the bubble's current position to position it relative to spout
-    Vector3d ball = themodel->ballPosition();
-    glTranslatef(ball.x, ball.y, ball.z);
 
-    // draw the bubble
-    //glutSolidSphere(ballsize / 2, 36, 13);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor4);
+    glPushMatrix();
+    glTranslatef(0, -tranlate, 0);
+    glScalef(1, wallThick, 1);
+    glutSolidCube(boxsize);
+    glPopMatrix();
+
+
+
+    // // position of end of spout. Note: these magic numbers were determined experimentally
+    // Vector3d origin(0, 0, 0);
+    //
+    // // at its starting position, the ball is in the teapot spout
+    // glTranslatef(origin.x, origin.y, origin.z);
+
+    // // use the ball's current position to position it relative to spout
+    // Vector3d ball = themodel->ballPosition();
+    // glTranslatef(ball.x, ball.y, ball.z);
+
 
     glDisable(GL_LIGHTING);
-    glColor3f(1.0f, 0.0f, 0.0f);
     glPointSize(2.0f);
     glBegin(GL_POINTS);
-    glVertex3f(0.0f, 0.0f, 0.0f);
-    glVertex3f(0.0f, 0.0f, 1.0f);
-    glVertex3f(0.0f, 0.0f, 0.5f);
+    for(Particle p : (particles->particles))
+    {
+        glColor3f(p.color.x, p.color.y, p.color.z);
+        glVertex3f(p.pos.x, p.pos.y, p.pos.z);
+    }
     glEnd();
     glEnable(GL_LIGHTING);
-    //glFlush();
+    //std::cout << "particles: " << (particles->particles).size() << '\n';
+
 }
 
 //
