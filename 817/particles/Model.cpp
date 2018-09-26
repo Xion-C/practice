@@ -44,6 +44,13 @@ bool Model::loadParameters(const ParameterLoader& params)
     ballsize = params.ballSize;
     ballPos = params.ballPosition;
 
+    v0 = params.vertex0;
+    v1 = params.vertex1;
+    v2 = params.vertex2;
+
+    triNormal = (v1 - v0).cross(v2 - v1);
+    triNormal = triNormal.normalize();
+
     // set box
     normals[0] = Vector3d(1.0, 0.0, 0.0);
     normals[1] = Vector3d(0.0, 1.0, 0.0);
@@ -75,11 +82,16 @@ void Model::printParameters() const
     std::cout << "cf:               " << cf << '\n';
     std::cout << "box size:         " << boxsize << '\n';
     std::cout << "ball size:        " << ballsize << '\n';
+    std::cout << "ball position:    " << ballPos << '\n';
+    std::cout << "triangle vertex0: " << v0 << '\n';
+    std::cout << "triangle vertex1: " << v1 << '\n';
+    std::cout << "triangle vertex2: " << v2 << '\n';
+    std::cout << "triangle normal:  " << triNormal << '\n';
     std::cout << "/----------------------------/" << '\n';
 }
 
 void Model::initSimulation() {
-    if(!haveAir) d = 0;
-    if(!haveWind) windVel = 0;
-    if(!haveLowGravity) gravity = gravity * 0.2;
+    // if(!haveAir) d = 0;
+    // if(!haveWind) windVel = 0;
+    // if(!haveLowGravity) gravity = gravity * 0.2;
 }

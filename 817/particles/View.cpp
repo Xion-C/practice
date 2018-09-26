@@ -196,6 +196,8 @@ void View::drawModel(){
     float diffuseColor2[4] = { 0.2, 0.6, 0.2, 1 };
     float diffuseColor3[4] = { 0.2, 0.2, 0.6, 1 };
     float diffuseColor4[4] = { 0.8, 0.8, 0.8, 1 };
+    float diffuseColorBall[4] = { 0.5, 0.5, 0.7, 1 };
+    float diffuseColorTri[4] = { 1, 1, 1, 1 };
 
     glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor1);
     glPushMatrix();
@@ -226,21 +228,23 @@ void View::drawModel(){
     glutSolidCube(boxsize);
     glPopMatrix();
 
+    // draw the sphere obstacle
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColorBall);
+    glPushMatrix();
+    glTranslatef(themodel->ballPos.x, themodel->ballPos.y, themodel->ballPos.z);
+    glutSolidSphere(themodel->ballsize / 2, 36, 13);
+    glPopMatrix();
 
-
-    // // position of end of spout. Note: these magic numbers were determined experimentally
-    // Vector3d origin(0, 0, 0);
-    //
-    // // at its starting position, the ball is in the teapot spout
-    // glTranslatef(origin.x, origin.y, origin.z);
-
-    // // use the ball's current position to position it relative to spout
-    // Vector3d ball = themodel->ballPosition();
-    // glTranslatef(ball.x, ball.y, ball.z);
-
+    // draw the triangle obstacle
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColorTri);
+    glBegin(GL_TRIANGLE_FAN);
+    glVertex3f(themodel->v0.x, themodel->v0.y, themodel->v0.z);
+    glVertex3f(themodel->v1.x, themodel->v1.y, themodel->v1.z);
+    glVertex3f(themodel->v2.x, themodel->v2.y, themodel->v2.z);
+    glEnd();
 
     glDisable(GL_LIGHTING);
-    glPointSize(2.0f);
+    glPointSize(3.0f);
     glBegin(GL_POINTS);
     for(Particle p : (particles->particles))
     {

@@ -36,7 +36,7 @@ ParameterLoader params;
 //===========================================================================
 
 // Create the teapot viewer with pointer to the model
-View bouncingBall(&boxModel, &particleGen);
+View viewer(&boxModel, &particleGen);
 
 //===========================================================================
 // Controller
@@ -60,8 +60,9 @@ void handleKey(unsigned char key, int x, int y){
         // reload parameters in case they have changed
         params.LoadParameters(paramfilename);
         boxModel.loadParameters(params);
-
         boxModel.initSimulation();
+        particleGen.LoadParameters(params);
+        particleGen.Init();
         break;
 
     case ' ':
@@ -69,29 +70,37 @@ void handleKey(unsigned char key, int x, int y){
         pause = !pause;
         break;
 
+    case 's':
+        particleGen.Stop();
+        particleGen.GenerateRectPaticles(1);
+        break;
+
     case 'k':           // toggle key light on and off
-        bouncingBall.toggleKeyLight();
+        viewer.toggleKeyLight();
         break;
 
     case 'f':           // toggle fill light on and off
-        bouncingBall.toggleFillLight();
+        viewer.toggleFillLight();
         break;
 
     case 'r':           // toggle rim light on and off
-        bouncingBall.toggleRimLight();
+        viewer.toggleRimLight();
         break;
 
     case 'i':           // I -- reinitialize view
     case 'I':
-        bouncingBall.setInitialView();
+        viewer.setInitialView();
         break;
     case '1':
+        boxModel.loadParameters(params);
         boxModel.toggleHaveAir();
         break;
     case '2':
+        boxModel.loadParameters(params);
         boxModel.toggleHaveWind();
         break;
     case '3':
+        boxModel.loadParameters(params);
         boxModel.toggleHaveLowGravity();
         break;
     case 'q':           // Q or Esc -- exit program
@@ -112,7 +121,7 @@ void handleKey(unsigned char key, int x, int y){
 void handleButtons(int button, int state, int x, int y) {
     bool shiftkey = (glutGetModifiers() == GLUT_ACTIVE_SHIFT);
 
-    bouncingBall.handleButtons(button, state, x, y, shiftkey);
+    viewer.handleButtons(button, state, x, y, shiftkey);
     glutPostRedisplay();
 }
 
@@ -120,7 +129,7 @@ void handleButtons(int button, int state, int x, int y) {
 // let the View handle mouse motion events
 //
 void handleMotion(int x, int y) {
-    bouncingBall.handleMotion(x, y);
+    viewer.handleMotion(x, y);
     glutPostRedisplay();
 }
 
@@ -128,14 +137,14 @@ void handleMotion(int x, int y) {
 // let the View handle display events
 //
 void doDisplay(){
-    bouncingBall.updateDisplay();
+    viewer.updateDisplay();
 }
 
 //
 // let the View handle reshape events
 //
 void doReshape(int width, int height){
-    bouncingBall.reshapeWindow(width, height);
+    viewer.reshapeWindow(width, height);
 }
 
 //
@@ -178,7 +187,7 @@ int main(int argc, char* argv[]){
     // and establish double buffering, RGBA color
     // Depth buffering must be available for drawing the shaded model
     glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-    glutInitWindowSize(bouncingBall.getWidth(), bouncingBall.getHeight());
+    glutInitWindowSize(viewer.getWidth(), viewer.getHeight());
     glutCreateWindow("Canonical 3D Animation Example");
 
     // register callback to handle events
@@ -192,7 +201,7 @@ int main(int argc, char* argv[]){
     glutIdleFunc(doSimulation);
 
     // set up the camera viewpoint, materials, and lights
-    bouncingBall.setInitialView();
+    viewer.setInitialView();
 
     // load parameters and initialize the model
     params.LoadParameters(paramfilename);
@@ -201,9 +210,8 @@ int main(int argc, char* argv[]){
     boxModel.initSimulation();
 
     particleGen.LoadParameters(params);
-    particleGen.GenerateRectPaticles();
 
-    bouncingBall.updateParams();
+    viewer.updateParams();
 
     glutMainLoop();
 }

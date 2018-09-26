@@ -19,26 +19,44 @@ class ParticleGenerator
 public:
     std::list<Particle> particles;
 
-    ParticleGenerator(Model *m) : model(m) {
+    ParticleGenerator(Model *m) : model(m), continuous(false) {
     }
 
     bool LoadParameters(const ParameterLoader& params);
 
-    void GenerateRectPaticles();
+    void GenerateRectPaticles(int number);
     void PrintParameters() const;
     void SimulateParticles();
 
-    bool DetectBoxCollision(float timeStep,
-                            float boxsize,
+    void Init() {
+        continuous = true;
+    }
+    void Stop() {
+        continuous = false;
+    }
+
+    bool DetectBoxCollision(const float timeStep,
                             const Vector3d& posCur,
                             const Vector3d& posNew,
                             Vector3d& collidePos,
                             Vector3d& collideNormal,
                             float& f);
 
+    bool DetectSphereCollision(const float timeStep,
+                               const Vector3d& posCur,
+                               const Vector3d& posNew,
+                               Vector3d& collidePos,
+                               Vector3d& collideNormal,
+                               float& f);
+    bool DetectTriangleCollision(const float timeStep,
+                                 const Vector3d& posCur,
+                                 const Vector3d& posNew,
+                                 Vector3d& collidePos,
+                                 Vector3d& collideNormal,
+                                 float& f);
+
 
     void TimeStep();
-    bool Clear();
 
 private:
     Model* model;
@@ -51,6 +69,8 @@ private:
     int height;
     int width;
     float velStd;
+
+    bool continuous;
 };
 
 #endif
