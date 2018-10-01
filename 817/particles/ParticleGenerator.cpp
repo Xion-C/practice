@@ -129,18 +129,18 @@ void ParticleGenerator::SimulateParticles()
                                                  posNew,
                                                  collidePos, collideNormal,
                                                  f);
-            collideDetected |= DetectSphereCollision(timeStep,
-                                                     posCur,
-                                                     posNew,
-                                                     collidePos,
-                                                     collideNormal,
-                                                     f);
-            collideDetected |= DetectTriangleCollision(timeStep,
-                                                       posCur,
-                                                       posNew,
-                                                       collidePos,
-                                                       collideNormal,
-                                                       f);
+            // collideDetected |= DetectSphereCollision(timeStep,
+            //                                          posCur,
+            //                                          posNew,
+            //                                          collidePos,
+            //                                          collideNormal,
+            //                                          f);
+            // collideDetected |= DetectTriangleCollision(timeStep,
+            //                                            posCur,
+            //                                            posNew,
+            //                                            collidePos,
+            //                                            collideNormal,
+            //                                            f);
 
 
             if(collideDetected)
@@ -288,6 +288,7 @@ bool ParticleGenerator::DetectTriangleCollision(float timeStep,
     Vector3d v1 = model->v1;
     Vector3d v2 = model->v2;
     Vector3d triNormal = model->triNormal;
+    int maxIndex = model->triNormMax;
 
     bool collideDetected = false;
 
@@ -302,14 +303,9 @@ bool ParticleGenerator::DetectTriangleCollision(float timeStep,
     {
         //Vector3d checkCollidePos = posCur + velNew * timeStep * checkf;
         Vector3d checkCollidePos = posCur + (posNew - posCur) * checkf;
-        //std::cout << "checkCollidePos: " << checkCollidePos << '\n';
-
         //check if the object is inside the box
         bool inside = false;
 
-        int maxIndex = 0;
-        if(triNormal[1] > triNormal[maxIndex]) maxIndex = 1;
-        if(triNormal[2] > triNormal[maxIndex]) maxIndex = 2;
         Vector2d vec01;
         Vector2d vec02;
         Vector2d vec0p;
@@ -339,9 +335,10 @@ bool ParticleGenerator::DetectTriangleCollision(float timeStep,
             vec0p.y = checkCollidePos.y - v0.y;
             break;
         }
+
         float dxy01 = vec01.x * vec02.y - vec02.x * vec01.y;
-        float dxy1p = checkCollidePos.y * vec01.x - checkCollidePos.x * vec01.y;
-        float dxy2p = checkCollidePos.x * vec02.y - checkCollidePos.y * vec02.x;
+        float dxy1p = vec0p.y * vec01.x - vec0p.x * vec01.y;
+        float dxy2p = vec0p.x * vec02.y - vec0p.y * vec02.x;
         float u = dxy2p / dxy01;
         float v = dxy1p / dxy01;
         if(u + v <= 1 && u >= 0 && v >= 0) inside = true;
@@ -363,6 +360,11 @@ bool ParticleGenerator::DetectTriangleCollision(float timeStep,
 
 }
 
+
+void ParticleGenerator::Translate(const Vector3d& transVel)
+{
+    pos = pos + transVel * h;
+}
 
 void ParticleGenerator::TimeStep()
 {

@@ -50,6 +50,9 @@ bool Model::loadParameters(const ParameterLoader& params)
 
     triNormal = (v1 - v0).cross(v2 - v1);
     triNormal = triNormal.normalize();
+    triNormMax = 0;
+    if(triNormal[1] > triNormal[triNormMax]) triNormMax = 1;
+    if(triNormal[2] > triNormal[triNormMax]) triNormMax = 2;
 
     // set box
     normals[0] = Vector3d(1.0, 0.0, 0.0);
@@ -83,9 +86,8 @@ void Model::printParameters() const
     std::cout << "box size:         " << boxsize << '\n';
     std::cout << "ball size:        " << ballsize << '\n';
     std::cout << "ball position:    " << ballPos << '\n';
-    std::cout << "triangle vertex0: " << v0 << '\n';
-    std::cout << "triangle vertex1: " << v1 << '\n';
-    std::cout << "triangle vertex2: " << v2 << '\n';
+    std::cout << "triangle vertices: " << v0 << ", "
+        << v1 << ", " << v2 << '\n';
     std::cout << "triangle normal:  " << triNormal << '\n';
     std::cout << "/----------------------------/" << '\n';
 }

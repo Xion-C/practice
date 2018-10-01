@@ -37,15 +37,15 @@
 
 // Shading parameters
 #define DIFFUSE_FRACTION  0.8
-#define SPECULAR_FRACTION 0.2
+#define SPECULAR_FRACTION 0.5
 #define SHININESS         60.0
 
 // Light colors
-#define WHITE     0.8, 0.8, 0.8, 1
+#define WHITE     0.9, 0.9, 0.9, 1
 #define DIM_WHITE 0.4, 0.4, 0.4, 1
 
 // Screen background color
-#define GREY_BACKGROUND 0.62, 0.62, 0.82, 1
+#define GREY_BACKGROUND 0.08, 0.08, 0.08, 1
 
 // Material colors
 #define BASE_COLOR  0.6, 0.6, 0.9       // diffuse color
@@ -135,6 +135,9 @@ void View::setInitialView(){
     glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse_color);
     glMaterialfv(GL_FRONT, GL_SPECULAR, specular_color);
     glMaterialf(GL_FRONT, GL_SHININESS, shininess);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 //
@@ -143,6 +146,8 @@ void View::setInitialView(){
 void View::setLights(){
     // key is point light above and behind camera to the left
     const float key_light_position[4] = {-modeldepth / 2, modeldepth / 2, modeldepth / 2, 1};
+    //const float key_light_position[4] = {-10, 20, 0, 1};
+
     glLightfv(GL_LIGHT0, GL_POSITION, key_light_position);
 
     // fill is point light at eye level to right
@@ -192,41 +197,41 @@ void View::drawModel(){
 
     const float wallThick = 0.01;
     const float tranlate = (0.5 + 0.5 * wallThick) * boxsize;
-    float diffuseColor1[4] = { 0.6, 0.2, 0.2, 1 };
-    float diffuseColor2[4] = { 0.2, 0.6, 0.2, 1 };
-    float diffuseColor3[4] = { 0.2, 0.2, 0.6, 1 };
-    float diffuseColor4[4] = { 0.8, 0.8, 0.8, 1 };
-    float diffuseColorBall[4] = { 0.5, 0.5, 0.7, 1 };
-    float diffuseColorTri[4] = { 1, 1, 1, 1 };
+    float diffuseColor1[4] = { 0.2, 0.1, 0.1, 1 };
+    float diffuseColor2[4] = { 0.1, 0.2, 0.1, 1 };
+    float diffuseColor3[4] = { 0.1, 0.1, 0.2, 1 };
+    float diffuseColor4[4] = { 0.1, 0.1, 0.1, 1 };
+    float diffuseColorBall[4] = { 0.5, 0.5, 0.9, 1 };
+    float diffuseColorTri[4] = { 1.0, 1.0, 0.0, 1 };
 
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor1);
-    glPushMatrix();
-    glTranslatef(-tranlate, 0, 0);
-    glScalef(wallThick, 1, 1);
-    glutSolidCube(boxsize);
-    glPopMatrix();
-
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor2);
-    glPushMatrix();
-    glTranslatef(0, 0, -tranlate);
-    glScalef(1, 1, wallThick);
-    glutSolidCube(boxsize);
-    glPopMatrix();
-
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor3);
-    glPushMatrix();
-    glTranslatef(tranlate, 0, 0);
-    glScalef(wallThick, 1, 1);
-    glutSolidCube(boxsize);
-    glPopMatrix();
-
-
-    glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor4);
-    glPushMatrix();
-    glTranslatef(0, -tranlate, 0);
-    glScalef(1, wallThick, 1);
-    glutSolidCube(boxsize);
-    glPopMatrix();
+    // glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor1);
+    // glPushMatrix();
+    // glTranslatef(-tranlate, 0, 0);
+    // glScalef(wallThick, 1, 1);
+    // glutSolidCube(boxsize);
+    // glPopMatrix();
+    //
+    // glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor2);
+    // glPushMatrix();
+    // glTranslatef(0, 0, -tranlate);
+    // glScalef(1, 1, wallThick);
+    // glutSolidCube(boxsize);
+    // glPopMatrix();
+    //
+    // glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor3);
+    // glPushMatrix();
+    // glTranslatef(tranlate, 0, 0);
+    // glScalef(wallThick, 1, 1);
+    // glutSolidCube(boxsize);
+    // glPopMatrix();
+    //
+    //
+    // glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor4);
+    // glPushMatrix();
+    // glTranslatef(0, -tranlate, 0);
+    // glScalef(1, wallThick, 1);
+    // glutSolidCube(boxsize);
+    // glPopMatrix();
 
     // draw the sphere obstacle
     glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColorBall);
@@ -237,10 +242,16 @@ void View::drawModel(){
 
     // draw the triangle obstacle
     glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColorTri);
-    glBegin(GL_TRIANGLE_FAN);
+    glBegin(GL_TRIANGLES);
+    setLights();
     glVertex3f(themodel->v0.x, themodel->v0.y, themodel->v0.z);
     glVertex3f(themodel->v1.x, themodel->v1.y, themodel->v1.z);
     glVertex3f(themodel->v2.x, themodel->v2.y, themodel->v2.z);
+
+    glVertex3f(themodel->v0.x, themodel->v0.y, themodel->v0.z);
+    glVertex3f(themodel->v2.x, themodel->v2.y, themodel->v2.z);
+    glVertex3f(themodel->v1.x, themodel->v1.y, themodel->v1.z);
+
     glEnd();
 
     glDisable(GL_LIGHTING);
@@ -253,6 +264,17 @@ void View::drawModel(){
     }
     glEnd();
     glEnable(GL_LIGHTING);
+
+
+    // glDisable(GL_LIGHTING);
+    // glBegin(GL_LINES);
+    // glColor4f(1.0, 0.0, 0.0, 1.0);
+    // glVertex3f(10.0, 0, 0);
+    // glColor4f(1.0, 1.0, 0.0, 0.1);
+    // glVertex3f(0.0, 10, 0);
+    // glEnd();
+    // glEnable(GL_LIGHTING);
+
     //std::cout << "particles: " << (particles->particles).size() << '\n';
 
 }

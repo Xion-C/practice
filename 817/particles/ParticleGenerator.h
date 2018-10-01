@@ -55,7 +55,7 @@ public:
                                  Vector3d& collideNormal,
                                  float& f);
 
-
+    void Translate(const Vector3d& transVel);
     void TimeStep();
 
 private:

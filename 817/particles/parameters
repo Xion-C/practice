@@ -8,25 +8,25 @@ WindVelocity                    0.0, 0.0, 0.0
 CoefficientOfAirResistance      0.1
 
 //Circumstance
-BoxSize                         20.0
+BoxSize                         30.0
 CoefficientOfRestitution        0.6
 CoefficientOfFriction           0.1
 
 
 //ParticleGeneratorInitialStates
 GenerateSpeed                   1000
-InitialPosition                 0.0 5.0 -5.0
+InitialPosition                 0.0 5.0 -2.0
 InitialVelocity                 2.0 3.0 5.0
 Mass                            2.0
 Lifespan                        10
 Height                          3
-Width                           6
+Width                           10
 VelocityStd                     1.0
 
 
 //SphericalObstacles
-BallSize                        5.0
-BallPosition                    2.0 -4.0 3.0
+BallSize                        8.0
+BallPosition                    3.0 -8.0 3.0
 
 //TriangularObstacles
 vertex0                         1.0 3.0 0.0

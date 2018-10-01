@@ -19,6 +19,8 @@
 #  include <GL/glut.h>
 #endif
 
+#define TRANSLATESPEED 10.0
+
 using namespace std;
 
 //===========================================================================
@@ -70,7 +72,29 @@ void handleKey(unsigned char key, int x, int y){
         pause = !pause;
         break;
 
+    //keyboard transform
+    case 'a':
+        particleGen.Translate(Vector3d(-TRANSLATESPEED, 0, 0));
+        break;
+    case 'd':
+        particleGen.Translate(Vector3d(TRANSLATESPEED, 0, 0));
+        break;
+    case 'w':
+        particleGen.Translate(Vector3d(0, TRANSLATESPEED, 0));
+        break;
     case 's':
+        particleGen.Translate(Vector3d(0, -TRANSLATESPEED, 0));
+        break;
+    case 'q':
+        particleGen.Translate(Vector3d(0, 0, -TRANSLATESPEED));
+        break;
+        break;
+    case 'e':
+        particleGen.Translate(Vector3d(0, 0, TRANSLATESPEED));
+        break;
+        break;
+
+    case 't':
         particleGen.Stop();
         particleGen.GenerateRectPaticles(1);
         break;
@@ -103,8 +127,6 @@ void handleKey(unsigned char key, int x, int y){
         boxModel.loadParameters(params);
         boxModel.toggleHaveLowGravity();
         break;
-    case 'q':           // Q or Esc -- exit program
-    case 'Q':
     case ESC:
         exit(0);
 

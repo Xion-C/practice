@@ -44,6 +44,7 @@ public:
     Vector3d v1;
     Vector3d v2;
     Vector3d triNormal;
+    int triNormMax;
 
 public:
     Model();
