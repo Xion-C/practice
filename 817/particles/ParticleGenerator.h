@@ -17,12 +17,15 @@
 class ParticleGenerator
 {
 public:
-    std::list<Particle> particles;
+    //std::list<Particle> particles;
 
     ParticleGenerator(Model *m) : model(m), continuous(false) {
     }
 
     bool LoadParameters(const ParameterLoader& params);
+
+    const float GetParticleSize() const {return particleSize;}
+    const std::list<Particle>& GetParticles() const { return particles; }
 
     void GenerateRectPaticles(int number);
     void PrintParameters() const;
@@ -70,7 +73,11 @@ private:
     int width;
     float velStd;
 
+    float particleSize;
+
     bool continuous;
+
+    std::list<Particle> particles;
 };
 
 #endif

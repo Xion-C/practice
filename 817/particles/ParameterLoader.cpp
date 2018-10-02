@@ -87,6 +87,11 @@ bool ParameterLoader::LoadParameters(const char* path)
             number++;
         }
 
+        if (strcmp(text, "ParticleSize") == 0) {
+            fscanf(file, "%f\n", &particleSize);
+            number++;
+        }
+
         if (strcmp(text, "vertex0") == 0) {
             fscanf(file, "%lf %lf %lf\n", &(vertex0.x), &(vertex0.y), &(vertex0.z));
             number++;

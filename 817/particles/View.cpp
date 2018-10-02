@@ -251,19 +251,38 @@ void View::drawModel(){
     glVertex3f(themodel->v0.x, themodel->v0.y, themodel->v0.z);
     glVertex3f(themodel->v2.x, themodel->v2.y, themodel->v2.z);
     glVertex3f(themodel->v1.x, themodel->v1.y, themodel->v1.z);
-
     glEnd();
 
     glDisable(GL_LIGHTING);
-    glPointSize(3.0f);
+    glPointSize(particles->GetParticleSize());
     glBegin(GL_POINTS);
-    for(Particle p : (particles->particles))
+    for(Particle p : (particles->GetParticles()))
     {
+        // if(p.color.x < 0.1 && p.color.y < 0.1 && p.color.z < 0.1)
+        // {
+        //     std::cout << "point: " << p.pos << "  color: " << p.color << '\n';
+        // }
         glColor3f(p.color.x, p.color.y, p.color.z);
         glVertex3f(p.pos.x, p.pos.y, p.pos.z);
     }
     glEnd();
     glEnable(GL_LIGHTING);
+
+    // glDisable(GL_LIGHTING);
+    // glPointSize(particles->GetParticleSize());
+    // glBegin(GL_POINTS);
+    // for(Particle p : (particles->GetParticles()))
+    // {
+    //     // if(p.color.x < 0.1 && p.color.y < 0.1 && p.color.z < 0.1)
+    //     // {
+    //     //     std::cout << "point: " << p.pos << "  color: " << p.color << '\n';
+    //     // }
+    //     glColor3f(p.color.x, p.color.y, p.color.z);
+    //     glVertex3f(p.pos.x, p.pos.y, p.pos.z);
+    // }
+    // glEnd();
+    // glEnable(GL_LIGHTING);
+
 
 
     // glDisable(GL_LIGHTING);

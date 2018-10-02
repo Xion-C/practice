@@ -29,6 +29,8 @@ public:
     int width;
     float velocityStd;
 
+    float particleSize;
+
     float ballSize;
     Vector3d ballPosition;
 

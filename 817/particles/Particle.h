@@ -15,6 +15,9 @@ class Particle
 public:
     Vector3d pos; //position
     Vector3d vel; //velocity
+    Vector3d oldpos;
+    Vector3d oldvel;
+
     float mass;
     float lifespan;
     Vector3d color;
@@ -25,10 +28,18 @@ public:
         pos(p), vel(v), mass(m), lifespan(l), color(c) {
     }
 
+    void SetState(const Vector3d& p, const Vector3d& v)
+    {
+        oldpos = pos;
+        oldvel = vel;
+        pos = p;
+        vel = v;
+    }
+
     inline void Colorize(float h)
     {
         Vector3d dcolor = vel.normalize() * 0.5 + Vector3d(0.5, 0.5, 0.5);
-        color = color + h * (dcolor - color);
+        color = color + 0.2 * (dcolor - color);
     }
 };
 

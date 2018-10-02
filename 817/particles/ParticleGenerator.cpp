@@ -24,6 +24,8 @@ bool ParticleGenerator::LoadParameters(const ParameterLoader& params)
     width = params.width;
     velStd = params.velocityStd;
 
+    particleSize = params.particleSize;
+
     PrintParameters();
     return true;
 }
@@ -62,7 +64,7 @@ void ParticleGenerator::GenerateRectPaticles(int number)
         double rheight = (double)rand() / RAND_MAX * height;
         double rwidth = (double)rand() / RAND_MAX * width;
         Vector3d rpos(pos[0] - 0.5 * rwidth, pos[1] - 0.5 * rheight, pos[2]);
-        rpos = rpos + rvel * h;
+        rpos = rpos + rvel * dtime;
         Vector3d rcolor = rvel.normalize() * 0.5 + Vector3d(0.5, 0.5, 0.5);
         //Vector3d rcolor(0, 0, 0);
         float rmass = mass;
@@ -129,18 +131,18 @@ void ParticleGenerator::SimulateParticles()
                                                  posNew,
                                                  collidePos, collideNormal,
                                                  f);
-            // collideDetected |= DetectSphereCollision(timeStep,
-            //                                          posCur,
-            //                                          posNew,
-            //                                          collidePos,
-            //                                          collideNormal,
-            //                                          f);
-            // collideDetected |= DetectTriangleCollision(timeStep,
-            //                                            posCur,
-            //                                            posNew,
-            //                                            collidePos,
-            //                                            collideNormal,
-            //                                            f);
+            collideDetected |= DetectSphereCollision(timeStep,
+                                                     posCur,
+                                                     posNew,
+                                                     collidePos,
+                                                     collideNormal,
+                                                     f);
+            collideDetected |= DetectTriangleCollision(timeStep,
+                                                       posCur,
+                                                       posNew,
+                                                       collidePos,
+                                                       collideNormal,
+                                                       f);
 
 
             if(collideDetected)
@@ -172,9 +174,12 @@ void ParticleGenerator::SimulateParticles()
 
         }
 
-        itparticle->pos = posCur;
-        itparticle->vel = velCur;
+        itparticle->SetState(posCur, velCur);
         itparticle->Colorize(h);
+        // if((itparticle.color).norm() < 1) {
+        //     std::cout << "too small: " << itparticle.color << '\n';
+        // }
+
 
         itparticle->lifespan -= h;
         if(itparticle->lifespan < 0) {
@@ -238,6 +243,9 @@ bool ParticleGenerator::DetectBoxCollision(float timeStep,
 
 }
 
+
+// followed the algorithm from:
+//   https://people.cs.clemson.edu/~dhouse/courses/817/notes/raycast.pdf
 bool ParticleGenerator::DetectSphereCollision(const float timeStep,
                                               const Vector3d& posCur,
                                               const Vector3d& posNew,
@@ -245,33 +253,43 @@ bool ParticleGenerator::DetectSphereCollision(const float timeStep,
                                               Vector3d& collideNormal,
                                               float& f)
 {
-    float ballsize = model->ballsize;
-    Vector3d ballPos = model->ballPos;
-    float radius = ballsize / 2;
+    Vector3d center = model->ballPos;
+    float radius = (model->ballsize) / 2;
 
     bool collideDetected = false;
-    Vector3d vn1 = posNew - ballPos;
+    Vector3d vn1 = posNew - center;
     float dn1 = (float)(vn1).norm();
     if(dn1 <= radius + PRECISION)
     {
         collideDetected = true;
-        Vector3d dpos = posNew - posCur;
-        //float dposnorm = dpos.norm();
-        float a = (float)(dpos * dpos);
-        float b = (float)(-2 * vn1 * dpos);
-        float c = (float)(vn1 * vn1 - radius * radius);
-        float delta = b * b - 4 * a * c;
-        float f = (-b + sqrt(delta))/(2 * a);
-        f = 1 - f;
-        collidePos = posCur + (posNew - posCur) * f;
-        collideNormal = (collidePos - ballPos).normalize();
 
-        // std::cout << "[ballcollide]" << '\n';
-        // std::cout << "  collidePos: " << collidePos << '\n';
-        // std::cout << "  collideNormal: " << collideNormal << '\n';
-        // std::cout << "  f: " << f << '\n';
-        // std::cout << "a: " << a << "b: " << b << "c: " << c << '\n';
-        // std::cout << "====================" << '\n';
+        float dpos = (posNew - posCur).norm();
+        if(fabs(dpos) < 0.00001)
+        {
+            collidePos = posCur;
+            collideNormal = (collidePos - center).normalize();
+            return collideDetected;
+        }
+
+        Vector3d ur = (posNew - posCur).normalize(); // direction of the intersecting vector
+        float tclose = ur * (center - posCur);
+        Vector3d xclose = posCur + tclose * ur;
+        float dclose = (center - xclose).norm();
+        float a = sqrt(radius * radius - dclose * dclose);
+
+        collidePos = posCur + (tclose - a) * ur;
+        collideNormal = (collidePos - center).normalize();
+
+        f = ((collidePos - posCur).norm()) / (dpos);
+        // if(f < 0)
+        // {
+        //     f = 0;
+        // }
+
+        if(collidePos.norm() > 30) {
+            std::cout << "too big" << '\n';
+        }
+
     }
     return collideDetected;
 

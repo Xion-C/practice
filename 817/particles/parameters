@@ -23,6 +23,8 @@ Height                          3
 Width                           10
 VelocityStd                     1.0
 
+ParticleSize                    5.0
+
 
 //SphericalObstacles
 BallSize                        8.0
