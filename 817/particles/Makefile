@@ -11,7 +11,14 @@ else
 endif
 
 HEADERS = $(shell find . -regex ".*\.h" | tr '\n' ' ')
-OBJECTS = $(shell find . -regex ".*\.cpp" -printf "%P " | sed 's/.cpp/.o/g')
+# OBJECTS = $(shell find . -regex ".*\.cpp" -printf "%P " | sed 's/.cpp/.o/g')
+
+# https://hiltmon.com/blog/2015/08/01/simple-c-plus-plus-from-makefiles-to-xcode-builds/
+SRCDIR = .
+SRCEXT = cpp
+SOURCES = $(shell find ${SRCDIR} -type f -name "*.${SRCEXT}")
+BUILDDIR = .
+OBJECTS = $(patsubst $(SRCDIR)/%,$(BUILDDIR)/%,$(SOURCES:.$(SRCEXT)=.o))
 
 EXEC = run
 
@@ -19,6 +26,7 @@ EXEC = run
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
 ${EXEC}: ${OBJECTS}
+	@echo “Objects: ${OBJECTS}”
 	${CXX} ${CXXFLAGS} -o $@ ${OBJECTS} ${LDFLAGS}
 
 clean:
