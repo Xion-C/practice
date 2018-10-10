@@ -25,8 +25,8 @@ EXEC = run
 %.o: %.cpp
 	$(CXX) -c $(CXXFLAGS) $< -o $@
 
+# @echo "Objects: ${OBJECTS}"
 ${EXEC}: ${OBJECTS}
-	@echo “Objects: ${OBJECTS}”
 	${CXX} ${CXXFLAGS} -o $@ ${OBJECTS} ${LDFLAGS}
 
 clean:
