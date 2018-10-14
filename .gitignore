@@ -1,3 +1,4 @@
 # object
 *.o
 run
+.DS_Store
