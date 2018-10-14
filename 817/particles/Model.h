@@ -27,6 +27,7 @@ public:
     int dispinterval;
 
     float boxsize;
+    bool boxenabled;
 
     // box Parameters
     Vector3d normals[6];
@@ -49,6 +50,14 @@ public:
 public:
     Model();
 
+    bool isBox() const {
+        return boxenabled;
+    }
+
+    void toggleBox() {
+        boxenabled = !boxenabled;
+    }
+
     void toggleHaveAir() {
         haveAir = !haveAir;
         if(!haveAir) d = 0;
@@ -57,10 +66,7 @@ public:
     void toggleHaveWind() {
         haveWind = !haveWind;
         if(!haveAir) haveAir = true;
-        if(!haveWind)
-        {
-            windVel = Vector3d(0, 0, 0);
-        }
+        std::cout << "wind velocity enable:" << haveWind << '\n';
     }
 
     void toggleHaveLowGravity() {

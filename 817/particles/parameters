@@ -4,10 +4,10 @@ DisplayInterval                 1
 
 //Environment
 Gravity                         0.0 -9.8 0.0
-WindVelocity                    0.0, 0.0, 0.0
+WindVelocity                    20.0 200.0 -50.0
 CoefficientOfAirResistance      0.1
 
-//Circumstance
+//Box
 BoxSize                         30.0
 CoefficientOfRestitution        0.6
 CoefficientOfFriction           0.1
@@ -23,12 +23,12 @@ Height                          3
 Width                           10
 VelocityStd                     1.0
 
-ParticleSize                    5.0
+ParticleSize                    3.0
 
 
 //SphericalObstacles
 BallSize                        8.0
-BallPosition                    3.0 -8.0 3.0
+BallPosition                    3.0 -8.0 4.0
 
 //TriangularObstacles
 vertex0                         1.0 3.0 0.0

@@ -24,9 +24,10 @@ using namespace std;
 
 Model::Model(){
     initSimulation();
+    boxenabled = true;
     haveAir = true;
-    haveWind = true;
-    haveLowGravity = true;
+    haveWind = false;
+    haveLowGravity = false;
 }
 
 bool Model::loadParameters(const ParameterLoader& params)
@@ -34,9 +35,10 @@ bool Model::loadParameters(const ParameterLoader& params)
     if(!params.IsSuccess()) return false;
     h = params.timeStep;
     dispinterval = params.displayInterval;
-    gravity = params.gravity;
-    windVel = params.windVelocity;
-    d = params.airReisistance;
+    gravity = haveLowGravity ? 0.2 * params.gravity : params.gravity;
+    windVel = haveWind ? params.windVelocity : Vector3d(0, 0, 0);
+    //windVel = params.windVelocity;
+    d = haveAir ? params.airReisistance : 0;
     cr = params.restitution;
     cf = params.friction;
     boxsize = params.boxSize;
@@ -68,8 +70,6 @@ bool Model::loadParameters(const ParameterLoader& params)
     points[4] = Vector3d(0.0, boxsize/2, 0.0);
     points[5] = Vector3d(0.0, 0.0, boxsize/2);
 
-    printParameters();
-
     return true;
 }
 
@@ -87,7 +87,7 @@ void Model::printParameters() const
     std::cout << "ball size:        " << ballsize << '\n';
     std::cout << "ball position:    " << ballPos << '\n';
     std::cout << "triangle vertices: " << v0 << ", "
-        << v1 << ", " << v2 << '\n';
+              << v1 << ", " << v2 << '\n';
     std::cout << "triangle normal:  " << triNormal << '\n';
     std::cout << "/----------------------------/" << '\n';
 }

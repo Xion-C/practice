@@ -62,8 +62,10 @@ void handleKey(unsigned char key, int x, int y){
         // reload parameters in case they have changed
         params.LoadParameters(paramfilename);
         boxModel.loadParameters(params);
+        boxModel.printParameters();
         boxModel.initSimulation();
         particleGen.LoadParameters(params);
+        particleGen.PrintParameters();
         particleGen.Init();
         break;
 
@@ -99,6 +101,11 @@ void handleKey(unsigned char key, int x, int y){
         particleGen.GenerateRectPaticles(1);
         break;
 
+    case 'v':
+        boxModel.toggleBox();
+        break;
+
+
     case 'k':           // toggle key light on and off
         viewer.toggleKeyLight();
         break;
@@ -116,12 +123,12 @@ void handleKey(unsigned char key, int x, int y){
         viewer.setInitialView();
         break;
     case '1':
+        boxModel.toggleHaveWind();
         boxModel.loadParameters(params);
-        boxModel.toggleHaveAir();
         break;
     case '2':
         boxModel.loadParameters(params);
-        boxModel.toggleHaveWind();
+        boxModel.toggleHaveAir();
         break;
     case '3':
         boxModel.loadParameters(params);

@@ -190,19 +190,20 @@ void View::drawModel(){
     //glEnable(GL_CULL_FACE);
 
     // Draw the box wire
-    glDisable(GL_LIGHTING);
-    glColor3f(0, 1, 0);
-    glutWireCube(boxsize);
-    glEnable(GL_LIGHTING);
+    if(themodel->isBox())
+    {
+        glDisable(GL_LIGHTING);
+        glColor3f(0, 1, 0);
+        glutWireCube(boxsize);
+        glEnable(GL_LIGHTING);
+    }
 
-    const float wallThick = 0.01;
-    const float tranlate = (0.5 + 0.5 * wallThick) * boxsize;
-    float diffuseColor1[4] = { 0.2, 0.1, 0.1, 1 };
-    float diffuseColor2[4] = { 0.1, 0.2, 0.1, 1 };
-    float diffuseColor3[4] = { 0.1, 0.1, 0.2, 1 };
-    float diffuseColor4[4] = { 0.1, 0.1, 0.1, 1 };
-    float diffuseColorBall[4] = { 0.5, 0.5, 0.9, 1 };
-    float diffuseColorTri[4] = { 1.0, 1.0, 0.0, 1 };
+    // const float wallThick = 0.01;
+    // const float tranlate = (0.5 + 0.5 * wallThick) * boxsize;
+    // float diffuseColor1[4] = { 0.2, 0.1, 0.1, 1 };
+    // float diffuseColor2[4] = { 0.1, 0.2, 0.1, 1 };
+    // float diffuseColor3[4] = { 0.1, 0.1, 0.2, 1 };
+    // float diffuseColor4[4] = { 0.1, 0.1, 0.1, 1 };
 
     // glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor1);
     // glPushMatrix();
@@ -233,6 +234,9 @@ void View::drawModel(){
     // glutSolidCube(boxsize);
     // glPopMatrix();
 
+    float diffuseColorBall[4] = { 0.5, 0.5, 0.9, 1 };
+    float diffuseColorTri[4] = { 1.0, 1.0, 0.0, 1 };
+
     // draw the sphere obstacle
     glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColorBall);
     glPushMatrix();
@@ -253,48 +257,33 @@ void View::drawModel(){
     glVertex3f(themodel->v1.x, themodel->v1.y, themodel->v1.z);
     glEnd();
 
-    glDisable(GL_LIGHTING);
-    glPointSize(particles->GetParticleSize());
-    glBegin(GL_POINTS);
-    for(Particle p : (particles->GetParticles()))
-    {
-        // if(p.color.x < 0.1 && p.color.y < 0.1 && p.color.z < 0.1)
-        // {
-        //     std::cout << "point: " << p.pos << "  color: " << p.color << '\n';
-        // }
-        glColor3f(p.color.x, p.color.y, p.color.z);
-        glVertex3f(p.pos.x, p.pos.y, p.pos.z);
-    }
-    glEnd();
-    glEnable(GL_LIGHTING);
-
+    // // draw particles
     // glDisable(GL_LIGHTING);
     // glPointSize(particles->GetParticleSize());
     // glBegin(GL_POINTS);
     // for(Particle p : (particles->GetParticles()))
     // {
-    //     // if(p.color.x < 0.1 && p.color.y < 0.1 && p.color.z < 0.1)
-    //     // {
-    //     //     std::cout << "point: " << p.pos << "  color: " << p.color << '\n';
-    //     // }
     //     glColor3f(p.color.x, p.color.y, p.color.z);
     //     glVertex3f(p.pos.x, p.pos.y, p.pos.z);
     // }
     // glEnd();
     // glEnable(GL_LIGHTING);
 
-
-
-    // glDisable(GL_LIGHTING);
-    // glBegin(GL_LINES);
-    // glColor4f(1.0, 0.0, 0.0, 1.0);
-    // glVertex3f(10.0, 0, 0);
-    // glColor4f(1.0, 1.0, 0.0, 0.1);
-    // glVertex3f(0.0, 10, 0);
-    // glEnd();
-    // glEnable(GL_LIGHTING);
-
-    //std::cout << "particles: " << (particles->particles).size() << '\n';
+    // draw particles
+    float tailLength = 2.5;
+    glDisable(GL_LIGHTING);
+    glLineWidth(particles->GetParticleSize());
+    glBegin(GL_LINES);
+    for(Particle p : (particles->GetParticles()))
+    {
+        glColor3f(p.color.x, p.color.y, p.color.z);
+        glVertex3f(p.pos.x, p.pos.y, p.pos.z);
+        Vector3d tail = p.pos + (p.oldpos - p.pos) * tailLength;
+        glColor4f(1, 1, 1, 0.1);
+        glVertex3f(tail.x, tail.y, tail.z);
+    }
+    glEnd();
+    glEnable(GL_LIGHTING);
 
 }
 

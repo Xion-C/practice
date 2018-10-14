@@ -26,7 +26,6 @@ bool ParticleGenerator::LoadParameters(const ParameterLoader& params)
 
     particleSize = params.particleSize;
 
-    PrintParameters();
     return true;
 }
 
@@ -85,6 +84,8 @@ void ParticleGenerator::SimulateParticles()
     float cr = model->cr;
     float cf = model->cf;
 
+    bool isBox = model->isBox();
+
     std::list<Particle>::iterator itparticle = particles.begin();
     while(itparticle != particles.end())
     {
@@ -126,11 +127,13 @@ void ParticleGenerator::SimulateParticles()
             float f;         // fraction
 
             //determine collision
-            collideDetected = DetectBoxCollision(timeStep,
-                                                 posCur,
-                                                 posNew,
-                                                 collidePos, collideNormal,
-                                                 f);
+            if(isBox) {
+                collideDetected = DetectBoxCollision(timeStep,
+                                                     posCur,
+                                                     posNew,
+                                                     collidePos, collideNormal,
+                                                     f);
+            }
             collideDetected |= DetectSphereCollision(timeStep,
                                                      posCur,
                                                      posNew,
@@ -264,8 +267,9 @@ bool ParticleGenerator::DetectSphereCollision(const float timeStep,
         collideDetected = true;
 
         float dpos = (posNew - posCur).norm();
-        if(fabs(dpos) < 0.00001)
+        if(fabs(dpos) < PRECISION)
         {
+            f = 1;
             collidePos = posCur;
             collideNormal = (collidePos - center).normalize();
             return collideDetected;
@@ -281,10 +285,10 @@ bool ParticleGenerator::DetectSphereCollision(const float timeStep,
         collideNormal = (collidePos - center).normalize();
 
         f = ((collidePos - posCur).norm()) / (dpos);
-        // if(f < 0)
-        // {
-        //     f = 0;
-        // }
+        if(f < 0)
+        {
+            f = 0;
+        }
 
         if(collidePos.norm() > 30) {
             std::cout << "too big" << '\n';

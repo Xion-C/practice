@@ -1,45 +1,30 @@
 #include <iostream>
-
-class Number
-{
+#include <string>
+class Student {
 public:
-    Number() { std::cout << "default" << std::endl; }
-    Number(float) { std::cout << "convert" << std::endl; }
-    Number(const Number&) { std::cout << "copy" << std::endl; }
-    ~Number() { std::cout << "destructor" << std::endl; }
-
-    Number& operator=(const Number&)
-    {
-        std::cout << "assign" << std::endl;
-        return *this;
+    //Student(const string * s) : name(new std::string(s)) {}
+    Student(const char * s) : name(new std::string(s)) {
     }
-};
-
-class Pokemon
-{
-public:
-    Pokemon(int cp, int hp)
+    Student(const Student& s) : name(new std::string(*(s.name))) {
+    }
+    ~Student ( ) {
+        delete name;
+    }
+    const std::string& getName ( ) const
     {
-			  std::cout << "here" << std::endl;
-        combatPower = cp;
-				std::cout << "there" << std::endl;
-        hitpoints = hp;
+        return *name;
+    }
+    void setName ( const std::string n ) {
+        (*name) = n;
     }
 private:
-    Number combatPower;
-    int hitpoints;
+    std::string * name;
 };
 
-int main()
-{
-    Pokemon* chansey = new Pokemon(400, 376);
-    int i = 100000;
-    while(i)
-    {
-        int j = 1;
-        j++;
-        i--;
-        std::cout << "j: " << j << '\n';
-    }
-    return 0;
+
+int main () {
+    Student student("Goku"), teacher = student;
+    teacher.setName("Kakarot");
+    std::cout << teacher.getName ( ) << std::endl;
+    std::cout << student.getName ( ) << std::endl;
 }

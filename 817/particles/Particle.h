@@ -25,7 +25,9 @@ public:
     Particle() {
     }
     Particle(const Vector3d& p, const Vector3d& v, float m, float l, const Vector3d& c) :
-        pos(p), vel(v), mass(m), lifespan(l), color(c) {
+        pos(p), vel(v),
+        oldpos(p), oldvel(v),
+        mass(m), lifespan(l), color(c) {
     }
 
     void SetState(const Vector3d& p, const Vector3d& v)
