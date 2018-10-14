@@ -13,7 +13,7 @@ endif
 HEADERS = $(shell find . -regex ".*\.h" | tr '\n' ' ')
 OBJECTS = $(shell find . -regex ".*\.cpp" -printf "%P " | sed 's/.cpp/.o/g')
 
-EXEC = run
+EXEC = particles
 
 %.o: %.cpp
 	$(CXX) -c $(CXXFLAGS) $< -o $@
