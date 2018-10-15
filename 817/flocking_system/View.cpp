@@ -234,7 +234,7 @@ void View::drawModel(){
     // glutSolidCube(boxsize);
     // glPopMatrix();
 
-    float diffuseColorBall[4] = { 0.8, 0.5, 0.3, 1 };
+    float diffuseColorBall[4] = { 0.14, 0.25, 0.4, 1 };
     float diffuseColorTri[4] = { 1.0, 1.0, 0.0, 1 };
 
     // // draw the sphere obstacle

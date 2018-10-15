@@ -56,6 +56,8 @@ private:
     void computeSystemAccelerations(SV3& svd, float* mass, const SV3& sv, float t);
     void computeSystemDynamicFunction(SV3& svd, float* mass, const SV3& sv, float t);
     void computeEulerIntergration(SV3& svnew, const SV3& sv, const SV3& svd, float t);
+    void computeRK4Intergration(SV3& svnew, float* mass, const SV3& sv, const SV3& svd, float t);
+
 };
 
 #endif

@@ -129,6 +129,20 @@ void FlockingParticles::computeEulerIntergration(SV3& svnew, const SV3& sv, cons
     //svnew = sv;
 }
 
+void FlockingParticles::computeRK4Intergration(SV3& svnew, float* mass, const SV3& sv, const SV3& svd, float t)
+{
+    int n = sv.N;
+    SV3 k1 = svd;
+    SV3 k2(n);
+    computeSystemDynamicFunction(k2, mass, sv + k1 * (0.5 * h), t + 0.5 * h);
+    SV3 k3(n);
+    computeSystemDynamicFunction(k3, mass, sv + k2 * (0.5 * h), t + 0.5 * h);
+    SV3 k4(n);
+    computeSystemDynamicFunction(k3, mass, sv + k2 * h, t + h);
+    svnew = sv + (k1 + k2 * 2 + k3 * 2 + k4) * (h / 6.0);
+}
+
+
 
 void FlockingParticles::SimulateParticles()
 {
@@ -162,6 +176,7 @@ void FlockingParticles::SimulateParticles()
     //new state vector
     SV3 svnew(pnum);
     computeEulerIntergration(svnew, sv, svd, h);
+    //computeRK4Intergration(svnew, mass, sv, svd, h);
 
     //set new state
     itparticle = particles.begin();

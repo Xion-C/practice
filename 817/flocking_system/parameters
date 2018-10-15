@@ -18,11 +18,6 @@ Centering_kc                    0.2
 MaxResidualAcceleration_amax    50.0
 
 
-//SphericalObstacle
-BallSize                        8.0
-BallPosition                    3.0 -8.0 4.0
-
-
 //RoutePoints
 RoutePointsNumber               5
 -10.0 10.0 -10.0
@@ -53,3 +48,6 @@ CoefficientOfFriction           0.1
 vertex0                         1.0 3.0 0.0
 vertex1                         -8.0 -2.0 2.0
 vertex2                         -1.0 0.0 8.0
+//SphericalObstacle
+BallSize                        20
+BallPosition                    0 0 -10

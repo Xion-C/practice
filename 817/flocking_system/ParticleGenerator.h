@@ -41,6 +41,8 @@ public:
     void GenerateCubeParticles(int number);
 
     void PrintParameters() const;
+
+    void HandleCollision();
     void SimulateParticles();
 
     void Init() {

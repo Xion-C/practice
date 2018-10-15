@@ -102,6 +102,67 @@ void ParticleGenerator::GenerateCubeParticles(int number)
     }
 }
 
+void ParticleGenerator::HandleCollision()
+{
+    float cr = model->cr;
+    float cf = model->cf;
+
+    std::list<Particle>::iterator itparticle = particles.begin();
+    while(itparticle != particles.end())
+    {
+        Vector3d posCur = itparticle->oldpos;
+        Vector3d velCur = itparticle->oldvel;
+        Vector3d posNew = itparticle->pos;
+        Vector3d velNew = itparticle->vel;
+
+        Vector3d collideNormal;
+        Vector3d collidePos;
+        Vector3d collideVel;
+
+        bool collideDetected = false;
+        float f;         // fraction
+
+        float timeStep = h;
+        collideDetected = DetectSphereCollision(timeStep,
+                                                posCur,
+                                                posNew,
+                                                collidePos,
+                                                collideNormal,
+                                                f);
+        if(collideDetected)
+        {
+            timeStep = f * timeStep;
+            //collideVel = velCur + a * timeStep;
+            //collideVel = velCur + f * (velNew - velCur);
+            collideVel = velCur + f * (velNew - velCur);
+
+            //not accurate
+            //collidePos = posCur + collideVel * timeStep;
+            collidePos = collidePos + 0.5 * PRECISION * collideNormal;
+
+            //perpendicular and parallel component of collide velocity
+            Vector3d collideVelPerp = (collideVel * collideNormal) * collideNormal;
+            Vector3d collideVelPara = collideVel - collideVelPerp;
+            collideVelPerp = -cr * collideVelPerp;
+            collideVelPara = (1 - cf * (timeStep / h)) * collideVelPara;
+
+            velNew = collideVelPerp + collideVelPara;
+
+            //posNew = collidePos + velNew * timeStep;
+            posNew = collidePos;
+
+        }
+
+        posCur = posNew + velNew * (h - timeStep);
+        velCur = velNew;
+
+        itparticle->SetState(posCur, velCur);
+        itparticle->Colorize();
+
+        itparticle++;
+    }
+
+}
 
 void ParticleGenerator::SimulateParticles()
 {
@@ -289,9 +350,13 @@ bool ParticleGenerator::DetectSphereCollision(const float timeStep,
     float radius = (model->ballsize) / 2;
 
     bool collideDetected = false;
+
+    Vector3d vn0 = posCur - center;
+    float dn0 = (float)(vn0).norm();
+
     Vector3d vn1 = posNew - center;
     float dn1 = (float)(vn1).norm();
-    if(dn1 <= radius + PRECISION)
+    if(dn1 <= radius + PRECISION && dn0 > radius + PRECISION)
     {
         collideDetected = true;
 
@@ -419,17 +484,18 @@ void ParticleGenerator::Translate(const Vector3d& transVel)
 
 void ParticleGenerator::TimeStep()
 {
-    int num = particles.size();
-    if(continuous)
-    {
-        if(num + speed * h <= particleNum)
-        {
-            GenerateRectPaticles(int(speed * h));
-        }
-        else if(num <= particleNum)
-        {
-            GenerateRectPaticles(particleNum - num);
-        }
-    }
+    // int num = particles.size();
+    // if(continuous)
+    // {
+    //     if(num + speed * h <= particleNum)
+    //     {
+    //         GenerateRectPaticles(int(speed * h));
+    //     }
+    //     else if(num <= particleNum)
+    //     {
+    //         GenerateRectPaticles(particleNum - num);
+    //     }
+    // }
     //SimulateParticles();
+    HandleCollision();
 }
