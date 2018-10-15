@@ -1,0 +1,55 @@
+//Simulation
+TimeStep-h                      0.05
+DisplayInterval                 1
+
+//FlockingSystem
+InitialVelocity                 0.0 0.0 0.0
+Mass                            2.0
+GeneratorSize                   15.0
+VelocityStd                     1.0
+
+ParticleSize                    3.0
+ParticlesNumber                 150
+LeadBoidSpeed                   2
+
+CollisionAvoidance_ka           40
+VelocityMatching_kv             0.2
+Centering_kc                    0.2
+MaxResidualAcceleration_amax    50.0
+
+
+//SphericalObstacle
+BallSize                        8.0
+BallPosition                    3.0 -8.0 4.0
+
+
+//RoutePoints
+RoutePointsNumber               5
+-10.0 10.0 -10.0
+-10.0 10.0 10.0
+10.0 -10.0 10.0
+10.0 10.0 -10.0
+-10.0 -10.0 -10.0
+
+
+
+
+
+/*** ExpiredParameters ***/
+Lifespan                        -1
+GenerateSpeed                   50
+InitialPosition                 0.0 5.0 -2.0
+Height                          10
+Width                           10
+//Environment
+Gravity                         0.0 -9.8 0.0
+WindVelocity                    20.0 200.0 -50.0
+CoefficientOfAirResistance      0.1
+//Box
+BoxSize                         30.0
+CoefficientOfRestitution        0.6
+CoefficientOfFriction           0.1
+//TriangularObstacles
+vertex0                         1.0 3.0 0.0
+vertex1                         -8.0 -2.0 2.0
+vertex2                         -1.0 0.0 8.0
