@@ -1,5 +1,5 @@
-#ifndef __FLOCKINGPARTICLES_H__
-#define __FLOCKINGPARTICLES_H__
+#ifndef __FLOCKINGSYSTEM_H__
+#define __FLOCKINGSYSTEM_H__
 
 #include <list>
 #include "Vector.h"
@@ -43,6 +43,13 @@ private:
     float kv; // velocity matching
     float kc; // centering
     float amax;
+    // distance thresholds
+    float r1;
+    float r2;
+    // FOV thresholds
+    float t1;
+    float t2;
+    
     float leadBoidSpeed;
 
     //lead boid route

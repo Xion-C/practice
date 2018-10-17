@@ -9,7 +9,7 @@
 #include "ParameterLoader.h"
 #include "ParticleCluster.h"
 #include "ParticleGenerator.h"
-#include "FlockingParticles.h"
+#include "FlockingSystem.h"
 
 #include "StateVector.h"
 

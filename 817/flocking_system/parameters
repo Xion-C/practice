@@ -9,12 +9,18 @@ GeneratorSize                   15.0
 VelocityStd                     1.0
 
 ParticleSize                    3.0
-ParticlesNumber                 150
+ParticlesNumber                 300
 LeadBoidSpeed                   2
 
 CollisionAvoidance_ka           40
 VelocityMatching_kv             0.2
-Centering_kc                    0.2
+Centering_kc                    0.15
+
+DistanceThreshold_r1            1
+DistanceThreshold_r2            30
+FiedOfViewThreshold_t1          100
+FiedOfViewThreshold_t1          300
+
 MaxResidualAcceleration_amax    50.0
 
 

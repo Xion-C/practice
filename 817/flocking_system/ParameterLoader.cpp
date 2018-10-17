@@ -147,6 +147,24 @@ bool ParameterLoader::LoadParameters(const char* path)
             fscanf(file, "%f\n", &leadBoidSpeed);
             number++;
         }
+
+        if (strcmp(text, "DistanceThreshold_r1") == 0) {
+            fscanf(file, "%f\n", &r1);
+            number++;
+        }
+        if (strcmp(text, "DistanceThreshold_r2") == 0) {
+            fscanf(file, "%f\n", &r2);
+            number++;
+        }
+        if (strcmp(text, "FiedOfViewThreshold_t1") == 0) {
+            fscanf(file, "%f\n", &t1);
+            number++;
+        }
+        if (strcmp(text, "FiedOfViewThreshold_t2") == 0) {
+            fscanf(file, "%f\n", &t2);
+            number++;
+        }
+
         if (strcmp(text, "RoutePointsNumber") == 0) {
             fscanf(file, "%d\n", &routePointsNum);
             number++;

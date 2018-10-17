@@ -48,6 +48,11 @@ public:
     float kc;
     float amax;
 
+    float r1;
+    float r2;
+    float t1;
+    float t2;
+
     float leadBoidSpeed;
     //route
     int routePointsNum;

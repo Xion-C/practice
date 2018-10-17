@@ -1,5 +1,5 @@
 #include <vector>
-#include "FlockingParticles.h"
+#include "FlockingSystem.h"
 #include "ParticleCluster.h"
 #include "Utility.h"
 
@@ -10,6 +10,10 @@ bool FlockingParticles::LoadParameters(const ParameterLoader &params)
     ka = params.ka;
     kv = params.kv;
     kc = params.kc;
+    r1 = params.r1;
+    r2 = params.r2;
+    t1 = params.t1;
+    t2 = params.t2;
     amax = params.amax;
     leadBoidSpeed = params.leadBoidSpeed;
     routePointsNum = params.routePointsNum;
@@ -72,6 +76,18 @@ Vector3d FlockingParticles::computeInteractiongForce(const SV3& sv, int i, int j
     // centering
     Vector3d aijc = kc * xij;
 
+    // // distance
+    // float kd = 0;
+    // if(dij < r1)
+    // {
+    //     kd = 1;
+    // }
+    // else if(dij <= r2)
+    // {
+    //     kd = (r2 - dij) / (r2 - r1);
+    // }
+
+
     float aan = aija.norm();
     float avn = aijv.norm();
     float acn = aijc.norm();
@@ -99,12 +115,26 @@ void FlockingParticles::computeSystemAccelerations(SV3& svd, float* mass, const 
 
     for(int i = 0; i < pnum; i++)
     {
-        for(int j = 0; j < pnum; j++)
+        for(int j = i + 1; j < pnum; j++)
         {
             if(i == j)
+            {
                 fij = 0;
+                continue;
+            }
             else
+            {
+                // distance
+                float dij = (sv.data[j] - sv.data[i]).norm();
+                // FOV
+
+                if(dij > r2)
+                {
+                    fij = 0;
+                    continue;
+                }
                 fij = computeInteractiongForce(sv, i, j, t);
+            }
             svd.data[i + pnum] = svd.data[i + pnum] + (1 / mass[i]) * fij;
             svd.data[j + pnum] = svd.data[j + pnum] - (1 / mass[j]) * fij;
         }
