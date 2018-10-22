@@ -170,15 +170,26 @@ void FlockingParticles::computeSystemAccelerations(SV3 &svd, float *mass,
     Vector3d *ac = new Vector3d[pnum];
     Vector3d aij[3];
     for (int i = 0; i < pnum; i++) {
-        for (int j = i + 1; j < pnum; j++) {
+        // for (int j = i + 1; j < pnum; j++) {
+        //     computeFlockingInteractionAccels(aij, sv, i, j, t);
+        //     aa[i] = aa[i] + aij[0];
+        //     av[i] = av[i] + aij[1];
+        //     ac[i] = ac[i] + aij[2];
+        //     aa[j] = aa[j] - aij[0];
+        //     av[j] = av[j] - aij[1];
+        //     ac[j] = ac[j] - aij[2];
+        // }
+
+        for (int j = 0; j < pnum; j++) {
+            if (i == j) {
+                continue;
+            }
             computeFlockingInteractionAccels(aij, sv, i, j, t);
             aa[i] = aa[i] + aij[0];
             av[i] = av[i] + aij[1];
             ac[i] = ac[i] + aij[2];
-            aa[j] = aa[j] - aij[0];
-            av[j] = av[j] - aij[1];
-            ac[j] = ac[j] - aij[2];
         }
+
 
         // lead boid
         computeFlockingLeadBoidAccels(aij, sv, i, t);
