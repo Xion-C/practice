@@ -9,15 +9,15 @@ GeneratorSize                   15.0
 VelocityStd                     1.0
 
 ParticleSize                    3.0
-ParticlesNumber                 300
-LeadBoidSpeed                   2
+ParticlesNumber                 250
+LeadBoidSpeed                   4
 
-CollisionAvoidance_ka           40
+CollisionAvoidance_ka           6
 VelocityMatching_kv             0.2
-Centering_kc                    0.15
+Centering_kc                    0.1
 
-DistanceThreshold_r1            1
-DistanceThreshold_r2            30
+DistanceThreshold_r1            2
+DistanceThreshold_r2            6
 FiedOfViewThreshold_t1          100
 FiedOfViewThreshold_t1          300
 
@@ -47,7 +47,7 @@ Gravity                         0.0 -9.8 0.0
 WindVelocity                    20.0 200.0 -50.0
 CoefficientOfAirResistance      0.1
 //Box
-BoxSize                         30.0
+BoxSize                         20.0
 CoefficientOfRestitution        0.6
 CoefficientOfFriction           0.1
 //TriangularObstacles

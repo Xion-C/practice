@@ -10,10 +10,10 @@
 #include "View.h"
 
 #ifdef __APPLE__
-#  pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#  include <GLUT/glut.h>
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#include <GLUT/glut.h>
 #else
-#  include <GL/glut.h>
+#include <GL/glut.h>
 #endif
 
 #include <cstdlib>
@@ -25,53 +25,60 @@
 
 // Distance of near and far clipping planes, and
 // camera vertical field-of-view in degrees
-#define NEAR  1.0
-#define FAR   1000.0
-#define FOV   60.0
+#define NEAR 1.0
+#define FAR 1000.0
+#define FOV 60.0
 
 // Scale of the model, and its initial distance from the camera
-#define MODELSIZE   10.0
-#define MODELDEPTH  30.0
+#define MODELSIZE 10.0
+#define MODELDEPTH 30.0
 #define BOXSIZE 20.0
 #define BALLSIZE 2.0
 
 // Shading parameters
-#define DIFFUSE_FRACTION  0.8
+#define DIFFUSE_FRACTION 0.8
 #define SPECULAR_FRACTION 0.5
-#define SHININESS         60.0
+#define SHININESS 60.0
 
 // Light colors
-#define WHITE     0.9, 0.9, 0.9, 1
+#define WHITE 0.9, 0.9, 0.9, 1
 #define DIM_WHITE 0.4, 0.4, 0.4, 1
 
 // Screen background color
 #define GREY_BACKGROUND 0.08, 0.08, 0.08, 1
 
 // Material colors
-#define BASE_COLOR  0.6, 0.6, 0.9       // diffuse color
-#define HIGHLIGHT_COLOR 1.0, 1.0, 1.0   // specular color
+#define BASE_COLOR 0.6, 0.6, 0.9       // diffuse color
+#define HIGHLIGHT_COLOR 1.0, 1.0, 1.0  // specular color
 
 using namespace std;
 
-View::View(Model *model, ParticleGenerator *particleGen) :
-    camera(NULL), themodel(model),
-    particles(particleGen),
-    width(WIDTH), height(HEIGHT),
-    near(NEAR), far(FAR), fov(FOV),
-    boxsize(model->boxSize()),
-    ballsize(model->ballSize()),
-    modeldepth(MODELDEPTH),
-    diffuse_fraction(DIFFUSE_FRACTION), specular_fraction(SPECULAR_FRACTION), shininess(SHININESS),
-    white {
-    WHITE
-},
-dim_white {DIM_WHITE}, grey_background {GREY_BACKGROUND},
-base_color {BASE_COLOR}, highlight_color {HIGHLIGHT_COLOR} {
-
+View::View(Model *model, ParticleGenerator *particleGen,
+           FlockingParticles *flockingSys)
+    : camera(NULL),
+      themodel(model),
+      particles(particleGen),
+      flocking(flockingSys),
+      width(WIDTH),
+      height(HEIGHT),
+      near(NEAR),
+      far(FAR),
+      fov(FOV),
+      boxsize(model->boxSize()),
+      ballsize(model->ballSize()),
+      modeldepth(MODELDEPTH),
+      diffuse_fraction(DIFFUSE_FRACTION),
+      specular_fraction(SPECULAR_FRACTION),
+      shininess(SHININESS),
+      white{WHITE},
+      dim_white{DIM_WHITE},
+      grey_background{GREY_BACKGROUND},
+      base_color{BASE_COLOR},
+      highlight_color{HIGHLIGHT_COLOR} {
     // Set up camera: parameters are eye point, aim point, up vector,
     // near and far clip plane distances, and camera vertical FOV in degrees
-    camera = new Camera(Vector3d(0, 0, modeldepth), Vector3d(0, 0, 0), Vector3d(0, 1, 0),
-                        near, far, fov);
+    camera = new Camera(Vector3d(0, 0, modeldepth), Vector3d(0, 0, 0),
+                        Vector3d(0, 1, 0), near, far, fov);
 
     // point to the model
     themodel = model;
@@ -84,12 +91,13 @@ base_color {BASE_COLOR}, highlight_color {HIGHLIGHT_COLOR} {
 //
 // Routine to initialize the state of the viewer to start-up defaults
 //
-void View::setInitialView(){
+void View::setInitialView() {
     // return camera to its default settings
     camera->Reset();
 
     // opaque grey background for window
-    glClearColor(grey_background[0], grey_background[1], grey_background[2], grey_background[3]);
+    glClearColor(grey_background[0], grey_background[1], grey_background[2],
+                 grey_background[3]);
 
     // smooth shade across triangles if vertex normals are present
     glShadeModel(GL_SMOOTH);
@@ -112,21 +120,22 @@ void View::setInitialView(){
     glLightfv(GL_LIGHT2, GL_SPECULAR, dim_white);
 
     // turn on lighting
-    glEnable(GL_LIGHT0);    // key light
+    glEnable(GL_LIGHT0);  // key light
     KeyOn = true;
-    glEnable(GL_LIGHT1);    // fill light
+    glEnable(GL_LIGHT1);  // fill light
     FillOn = true;
-    glEnable(GL_LIGHT2);    // rim light
+    glEnable(GL_LIGHT2);  // rim light
     RimOn = true;
 
     // turn on shading
     glEnable(GL_LIGHTING);
-    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE); // consider light position for specular
+    glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER,
+                  GL_TRUE);  // consider light position for specular
 
     // define the diffuse and specular colors of the teapot's material,
     // and set its specular exponent
     float diffuse_color[4], specular_color[4];
-    for(int i = 0; i < 3; i++) {
+    for (int i = 0; i < 3; i++) {
         diffuse_color[i] = diffuse_fraction * base_color[i];
         specular_color[i] = specular_fraction * highlight_color[i];
     }
@@ -143,10 +152,11 @@ void View::setInitialView(){
 //
 // Position the 3 lights
 //
-void View::setLights(){
+void View::setLights() {
     // key is point light above and behind camera to the left
-    const float key_light_position[4] = {-modeldepth / 2, modeldepth / 2, modeldepth / 2, 1};
-    //const float key_light_position[4] = {-10, 20, 0, 1};
+    const float key_light_position[4] = {-modeldepth / 2, modeldepth / 2,
+                                         modeldepth / 2, 1};
+    // const float key_light_position[4] = {-10, 20, 0, 1};
 
     glLightfv(GL_LIGHT0, GL_POSITION, key_light_position);
 
@@ -155,48 +165,47 @@ void View::setLights(){
     glLightfv(GL_LIGHT1, GL_POSITION, fill_light_position);
 
     // rim is parallel light coming from behind object, and above and to left
-    const float rim_light_direction[4] = {-2 * modeldepth, 2 * modeldepth, -2 * modeldepth, 0};
+    const float rim_light_direction[4] = {-2 * modeldepth, 2 * modeldepth,
+                                          -2 * modeldepth, 0};
     glLightfv(GL_LIGHT2, GL_POSITION, rim_light_direction);
 }
 
 // Toggle the lights on/off
-void View::toggleKeyLight(){
+void View::toggleKeyLight() {
     KeyOn = !KeyOn;
-    if(KeyOn)
+    if (KeyOn)
         glEnable(GL_LIGHT0);
     else
         glDisable(GL_LIGHT0);
 }
 
-void View::toggleFillLight(){
+void View::toggleFillLight() {
     FillOn = !FillOn;
-    if(FillOn)
+    if (FillOn)
         glEnable(GL_LIGHT1);
     else
         glDisable(GL_LIGHT1);
 }
 
-void View::toggleRimLight(){
+void View::toggleRimLight() {
     RimOn = !RimOn;
-    if(RimOn)
+    if (RimOn)
         glEnable(GL_LIGHT2);
     else
         glDisable(GL_LIGHT2);
 }
 
 // draw the cube and ball
-void View::drawModel(){
+void View::drawModel() {
+    // glEnable(GL_CULL_FACE);
 
-    //glEnable(GL_CULL_FACE);
-
-    // // Draw the box wire
-    // if(themodel->isBox())
-    // {
-    //     glDisable(GL_LIGHTING);
-    //     glColor3f(0, 1, 0);
-    //     glutWireCube(boxsize);
-    //     glEnable(GL_LIGHTING);
-    // }
+    // Draw the box wire
+    if (themodel->isBox()) {
+        glDisable(GL_LIGHTING);
+        glColor3f(0, 1, 0);
+        glutWireCube(boxsize);
+        glEnable(GL_LIGHTING);
+    }
 
     // const float wallThick = 0.01;
     // const float tranlate = (0.5 + 0.5 * wallThick) * boxsize;
@@ -234,14 +243,14 @@ void View::drawModel(){
     // glutSolidCube(boxsize);
     // glPopMatrix();
 
-    float diffuseColorBall[4] = { 0.14, 0.25, 0.4, 1 };
-    float diffuseColorTri[4] = { 1.0, 1.0, 0.0, 1 };
+    float diffuseColorBall[4] = {0.14, 0.25, 0.4, 1};
+    float diffuseColorTri[4] = {1.0, 1.0, 0.0, 1};
 
     // // draw the sphere obstacle
     // glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColorBall);
     // glPushMatrix();
-    // glTranslatef(themodel->ballPos.x, themodel->ballPos.y, themodel->ballPos.z);
-    // glutSolidSphere(themodel->ballsize / 2, 36, 13);
+    // glTranslatef(themodel->ballPos.x, themodel->ballPos.y,
+    // themodel->ballPos.z); glutSolidSphere(themodel->ballsize / 2, 36, 13);
     // glPopMatrix();
 
     // // draw the triangle obstacle
@@ -261,8 +270,7 @@ void View::drawModel(){
     glDisable(GL_LIGHTING);
     glPointSize(particles->GetParticleSize());
     glBegin(GL_POINTS);
-    for(Particle p : (particles->GetParticles()))
-    {
+    for (Particle p : (particles->GetParticles())) {
         glColor3f(p.color.x, p.color.y, p.color.z);
         glVertex3f(p.pos.x, p.pos.y, p.pos.z);
     }
@@ -274,8 +282,7 @@ void View::drawModel(){
     glDisable(GL_LIGHTING);
     glLineWidth(particles->GetParticleSize());
     glBegin(GL_LINES);
-    for(Particle p : (particles->GetParticles()))
-    {
+    for (Particle p : (particles->GetParticles())) {
         glColor3f(p.color.x, p.color.y, p.color.z);
         glVertex3f(p.pos.x, p.pos.y, p.pos.z);
         Vector3d tail = p.pos + (p.oldpos - p.pos) * tailLength;
@@ -289,18 +296,27 @@ void View::drawModel(){
     glDisable(GL_LIGHTING);
     glPointSize(2 * particles->GetParticleSize());
     glBegin(GL_POINTS);
-    const Particle* lead = &(*((particles->GetParticles()).begin()));
+    const Particle *lead = flocking->GetLeadBoid();
     glColor3f(1, 1, 1);
     glVertex3f(lead->pos.x, lead->pos.y, lead->pos.z);
     glEnd();
-    glEnable(GL_LIGHTING);
 
+    glLineWidth(2 * particles->GetParticleSize());
+    glBegin(GL_LINES);
+    glColor3f(lead->color.x, lead->color.y, lead->color.z);
+    glVertex3f(lead->pos.x, lead->pos.y, lead->pos.z);
+    Vector3d tail = lead->pos + (lead->oldpos - lead->pos) * tailLength;
+    glColor4f(1, 1, 1, 0.1);
+    glVertex3f(tail.x, tail.y, tail.z);
+    glEnd();
+
+    glEnable(GL_LIGHTING);
 }
 
 //
 // Redraw the display, including the model
 //
-void View::updateDisplay(){
+void View::updateDisplay() {
     // clear the window to the background color
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -321,34 +337,34 @@ void View::updateDisplay(){
 }
 
 //
-// handle mouse button events to initiate and end camera motion via mouse movements
+// handle mouse button events to initiate and end camera motion via mouse
+// movements
 //
-void View::handleButtons(int button, int state, int x, int y, bool shiftkey){
+void View::handleButtons(int button, int state, int x, int y, bool shiftkey) {
     camera->HandleMouseEvent(button, state, x, y, shiftkey);
 }
 
 //
 // handle mouse motion events to move the camera
 //
-void View::handleMotion(int x, int y){
-    camera->HandleMouseMotion(x, y);
-}
+void View::handleMotion(int x, int y) { camera->HandleMouseMotion(x, y); }
 
 //
 // When window resized, keep viewport proportions the same as the camera's
 // viewscreen proportions to avoid distortion of scene
 //
-void View::reshapeWindow(int w, int h){
-    float camaspect = float(width) / float(height); // camera's aspect ratio
-    float newaspect = float(w) / float(h);          // current window aspect ratio
+void View::reshapeWindow(int w, int h) {
+    float camaspect = float(width) / float(height);  // camera's aspect ratio
+    float newaspect = float(w) / float(h);  // current window aspect ratio
     float x0, y0;
 
     // tentatively set viewport dimensions to current window dimensions
     Width = w;
     Height = h;
 
-    // correct Width or Height so that Width / Height will match camera's aspect ratio
-    if(newaspect > camaspect)
+    // correct Width or Height so that Width / Height will match camera's aspect
+    // ratio
+    if (newaspect > camaspect)
         Width = int(h * camaspect);
     else
         Height = int(w / camaspect);
@@ -364,8 +380,7 @@ void View::reshapeWindow(int w, int h){
     camera->PerspectiveDisplay(Width, Height);
 }
 
-void View::updateParams()
-{
+void View::updateParams() {
     boxsize = themodel->boxSize();
     ballsize = themodel->ballSize();
 }
