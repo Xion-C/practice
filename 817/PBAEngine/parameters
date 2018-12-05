@@ -1,25 +1,3 @@
 //Simulation
-TimeStep-h                      0.02
-DisplayInterval                 1
-
-Gravity                         0.0 -9.8 0.0
-
-WindVelocity                    2.0 3.0 0.5
-
-//Particle
-Mass                            0.04
-
-//Flag
-FlagWidth                       25
-FlagHeight                      20
-
-MeshNumX                        20
-MeshNumY                        16
-
-Springy_k                       40
-Damper_d                        0.8
-
-DragCoefficient                 0.02
-LiftCoefficient                 0.02
-
-StartPostion                    -10 -5 0
+TimeStep-h                      0.05
+Gravity                         0.0 -1 0.0

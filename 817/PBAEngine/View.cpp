@@ -23,7 +23,7 @@
 
 // Screen width and height, proportions match 1080P
 #define WIDTH 960
-#define HEIGHT 640
+#define HEIGHT 1024
 
 // Distance of near and far clipping planes, and
 // camera vertical field-of-view in degrees
@@ -46,9 +46,10 @@
 
 // Screen background color
 #define GREY_BACKGROUND 0.08, 0.08, 0.08, 1
+#define SKY_BACKGROUND 0.5, 0.85, 0.95, 1
 
 // Material colors
-#define BASE_COLOR 0.9, 0.3, 0.3       // diffuse color
+#define BASE_COLOR 0.3, 0.3, 0.3       // diffuse color
 #define HIGHLIGHT_COLOR 1.0, 1.0, 1.0  // specular color
 
 
@@ -67,7 +68,7 @@ View::View() :
     shininess(SHININESS),
     white{WHITE},
     dim_white{DIM_WHITE},
-    grey_background{GREY_BACKGROUND},
+    background_color{SKY_BACKGROUND},
     base_color{BASE_COLOR},
     highlight_color{HIGHLIGHT_COLOR} {
     // Set up camera: parameters are eye point, aim point, up vector,
@@ -90,8 +91,7 @@ void View::setInitialView() {
     camera->Reset();
 
     // opaque grey background for window
-    glClearColor(grey_background[0], grey_background[1], grey_background[2],
-                 grey_background[3]);
+    glClearColor(background_color[0], background_color[1], background_color[2], background_color[3]);
 
     // smooth shade across triangles if vertex normals are present
     glShadeModel(GL_SMOOTH);

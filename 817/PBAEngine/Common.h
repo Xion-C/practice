@@ -6,10 +6,18 @@
 
 
 #ifdef __APPLE__
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#include <GLUT/glut.h>
+#   pragma clang diagnostic ignored "-Wdeprecated-declarations"
+#   include <GLUT/glut.h>
 #else
-#include <GL/glut.h>
+#   include <GL/glut.h>
+#endif
+
+#define __DEBUG__
+
+#ifdef __DEBUG__
+#   define IFDEBUG(...) __VA_ARGS__
+#else
+#   define IFDEBUG(...)
 #endif
 
 

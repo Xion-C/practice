@@ -37,7 +37,7 @@ private:
     // colors used for lights, and screen background
     const float white[4];
     const float dim_white[4];
-    const float grey_background[4];
+    const float background_color[4];
 
     // colors used for materials
     const float base_color[3];
@@ -89,8 +89,8 @@ public:
     void reshapeWindow(int width, int height);
 
     // accessors to determine current screen width and height
-    int getWidth() { return Width; }
-    int getHeight() { return Height; }
+    int getWidth() const { return Width; }
+    int getHeight() const { return Height; }
 };
 
 #endif

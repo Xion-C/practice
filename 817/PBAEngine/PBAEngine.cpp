@@ -1,15 +1,13 @@
 #include "PBAEngine.h"
 #include "Common.h"
+#include "ParameterLoader.h"
+
+#include "BreakoutScene.h"
 
 #include <cstdlib>
 #include <iostream>
+#include <string>
 
-// #ifdef __APPLE__
-// #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-// #include <GLUT/glut.h>
-// #else
-// #include <GL/glut.h>
-// #endif
 
 using namespace std;
 
@@ -17,7 +15,8 @@ PBAEngine* PBAEngine::instance = NULL;
 
 PBAEngine::PBAEngine() : 
     viewer(),
-    scene(new RigidBodyScene())
+    keyboard(),
+    scene(new BreakoutScene())
 {
 
 }
@@ -33,6 +32,22 @@ PBAEngine* PBAEngine::GetInstance()
         instance = new PBAEngine();
     return instance;
 }
+
+const PBAKeyboardManager& PBAEngine::GetKeyboard() const 
+{
+    return keyboard;
+}
+
+const PBAMouseManager& PBAEngine::GetMouse() const 
+{
+    return mouse;
+}
+
+const View& PBAEngine::GetView() const 
+{
+    return viewer;
+}
+
 
 int PBAEngine::InitGlut(int argc, char* argv[])
 {
@@ -52,6 +67,7 @@ int PBAEngine::InitGlut(int argc, char* argv[])
     glutKeyboardFunc(HandleKeyWrapper);
     glutMouseFunc(HandleMouseButtonsWrapper);
     glutMotionFunc(HandleMouseMotionWrapper);
+    glutPassiveMotionFunc(HandleMousePassiveMotionWrapper);
 
     // idle function is run whenever there are no other events to process
     glutIdleFunc(UpdateWrapper);
@@ -67,9 +83,31 @@ void PBAEngine::Reshape(int width, int height)
 void PBAEngine::HandleKey(unsigned char key, int x, int y)
 {
     const int ESC = 27;
+
+    // IFDEBUG(
+    //     std::cout << "----- keyboard -----" << std::endl;
+    // )
+
+
+    keyboard.SetKey(key, x, y);
     switch(key)
     {
         case 'b':
+            LoadParameters();
+            scene->Clear();
+            scene->Init();
+            scene->pause = false;
+            
+            break;
+        case 'a': 
+            // IFDEBUG(
+            //     std::cout << "press a" << std::endl;
+            // )
+            break;
+        case 'd': 
+            // IFDEBUG(
+            //     std::cout << "press d" << std::endl;
+            // )
             break;
         case ESC:
             exit(0);
@@ -77,7 +115,7 @@ void PBAEngine::HandleKey(unsigned char key, int x, int y)
             break;
     }
     // always refresh the display after a key press
-    glutPostRedisplay();
+    //glutPostRedisplay();
 }
 
 void PBAEngine::HandleMouseButtons(int button, int state, int x, int y)
@@ -91,6 +129,12 @@ void PBAEngine::HandleMouseButtons(int button, int state, int x, int y)
 void PBAEngine::HandleMouseMotion(int x, int y)
 {
     viewer.handleMotion(x, y);
+    glutPostRedisplay();
+}
+
+void PBAEngine::HandleMousePassiveMotion(int x, int y)
+{
+    mouse.SetMotion(x, y);
     glutPostRedisplay();
 }
 
@@ -114,6 +158,12 @@ void PBAEngine::HandleMouseMotionWrapper(int x, int y)
     instance->HandleMouseMotion(x, y);
 }
 
+void PBAEngine::HandleMousePassiveMotionWrapper(int x, int y)
+{
+    instance->HandleMousePassiveMotion(x, y);
+}
+
+
 void PBAEngine::DisplayWrapper()
 {
     instance->Display();
@@ -124,11 +174,34 @@ void PBAEngine::UpdateWrapper()
     instance->Update();
 }
 
+void PBAEngine::LoadParameters(const char* path)
+{
+    static std::string filepath;
+    if(path) {
+        filepath = std::string(path);
+    }
+    ParameterLoader::GetInstance().LoadParameters(filepath.c_str());
+
+}
+
 
 int PBAEngine::Init(int argc, char* argv[])
 {
     InitGlut(argc, argv);
     viewer.setInitialView();
+    std::string paramfile;
+
+    if(argc < 2) {
+        // cerr << "You need parameter file" << endl;
+        // exit(1);
+        paramfile = std::string("parameters");
+    }
+    else {
+        paramfile = std::string(argv[1]);
+    }
+
+    //ParameterLoader::GetInstance().LoadParameters(argv[1]);
+    LoadParameters(paramfile.c_str());
 
     return 0;
 }
@@ -150,10 +223,14 @@ void PBAEngine::Update()
     if (count == 0)
     {
         glutPostRedisplay();
-        // boxModel.print();
     }
 
-    count = (count + 1) % 2;
+    //count = (count + 1) % displayInterval;
+    // IFDEBUG(
+    //     std::cout << "***** Engine Update *****" << std::endl;
+    // )
+
+    keyboard.Reset();
 }
 
 void PBAEngine::Display()
