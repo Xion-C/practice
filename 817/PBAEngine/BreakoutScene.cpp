@@ -260,7 +260,7 @@ bool BreakoutScene::HandleBallHitStaticBox(BallCollider* ballcol, BoxCollider* b
             ballcol->object->SetVelocity(ballVel.x, -ballVel.y, ballVel.z);
         }
 
-        pause = true;
+        //pause = true;
 
         return true;
     }
