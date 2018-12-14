@@ -18,9 +18,15 @@ public:
     Test() {
         std::cout << "cosntrunctor" << std::endl;
     }
+    Test(int i) : num(i) {
+        std::cout << "int cosntrunctor" << std::endl;
+    }
+
     friend std::ostream& operator<<(std::ostream& os, const Test&) {
         return os << "| operator << |";
     }
+
+    int num;
 };
 
 void TestDefault(int b, int a)
@@ -36,7 +42,10 @@ int main () {
 
     //Logger& logger = Logger::GetInstance();
 
-    LogList ls;
+    LogList ls("hello");
+    std::cout << "size: " << sizeof(ls) << std::endl;
+    LogList *pls;
+    std::cout << "psize: " << sizeof(*pls) << std::endl;
 
     int num = 3;
 
@@ -65,10 +74,29 @@ int main () {
         ls.SetPrint(true);
         ls << "test log" << " " << num << test;
         ls << "another" << std::endl;
-        ls << "testitem" << LogItemEnd();
+        ls << "testitem" << LEND();
     );
     std::cout << "debug end" << std::endl;
     //ls.end();
     TestDefault();
 
+
+    Logger logger = Logger::GetInstance();
+    logger.SetAllPrint(true);
+    logger.SetPrint("test01", false);
+    logger["test01"] << "try test" << LEND();
+    logger["test02"] << "try test02" << std::endl << "another line" << LEND();
+
+    for(int i=0;i<5;i++) {
+        Test t(i);
+        std::cout << "t: " << t.num << std::endl;
+    }
+
+    int tnum = 3;
+    std::cout << (tnum << 2) << std::endl;
+
+    typedef unsigned char uint8_t;
+    uint8_t ttnum = 0b000000;
+    std::cout << (int(ttnum) << 2) << std::endl;
+    std::cout << (int(ttnum) >> 2) << std::endl;
 }

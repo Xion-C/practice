@@ -13,7 +13,7 @@ public:
     virtual ~PBAObject() {}
 
     virtual void Update() = 0;
-    virtual void Draw() = 0;
+    virtual void Render() = 0;
 
     virtual void SetPosition(float, float, float);
     virtual void SetPosition(const Vector3d&);
@@ -29,6 +29,7 @@ public:
     std::string name;
 
     bool staticFlag;
+    bool activatedFlag;
 };
 
 #endif

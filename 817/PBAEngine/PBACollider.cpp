@@ -14,3 +14,9 @@ const Vector3d& PBACollider::GetLoacalPosition() const
 {
     return localPosition;
 }
+
+Vector3d PBACollider::GetPosition() const 
+{
+    if(object) return object->GetPosition() + localPosition;
+    else return localPosition;
+}

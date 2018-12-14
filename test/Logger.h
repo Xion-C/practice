@@ -7,7 +7,11 @@
 #include <unordered_map>
 #include <list>
 
+#include <vector>
+
 class LogItemEnd { };
+
+typedef LogItemEnd LEND;
 
 class LogList
 {
@@ -15,7 +19,19 @@ public:
     typedef std::ostream& (*Manipulator)(std::ostream&);
     typedef std::ios_base& (*Flags)(std::ios_base&);
 
-    LogList() : printOn(false) {}
+    LogList(const std::string& tp = "") : 
+        printOn(false), 
+        type(tp),
+        currentlog(),
+        loglist()
+    {}
+
+    LogList(const LogList& ls) {
+        printOn = ls.printOn;
+        type = ls.type;
+        currentlog.str(ls.currentlog.str());
+        loglist = ls.loglist;
+    }
 
     LogList& operator<<(LogItemEnd&&);
 
@@ -41,6 +57,10 @@ public:
         printOn = s;
     }
 
+    void SetType(const std::string& tp) {
+        type = tp;
+    }
+
 private: 
     void Print(const std::string& str) const;
 
@@ -58,7 +78,11 @@ LogList& LogList::operator<<(LogItemEnd&&) {
 
 void LogList::Print(const std::string& str) const {
     if(printOn) {
-        std::cout << str << std::endl;
+        std::string prefix;
+        if(type.length() > 0) {
+            prefix = "[" + type + "]" + " ";
+        }
+        std::cout << prefix << str << std::endl;
     }
 }
 
@@ -70,31 +94,46 @@ void LogList::end() {
     currentlog.clear(); //set state
 }
 
-// class Logger 
-// {
-// public: 
-//     static Logger& GetInstance() {
-//         static Logger instance;
-//         return instance;
-//     }
-//     void SetPrintAll(bool s) {
-//         defaultPrintOn = s;
+class Logger 
+{
+public: 
+    static Logger& GetInstance() {
+        static Logger instance;
+        return instance;
+    }
+    void SetAllPrint(bool s) {
+        defaultPrintOn = s;
+        // for(auto& p : logGroupPrint) {
+        //     p.second = s;
+        // }
+        for(auto& ls : logGroup) {
+            ls.second.SetPrint(s);
+        }
+    }
+    void SetPrint(const std::string& group, bool s) {
+        logGroup[group].SetPrint(s);
+    }
 
-//     }
-//     OLog_T& operator[](const std::string& group) {
+    LogList& operator[](const std::string& group) {
+        auto iter = logGroup.find(group);
+        if(iter == logGroup.end()) {
+            logGroup[group].SetType(group);
+            logGroup[group].SetPrint(defaultPrintOn);
+        }
+        return logGroup[group];
+    }
 
-//     }
+private: 
+    Logger() : 
+        defaultPrintOn(false),
+        logGroup()
+    {
+    }
+private: 
+    bool defaultPrintOn;
+    std::unordered_map< std::string, LogList> logGroup;
+    //std::unordered_map< std::string, bool > logGroupPrint;
 
-// private: 
-//     Logger() : defaultPrintOn(false)
-//     {
-//     }
-// private: 
-//     bool defaultPrintOn;
-//     std::unordered_map< std::string, std::list<Log_T> > logGroup;
-//     std::unordered_map< std::string, OLog_T > logGroupOutput;
-//     std::unordered_map< std::string, bool > logGroupPrintOn;
-
-// };
+};
 
 #endif

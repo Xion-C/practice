@@ -5,6 +5,7 @@
 #include <string>
 
 #include "PBARigidBody.h"
+#include "PBAUI.h"
 
 class PBAScene 
 {
@@ -21,10 +22,14 @@ public:
     virtual void DeleteObject(const std::string& name);
     virtual PBARigidBody* GetObject(const std::string&);
 
+    virtual PBAUI* AddUI(const std::string&, PBAUI*);
+    virtual PBAUI* GetUI(const std::string&);
+
 public: 
     bool pause;
 protected: 
     std::unordered_map<std::string, PBARigidBody*> objectlist;
+    std::unordered_map<std::string, PBAUI*> uilist;
 
     float timeStep;
 };

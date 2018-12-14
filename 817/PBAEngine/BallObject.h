@@ -10,7 +10,7 @@ public:
     BallObject();
     virtual void Init() override;
     virtual void Update() override;
-    virtual void Draw() override;
+    virtual void Render() override;
 
     void SetRidus(float);
 

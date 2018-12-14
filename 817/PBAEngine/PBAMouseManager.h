@@ -11,8 +11,12 @@ public:
     }
     int GetX() const { return x; }
     int GetY() const { return y; }
+    bool GetClick() const { return click; }
+    int Reset() { click = false; }
+    int Click() { click = true; }
 private: 
     int x, y;
+    bool click;
 
 };
 

@@ -43,16 +43,38 @@ void BoxObject::Init()
 
 void BoxObject::Update()
 {
+    if(!activatedFlag) return;
+    if(staticFlag) return;
     const float h = ParameterLoader::GetInstance().timeStep;
     const Vector3d gravity = ParameterLoader::GetInstance().gravity;
-    position = position + velocity * h;
+
+    Vector3d posDot;
+    Quaternion quatDot;
+    Vector3d momDot;
+    Vector3d angmomDot;
+
+    posDot = massInv * momentum;
+    rotation = orientation.rotation();
+    rotMoiInv = rotation * moiInv * rotation.transpose();
 
     Quaternion wq = Quaternion(angularVelocity);
-    Quaternion quatDot = 0.5 * wq * orientation;
+    quatDot = 0.5 * wq * orientation;
 
+
+    momDot = Vector3d(0, 0, 0);
+    angmomDot = Vector3d(0, 0, 0);
+
+    momDot = momDot + gravity * mass;
+
+    //integration
+    position = position + velocity * h;
     orientation = orientation + quatDot * h;
     orientation = orientation.normalize();
 
+    momentum = momentum + momDot * h;
+    angularMomentum = angularMomentum + angmomDot * h;
+
+    velocity = massInv * momentum;
 
     // IFDEBUG(
     //     std::cout << "box update: " << std::endl;
@@ -61,8 +83,9 @@ void BoxObject::Update()
 
 }
 
-void BoxObject::Draw()
+void BoxObject::Render()
 {
+    if(!activatedFlag) return;
     glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor.data());
     glMaterialfv(GL_FRONT, GL_SPECULAR, specularColor.data());
     glMaterialf(GL_FRONT, GL_SHININESS, shininess);
@@ -79,4 +102,6 @@ void BoxObject::Draw()
     //     std::cout << "box size: " << size << std::endl;
     // );
 }
+
+
 

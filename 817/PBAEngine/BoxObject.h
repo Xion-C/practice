@@ -12,7 +12,7 @@ public:
     BoxObject();
     virtual void Init() override;
     virtual void Update() override;
-    virtual void Draw() override;
+    virtual void Render() override;
 
     void SetSize(float, float, float);
     //const Vector3d& GetSize() const;

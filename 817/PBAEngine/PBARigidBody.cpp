@@ -1,7 +1,7 @@
 #include "PBARigidBody.h"
 #include "ParameterLoader.h"
 
-#define MASS 10
+#define MASS 1
 #define CUBESIZE 5.0
 
 PBARigidBody::PBARigidBody() : 
@@ -45,6 +45,11 @@ void RefreshState()
 void PBARigidBody::SetVelocity(float vx, float vy, float vz)
 {
     velocity = Vector3d(vx, vy, vz);
+    momentum = mass * velocity;
+}
+void PBARigidBody::SetVelocity(const Vector3d& v)
+{
+    velocity = v;
     momentum = mass * velocity;
 }
 
@@ -122,6 +127,8 @@ void PBARigidBody::Init()
 
 void PBARigidBody::Update()
 {
+    if(!activatedFlag) return;
+
     const float h = ParameterLoader::GetInstance().timeStep;
     const Vector3d gravity = Vector3d(0, -0.98, 0);
 
@@ -182,8 +189,9 @@ void PBARigidBody::Update()
 
 }
 
-void PBARigidBody::Draw()
+void PBARigidBody::Render()
 {
+    if(!activatedFlag) return;
     glPushMatrix();
     glTranslatef(position.x, position.y, position.z);
     orientation.GLrotate();

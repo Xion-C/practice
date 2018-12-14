@@ -2,7 +2,7 @@
 #include "Common.h"
 #include "ParameterLoader.h"
 
-#include "BreakoutScene.h"
+#include "Breakout_Scene.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -109,6 +109,9 @@ void PBAEngine::HandleKey(unsigned char key, int x, int y)
             //     std::cout << "press d" << std::endl;
             // )
             break;
+        case ' ':
+            scene->pause = !(scene->pause);
+            break;
         case ESC:
             exit(0);
         default: 
@@ -123,6 +126,11 @@ void PBAEngine::HandleMouseButtons(int button, int state, int x, int y)
     bool shiftkey = (glutGetModifiers() == GLUT_ACTIVE_SHIFT);
 
     viewer.handleButtons(button, state, x, y, shiftkey);
+
+    if(state == GLUT_DOWN) {
+        mouse.Click();
+    }
+
     glutPostRedisplay();
 }
 
@@ -217,7 +225,8 @@ void PBAEngine::Update()
 {
     static int count = 0;
 
-    scene->Update();
+    if(!(scene->pause))
+        scene->Update();
 
     // only update the display after every displayinterval time steps
     if (count == 0)
@@ -231,6 +240,7 @@ void PBAEngine::Update()
     // )
 
     keyboard.Reset();
+    mouse.Reset();
 }
 
 void PBAEngine::Display()

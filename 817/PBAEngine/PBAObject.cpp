@@ -4,7 +4,8 @@ PBAObject::PBAObject() :
     position(Vector3d(0, 0, 0)),
     orientation(Quaternion()),
     name(""),
-    staticFlag(true)
+    staticFlag(true),
+    activatedFlag(true)
 {
 
 }

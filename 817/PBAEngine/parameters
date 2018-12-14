@@ -1,3 +1,3 @@
 //Simulation
 TimeStep-h                      0.05
-Gravity                         0.0 -1 0.0
+Gravity                         0.0 -0.9 0.0

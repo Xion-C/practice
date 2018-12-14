@@ -6,7 +6,7 @@
 //#include "ColliderMesh.h"
 #include "PBACollider.h"
 #include "Mesh.h"
-#include "ObjectRenderer.h"
+#include "PBARenderer.h"
 #include "PBAObject.h"
 
 #include <string>
@@ -19,9 +19,10 @@ public:
     virtual void Init();
     virtual void Update() override;
     //virtual void Draw() const;
-    virtual void Draw() override;
+    virtual void Render() override;
 
     virtual void SetVelocity(float vx, float vy, float vz);
+    virtual void SetVelocity(const Vector3d&);
     virtual void SetAngle(float yaw, float pitch, float roll);
     virtual void SetAngularVelocity(float ux, float uy, float uz);
     void SetGravity(bool);
@@ -37,6 +38,9 @@ public:
         return rotMoiInv;
     }
 
+    void SetMass(float m) {
+        mass = m;
+    }
     float GetMass() const {
         return mass;
     } 
@@ -49,7 +53,7 @@ public:
     void SetShininess(float);
 
     //in world coordinates
-    void AddImpulseAtPosition(const Vector3d&, const Vector3d&);
+    void AddImpulseAtPosition(const Vector3d& imp, const Vector3d& impos);
 
     //Matrix3x3 ComputeWorldToLocalMatrix();
 protected: 
@@ -60,7 +64,7 @@ protected:
 public: 
     //ColliderMesh* colliderMesh;
     ObjectMesh* mesh;
-    ObjectRenderer* renderer;
+    PBARenderer* renderer;
     PBACollider* collider;
 
 protected: 

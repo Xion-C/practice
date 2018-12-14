@@ -7,7 +7,7 @@
 class PlaneObject : public PBARigidBody 
 {
 public: 
-    virtual void Draw() override {
+    virtual void Render() override {
         glPushMatrix();
         glTranslatef(position.x, position.y, position.z);
         glScalef(5, 0.001, 5);

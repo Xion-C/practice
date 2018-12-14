@@ -39,7 +39,7 @@ void BallObject::Update()
 }
 
 
-void BallObject::Draw()
+void BallObject::Render()
 {
     glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuseColor.data());
     glMaterialfv(GL_FRONT, GL_SPECULAR, specularColor.data());

@@ -1,7 +1,10 @@
-#include "BreakoutScene.h"
+#include "Breakout_Scene.h"
+#include "Breakout_BounceBall.h"
+#include "Breakout_Paddle.h"
+#include "Collision_BallHitBox.h"
+
 #include "PBARigidBody.h"
 #include "BoxObject.h"
-#include "BreakoutPaddle.h"
 #include "BallObject.h"
 #include "BoxCollider.h"
 #include "BallCollider.h"
@@ -29,6 +32,7 @@ void BreakoutScene::Init()
     const float color2[] = { 0.5, 0.05, 0.95 };
     const float color3[] = { 0.5, 0.65, 0.95 };
     const float brick1[] = { 0.2, 0.65, 0.15 };
+    const float textColor[] = {0.95, 0.25, 0.3, 1};
 
     BoxObject* wall_left = static_cast<BoxObject*>(AddObject("wall_left", new BoxObject()));
     wall_left->SetSize(1.0, 30.0, thickness);
@@ -79,7 +83,8 @@ void BreakoutScene::Init()
     paddleCollider = paddlecol;
 
 
-    BallObject* ball = static_cast<BallObject*>(AddObject("ball", new BallObject()));
+    //BallObject* ball = static_cast<BallObject*>(AddObject("ball", new BallObject()));
+    BounceBall* ball = static_cast<BounceBall*>(AddObject("ball", new BounceBall(paddle)));
     ball->SetStatic(false);
     ball->SetGravity(true);
     ball->radius = 1.0;
@@ -123,15 +128,20 @@ void BreakoutScene::Init()
 
     BoxObject* bricktmp;
     BoxCollider* bricktmpcol;
+    int rownum = 3;
+    int colnum = 4;
+    float xstep = 20 / colnum;
+    float ystep = 15 / rownum;
     for(int i = 0; i < 4; i++)
     {
-        for(int j = 0; j < 5; j++)
+        for(int j = 0; j < 3; j++)
         {
             std::string name;
             name = std::string("bricktmp") + std::to_string(i) + std::to_string(j);
             bricktmp = static_cast<BoxObject*>(AddObject(name, new BoxObject()));
-            bricktmp->SetSize(1.5, 1.2, thickness/2);
-            bricktmp->SetPosition(i*5-7.5, j*3, 0);
+            bricktmp->SetMass(10.0);
+            bricktmp->SetSize(2, 1.5, thickness/2);
+            bricktmp->SetPosition(i*xstep-7.5, j*ystep, 0);
             bricktmp->SetDiffuseColor(brick1[0], brick1[1], brick1[2]);
             bricktmp->BindCollider(new BoxCollider(bricktmp));
             bricktmpcol = static_cast<BoxCollider*>(bricktmp->collider);
@@ -139,6 +149,11 @@ void BreakoutScene::Init()
             brickColliderList.push_back(bricktmpcol);
         }
     }
+
+
+    PBAText2D* author = static_cast<PBAText2D*>(AddUI("test", new PBAText2D(textColor)));
+    author->text = "By Xin Cheng";
+    author->position = Vector3d(12, 15, 0);
 
 
 }
@@ -155,8 +170,8 @@ void BreakoutScene::Clear()
 void BreakoutScene::Update()
 {
     PBAKeyboardManager keyboard = PBAEngine::GetInstance()->GetKeyboard();
-    if(keyboard.GetKey('p')) pause = !pause;
-    if(pause) return;
+    // if(keyboard.GetKey('p')) pause = !pause;
+    // if(pause) return;
     PBAScene::Update();
     for(BoxCollider* boxcol : boxColliderList) 
     {
@@ -167,9 +182,14 @@ void BreakoutScene::Update()
     auto itbrickcol = brickColliderList.begin();
     while(itbrickcol != brickColliderList.end()) 
     {
-        if(HandleBallHitStaticBox(bounceBallCollider, *itbrickcol))
+        Collision collision = HandleBallHitStaticBox(bounceBallCollider, *itbrickcol);
+        if(collision.contact)
         {
-            DeleteObject((*itbrickcol)->object->name);
+            (*itbrickcol)->object->SetStatic(false);
+            Vector3d impulse = -2 * (bounceBallCollider->object->GetVelocity() * collision.normal) * collision.normal * bounceBallCollider->object->GetMass();
+
+            (*itbrickcol)->object->AddImpulseAtPosition(impulse, collision.point);
+            //DeleteObject((*itbrickcol)->object->name);
             itbrickcol = brickColliderList.erase(itbrickcol);
         }
         else {
@@ -183,7 +203,8 @@ void BreakoutScene::Update()
 
 
     const float startSpeed = 10.0;
-    if(HandleBallHitStaticBox(bounceBallCollider, paddleCollider))
+    Collision collision = HandleBallHitStaticBox(bounceBallCollider, paddleCollider);
+    if(collision.contact)
     {
         Vector3d ballVel = bounceBallCollider->object->GetVelocity();
         ballVel = ballVel.normalize() * startSpeed;
@@ -199,10 +220,12 @@ void BreakoutScene::Update()
         std::cout << "*****                 *****" << std::endl;
         std::cout << "***************************" << std::endl;
     }
-    if((bounceBallCollider->object->GetPosition()).y < -20) {
+
+    /* fail */
+    if((bounceBallCollider->object->GetPosition()).y < -30) {
         Clear();
         Init();
-        pause = true;
+        pause = false;
     }
 
 }
@@ -212,59 +235,17 @@ void BreakoutScene::Update()
     
 // }
 
-bool BreakoutScene::HandleBallHitStaticBox(BallCollider* ballcol, BoxCollider* boxcol)
+Collision BreakoutScene::HandleBallHitStaticBox(BallCollider* ballcol, BoxCollider* boxcol)
 {
-    const float h = ParameterLoader::GetInstance().timeStep;
+    
+    BallHitStaticBoxSolver collisionSolver(ballcol, boxcol);
+    Collision collision = collisionSolver.Solve();
 
-    bool haveCollision = false;
-    Vector3d ballcolPos = ballcol->object->GetPosition() + ballcol->GetLoacalPosition();
-    Vector3d boxcolPos = boxcol->object->GetPosition() + boxcol->GetLoacalPosition();
-    Vector3d boxToBall = ballcolPos - boxcolPos;
-    float distance = boxToBall.norm();
-    if(distance <= PRECISION) {
-        haveCollision = true;
-    }
-    else {
-        Vector3d ballPoint = boxcolPos + boxToBall * (1 - (ballcol->radius + PRECISION) / distance);
-        haveCollision = boxcol->CheckPointInside(ballPoint);
-    }
-    if(haveCollision) {
-        Vector3d ballVel = ballcol->object->GetVelocity();
+    Vector3d ballVel = ballcol->object->GetVelocity();
+    Vector3d colVelPerp = (ballVel * collision.normal) * collision.normal;
+    Vector3d colVelPara = ballVel - colVelPerp;
+    colVelPerp = -colVelPerp;
+    ballcol->object->SetVelocity(colVelPerp + colVelPara);
+    return collision;
 
-        bool checkCollision = false;
-        Vector3d newBallPos = ballcolPos - ballVel * 0.5 * h;
-        Vector3d newBoxToBall = newBallPos - boxcolPos;
-        float newDistance = boxToBall.norm();
-        Vector3d newBallPoint = boxcolPos + newBoxToBall * (1 - (ballcol->radius + PRECISION) / distance);
-        if(newDistance <= PRECISION) {
-            checkCollision = true;
-        }
-        else {
-            checkCollision = boxcol->CheckPointInside(newBallPoint);
-        }
-        Vector3d collidePosition = newBallPoint;
-        if(checkCollision) {
-            collidePosition = ballcolPos - ballVel * h;
-            if(boxcol->CheckPointInside(collidePosition))
-            {
-                collidePosition = collidePosition - ballVel * h;
-            }
-        }
-
-        if(boxcol->CheckPointInY(collidePosition))
-        {
-            ballcol->object->SetVelocity(-ballVel.x, ballVel.y, ballVel.z);
-        }
-        else
-        {
-            ballcol->object->SetVelocity(ballVel.x, -ballVel.y, ballVel.z);
-        }
-
-        //pause = true;
-
-        return true;
-    }
-    else {
-        return false;
-    }
 }

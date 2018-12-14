@@ -12,6 +12,7 @@ public:
     PBACollider(PBARigidBody* obj = nullptr);
 
     const Vector3d& GetLoacalPosition() const;
+    Vector3d GetPosition() const;
 
 public: 
     PBARigidBody* object;

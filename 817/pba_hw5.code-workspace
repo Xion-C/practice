@@ -43,7 +43,8 @@
 			"typeinfo": "cpp",
 			"utility": "cpp",
 			"cstddef": "cpp",
-			"list": "cpp"
+			"list": "cpp",
+			"bitset": "cpp"
 		}
 	}
 }

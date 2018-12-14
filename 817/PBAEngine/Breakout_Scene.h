@@ -5,6 +5,7 @@
 #include "PBAScene.h"
 #include "BoxCollider.h"
 #include "BallCollider.h"
+#include "PBACollisionSolver.h"
 
 #include <list>
 
@@ -17,7 +18,7 @@ public:
     virtual void Update() override;
     //virtual void Display() override;
 private: 
-    bool HandleBallHitStaticBox(BallCollider*, BoxCollider*);
+    Collision HandleBallHitStaticBox(BallCollider*, BoxCollider*);
 
 private: 
     std::list<BoxCollider*> boxColliderList;
